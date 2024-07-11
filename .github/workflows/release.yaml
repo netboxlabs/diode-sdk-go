@@ -1,0 +1,149 @@
+name: Release
+on:
+  workflow_dispatch:
+  push:
+    branches: [ release ]
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+env:
+  GH_TOKEN: ${{ secrets.ORB_CI_GH_TOKEN }}
+  SEMANTIC_RELEASE_PACKAGE: ${{ github.repository }}
+  APP_NAME: diode-sdk-go
+
+jobs:
+  get-next-version:
+    name: Semantic release get next version
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - name: Write package.json
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: ./package.json
+          write-mode: overwrite
+          contents: |
+            {
+              "name": "${{ env.APP_NAME }}",
+              "version": "1.0.0",
+              "devDependencies": {
+                "semantic-release-export-data": "^1.0.1",
+                "@semantic-release/changelog": "^6.0.3"
+              }
+            }
+      - name: Upload artifact package.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: package.json
+          path: ./package.json
+          retention-days: 1
+          if-no-files-found: error
+      - name: Write .releaserc.json
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: ./.releaserc.json
+          write-mode: overwrite
+          contents: |
+            {
+              "branches": "release",
+              "repositoryUrl": "https://github.com/netboxlabs/diode-sdk-go",
+              "debug": "true",
+              "tagFormat": "v${version}",
+              "plugins": [
+                ["semantic-release-export-data"],
+                ["@semantic-release/commit-analyzer", {
+                  "releaseRules": [
+                    { "message": "*", "release": "patch"},
+                    { "message": "fix*", "release": "patch" },
+                    { "message": "feat*", "release": "minor" },
+                    { "message": "perf*",  "release": "major" }
+                  ]
+                }],
+                "@semantic-release/release-notes-generator",
+                [
+                  "@semantic-release/changelog",
+                  {
+                    "changelogFile": "CHANGELOG.md",
+                    "changelogTitle": "# Semantic Versioning Changelog"
+                  }
+                ],
+                [
+                  "@semantic-release/github",
+                  {
+                    "assets": [
+                      {
+                        "path": "release/**"
+                      }
+                    ]
+                  }
+                ]
+              ]
+            }
+      - name: Upload artifact .releaserc.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: .releaserc.json
+          path: ./.releaserc.json
+          retention-days: 1
+          if-no-files-found: error
+      - name: setup semantic-release
+        run: npm i
+      - name: release dry-run
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_SEMANTIC_RELEASE_WEBHOOK }}
+        run: npx semantic-release --debug --dry-run
+        id: get-next-version
+      - name: Set short sha output
+        id: short-sha
+        run: echo "::set-output name=short-sha::${GITHUB_SHA::7}"
+      - name: Set release version
+        id: release-version
+        run: |
+          echo "::set-output name=release-version::`echo ${{ steps.get-next-version.outputs.new-release-version }} | sed 's/v//g'`"
+    outputs:
+      new-release-published: ${{ steps.get-next-version.outputs.new-release-published }}
+      new-release-version: ${{ steps.release-version.outputs.release-version }}
+      short-sha: ${{ steps.short-sha.outputs.short-sha }}
+
+  confirm-version:
+    name: Next version ${{ needs.get-next-version.outputs.new-release-version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: get-next-version
+    if: needs.get-next-version.outputs.new-release-published == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "The new release version is ${{ needs.get-next-version.outputs.new-release-version }} commit ${{ needs.get-next-version.outputs.short-sha }}"
+
+  semantic-release:
+    name: Semantic release
+    needs: confirm-version
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - name: Download artifact package.json
+        uses: actions/download-artifact@v4
+        with:
+          name: package.json
+          path: ./package.json
+      - name: Download artifact .releaserc.json
+        uses: actions/download-artifact@v4
+        with:
+          name: .releaserc.json
+          path: ./.releaserc.json
+      - name: setup semantic-release
+        run: npm i
+      - name: Release
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_OBSERVABILITY_RELEASE_WEBHOOK }}
+        run: npx semantic-release --debug
