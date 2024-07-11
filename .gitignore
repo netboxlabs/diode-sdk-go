@@ -1,0 +1,11 @@
+# IntelliJ
+.idea/
+
+# VS Code
+.vscode
+
+# macOS
+.DS_Store
+
+# Go
+coverage.txt
