@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/netboxlabs/diode/diode-sdk-go/diode/v1/diodepb"
+	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
 
 const (

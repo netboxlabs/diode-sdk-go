@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/netboxlabs/diode/diode-sdk-go/diode/v1"
+	"github.com/netboxlabs/diode-sdk-go/diode/v1"
 )
 
 func TestNewClient(t *testing.T) {
