@@ -107,28 +107,28 @@ func TestGetAPIKey(t *testing.T) {
 		desc              string
 		apiKey            string
 		apiKeyEnvVarValue string
-		wantApiKey        string
+		wantAPIKey        string
 		wantErr           error
 	}{
 		{
 			desc:              "API key provided explicitly",
 			apiKey:            "foobar",
 			apiKeyEnvVarValue: "",
-			wantApiKey:        "foobar",
+			wantAPIKey:        "foobar",
 			wantErr:           nil,
 		},
 		{
 			desc:              "API key provided with environment variable",
 			apiKey:            "",
 			apiKeyEnvVarValue: "barfoo",
-			wantApiKey:        "barfoo",
+			wantAPIKey:        "barfoo",
 			wantErr:           nil,
 		},
 		{
 			desc:              "API key not provided either explicitly or with environment variable",
 			apiKey:            "",
 			apiKeyEnvVarValue: "",
-			wantApiKey:        "",
+			wantAPIKey:        "",
 			wantErr:           errors.New("api_key param or DIODE_API_KEY environment variable required"),
 		},
 	}
@@ -137,10 +137,12 @@ func TestGetAPIKey(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			if tt.apiKeyEnvVarValue != "" {
 				_ = os.Setenv(DiodeAPIKeyEnvVarName, tt.apiKeyEnvVarValue)
-				defer os.Unsetenv(DiodeAPIKeyEnvVarName)
+				defer func() {
+					_ = os.Unsetenv(DiodeAPIKeyEnvVarName)
+				}()
 			}
 			apiKey, err := getAPIKey(tt.apiKey)
-			require.Equal(t, tt.wantApiKey, apiKey)
+			require.Equal(t, tt.wantAPIKey, apiKey)
 			require.Equal(t, tt.wantErr, err)
 		})
 	}
@@ -240,8 +242,10 @@ func TestNewClient(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			defer os.Unsetenv(DiodeAPIKeyEnvVarName)
-			defer os.Unsetenv(DiodeSDKLogLevelEnvVarName)
+			defer func() {
+				_ = os.Unsetenv(DiodeAPIKeyEnvVarName)
+				_ = os.Unsetenv(DiodeSDKLogLevelEnvVarName)
+			}()
 
 			if tt.apiKeyEnvVarValue != "" {
 				_ = os.Setenv(DiodeAPIKeyEnvVarName, tt.apiKeyEnvVarValue)
@@ -275,7 +279,7 @@ type MockIngesterServiceServer struct {
 	diodepb.UnimplementedIngesterServiceServer
 }
 
-func (MockIngesterServiceServer) Ingest(_ context.Context, req *diodepb.IngestRequest) (*diodepb.IngestResponse, error) {
+func (MockIngesterServiceServer) Ingest(_ context.Context, _ *diodepb.IngestRequest) (*diodepb.IngestResponse, error) {
 	return &diodepb.IngestResponse{Errors: nil}, nil
 }
 
@@ -381,7 +385,9 @@ func TestNewLogger(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			defer os.Unsetenv(DiodeSDKLogLevelEnvVarName)
+			defer func() {
+				_ = os.Unsetenv(DiodeSDKLogLevelEnvVarName)
+			}()
 
 			if tt.logLevelEnvVarValue != "" {
 				_ = os.Setenv(DiodeSDKLogLevelEnvVarName, tt.logLevelEnvVarValue)
