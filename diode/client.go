@@ -250,7 +250,7 @@ func userAgent() string {
 func newLogger() *slog.Logger {
 	level, ok := os.LookupEnv(DiodeSDKLogLevelEnvVarName)
 	if !ok {
-		level = "DEBUG"
+		level = "INFO"
 	}
 
 	var l slog.Level

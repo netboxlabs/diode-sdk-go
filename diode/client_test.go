@@ -354,7 +354,7 @@ func TestNewLogger(t *testing.T) {
 		{
 			desc:                "log level not provided",
 			logLevelEnvVarValue: "",
-			wantLogLevel:        slog.LevelDebug,
+			wantLogLevel:        slog.LevelInfo,
 		},
 		{
 			desc:                "debug log level provided",
