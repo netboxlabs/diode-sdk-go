@@ -213,7 +213,7 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 	}
 
 	c.apiKey = apiKey
-	c.metadata = metadata.Pairs(authAPIKeyName, apiKey, "platform", platform, "go-version", goVersion)
+	c.metadata = metadata.Pairs(authAPIKeyName, c.apiKey, "platform", platform, "go-version", goVersion)
 
 	return c, nil
 }
@@ -239,6 +239,9 @@ func (g *GRPCClient) Ingest(ctx context.Context, entities []*diodepb.Entity) (*d
 		SdkName:            SDKName,
 		SdkVersion:         SDKVersion,
 	}
+
+	ctx = metadata.NewOutgoingContext(ctx, g.metadata)
+
 	return g.client.Ingest(ctx, req)
 }
 
