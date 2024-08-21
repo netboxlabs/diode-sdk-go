@@ -3,10 +3,17 @@ package diode
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
+	"errors"
 	"fmt"
+	"log/slog"
+	"net/url"
 	"os"
-	"strconv"
+	"regexp"
+	"runtime"
+	"strings"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
@@ -25,21 +32,60 @@ const (
 	// DiodeAPIKeyEnvVarName is the environment variable name for the Diode API key
 	DiodeAPIKeyEnvVarName = "DIODE_API_KEY"
 
-	// DiodeGRPCInsecureEnvVarName is the environment variable name for the Diode gRPC disabling transport security
-	DiodeGRPCInsecureEnvVarName = "DIODE_GRPC_INSECURE"
+	// DiodeSDKLogLevelEnvVarName is the environment variable name for the Diode SDK log level
+	DiodeSDKLogLevelEnvVarName = "DIODE_SDK_LOG_LEVEL"
 
-	// DiodeGRPCHostEnvVarName is the environment variable name for the Diode gRPC host
-	DiodeGRPCHostEnvVarName = "DIODE_GRPC_HOST"
-
-	// DiodeGRPCPortEnvVarName is the environment variable name for the Diode gRPC port
-	DiodeGRPCPortEnvVarName = "DIODE_GRPC_PORT"
+	defaultStreamName = "latest"
 
 	authAPIKeyName = "diode-api-key"
-
-	defaultGRPCHost = "127.0.0.1"
-
-	defaultGRPCPort = "8081"
 )
+
+var allowedSchemesRe = regexp.MustCompile(`grpc|grpcs`)
+
+// loadCerts loads the system x509 cert pool
+func loadCerts() *x509.CertPool {
+	certPool, _ := x509.SystemCertPool()
+	return certPool
+}
+
+// parseTarget parses the target string into authority, path, and tlsVerify
+func parseTarget(target string) (string, string, bool, error) {
+	u, err := url.Parse(target)
+	if err != nil {
+		return "", "", false, err
+	}
+
+	if !allowedSchemesRe.MatchString(u.Scheme) {
+		return "", "", false, errors.New("target should start with grpc:// or grpcs://")
+	}
+
+	authority := u.Host
+	if u.Port() == "" {
+		authority += ":443"
+	}
+
+	path := u.Path
+	if path == "/" {
+		path = ""
+	}
+
+	tlsVerify := u.Scheme == "grpcs"
+
+	return authority, path, tlsVerify, nil
+}
+
+// getAPIKey returns the API key either from provided value or environment variable
+func getAPIKey(apiKey string) (string, error) {
+	if apiKey == "" {
+		apiKey = os.Getenv(DiodeAPIKeyEnvVarName)
+	}
+
+	if apiKey == "" {
+		return "", fmt.Errorf("api_key param or %s environment variable required", DiodeAPIKeyEnvVarName)
+	}
+
+	return apiKey, nil
+}
 
 // Client is an interface that defines the methods available from Diode API
 type Client interface {
@@ -47,19 +93,114 @@ type Client interface {
 	Close() error
 
 	// Ingest sends an ingest request to the ingester service
-	Ingest(context.Context, *diodepb.IngestRequest, ...grpc.CallOption) (*diodepb.IngestResponse, error)
+	Ingest(context.Context, []*diodepb.Entity) (*diodepb.IngestResponse, error)
 }
 
 // GRPCClient is a gRPC implementation of the ingester service
 type GRPCClient struct {
+	// The logger for the client
+	logger *slog.Logger
+
 	// gRPC virtual connection
 	conn *grpc.ClientConn
 
 	// The gRPC API client
 	client diodepb.IngesterServiceClient
 
+	// Producer's application name
+	appName string
+
+	// Producer's application version
+	appVersion string
+
 	// An API key for the Diode API
 	apiKey *string
+
+	// GRPC target
+	target string
+
+	// GRPC path
+	path string
+
+	// TLS verify
+	tlsVerify bool
+
+	// Platform name
+	platform string
+
+	// Go version
+	goVersion string
+
+	// Metadata
+	metadata metadata.MD
+}
+
+// NewClient creates a new diode client based on gRPC
+func NewClient(target string, appName string, appVersion string, apiKey string) (Client, error) {
+	logger := newLogger()
+
+	if appName == "" {
+		return nil, fmt.Errorf("app name is required")
+	}
+
+	if appVersion == "" {
+		return nil, fmt.Errorf("app version is required")
+	}
+
+	target, path, tlsVerify, err := parseTarget(target)
+	if err != nil {
+		return nil, err
+	}
+
+	apiKey, err = getAPIKey(apiKey)
+	if err != nil {
+		return nil, err
+	}
+
+	dialOpts := []grpc.DialOption{
+		grpc.WithUserAgent(userAgent()),
+	}
+
+	if path != "" {
+		logger.Debug("Setting up gRPC interceptor for path", "path", path)
+		dialOpts = append(dialOpts, methodUnaryInterceptor(path))
+	}
+
+	if tlsVerify {
+		logger.Debug("Setting up gRPC secure channel")
+		rootCAs := loadCerts()
+		dialOpts = append(dialOpts, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{RootCAs: rootCAs})))
+	} else {
+		logger.Debug("Setting up gRPC insecure channel")
+		dialOpts = append(dialOpts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	}
+
+	conn, err := grpc.NewClient(target, dialOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	platform := fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH)
+	goVersion := runtime.Version()
+
+	md := metadata.Pairs(authAPIKeyName, apiKey, "platform", platform, "go-version", goVersion)
+
+	c := &GRPCClient{
+		logger:     logger,
+		conn:       conn,
+		client:     diodepb.NewIngesterServiceClient(conn),
+		appName:    appName,
+		appVersion: appVersion,
+		apiKey:     &apiKey,
+		target:     target,
+		path:       path,
+		tlsVerify:  tlsVerify,
+		platform:   platform,
+		goVersion:  goVersion,
+		metadata:   md,
+	}
+
+	return c, nil
 }
 
 // Close closes the connection to the API service
@@ -71,81 +212,62 @@ func (g *GRPCClient) Close() error {
 }
 
 // Ingest sends an ingest request to the ingester service
-func (g *GRPCClient) Ingest(ctx context.Context, req *diodepb.IngestRequest, opt ...grpc.CallOption) (*diodepb.IngestResponse, error) {
-	return g.client.Ingest(ctx, req, opt...)
+func (g *GRPCClient) Ingest(ctx context.Context, entities []*diodepb.Entity) (*diodepb.IngestResponse, error) {
+	stream := defaultStreamName
+
+	req := &diodepb.IngestRequest{
+		Id:                 uuid.NewString(),
+		Entities:           entities,
+		Stream:             stream,
+		ProducerAppName:    g.appName,
+		ProducerAppVersion: g.appVersion,
+		SdkName:            SDKName,
+		SdkVersion:         SDKVersion,
+	}
+	return g.client.Ingest(ctx, req)
 }
 
-func authUnaryInterceptor(apiKey string) grpc.DialOption {
+// methodUnaryInterceptor returns a gRPC dial option with a unary interceptor
+//
+// It's used to intercept the client calls and modify the method details.
+//
+// Diode's default method generated from Protocol Buffers definition is /diode.v1.IngesterService/Ingest and in order
+// to use Diode targets with path (i.e. localhost:8081/this/is/custom/path), this interceptor is used to modify the
+// method details, by prepending the generated method name with the path extracted from initial target.
+func methodUnaryInterceptor(path string) grpc.DialOption {
 	return grpc.WithUnaryInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		if apiKey != "" {
-			ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs(authAPIKeyName, apiKey))
-		}
+		method = fmt.Sprintf("%s%s", path, method)
 		return invoker(ctx, method, req, reply, cc, opts...)
 	})
 }
 
-// NewClient creates a new ingester client based on gRPC
-func NewClient() (Client, error) {
-	apiKey, ok := os.LookupEnv(DiodeAPIKeyEnvVarName)
-	if !ok {
-		return nil, fmt.Errorf("environment variable %s not found", DiodeAPIKeyEnvVarName)
-	}
-
-	dialOpts := []grpc.DialOption{
-		grpc.WithUserAgent(userAgent()),
-		authUnaryInterceptor(apiKey),
-	}
-
-	if grpcInsecure() {
-		dialOpts = append(dialOpts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	} else {
-		dialOpts = append(dialOpts, grpc.WithTransportCredentials(credentials.NewTLS(new(tls.Config))))
-	}
-
-	target := grpcTarget()
-
-	conn, err := grpc.NewClient(target, dialOpts...)
-	if err != nil {
-		return nil, err
-	}
-
-	c := &GRPCClient{
-		conn:   conn,
-		client: diodepb.NewIngesterServiceClient(conn),
-		apiKey: &apiKey,
-	}
-
-	return c, nil
-}
-
+// userAgent returns the user agent string for the SDK
 func userAgent() string {
 	return fmt.Sprintf("%s/%s", SDKName, SDKVersion)
 }
 
-func grpcTarget() string {
-	host, ok := os.LookupEnv(DiodeGRPCHostEnvVarName)
+// newLogger creates a new logger for the SDK
+func newLogger() *slog.Logger {
+	level, ok := os.LookupEnv(DiodeSDKLogLevelEnvVarName)
 	if !ok {
-		host = defaultGRPCHost
+		level = "DEBUG"
 	}
 
-	port, ok := os.LookupEnv(DiodeGRPCPortEnvVarName)
-	if !ok {
-		port = defaultGRPCPort
+	var l slog.Level
+	switch strings.ToUpper(level) {
+	case "DEBUG":
+		l = slog.LevelDebug
+	case "INFO":
+		l = slog.LevelInfo
+	case "WARN":
+		l = slog.LevelWarn
+	case "ERROR":
+		l = slog.LevelError
+	default:
+		l = slog.LevelDebug
 	}
 
-	return fmt.Sprintf("%s:%s", host, port)
-}
+	h := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: l, AddSource: false})
 
-func grpcInsecure() bool {
-	insecureStr, ok := os.LookupEnv(DiodeGRPCInsecureEnvVarName)
-	if !ok {
-		return false
-	}
-
-	insecureVal, err := strconv.ParseBool(insecureStr)
-	if err != nil {
-		return false
-	}
-
-	return insecureVal
+	return slog.New(h)
 }
