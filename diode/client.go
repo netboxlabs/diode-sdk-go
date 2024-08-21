@@ -114,7 +114,7 @@ type GRPCClient struct {
 	appVersion string
 
 	// An API key for the Diode API
-	apiKey *string
+	apiKey string
 
 	// GRPC target
 	target string
@@ -135,8 +135,18 @@ type GRPCClient struct {
 	metadata metadata.MD
 }
 
+// ClientOption is a functional option for the GRPCClient
+type ClientOption func(*GRPCClient)
+
+// WithAPIKey sets the API key for the client
+func WithAPIKey(apiKey string) ClientOption {
+	return func(c *GRPCClient) {
+		c.apiKey = apiKey
+	}
+}
+
 // NewClient creates a new diode client based on gRPC
-func NewClient(target string, appName string, appVersion string, apiKey string) (Client, error) {
+func NewClient(target string, appName string, appVersion string, opts ...ClientOption) (Client, error) {
 	logger := newLogger()
 
 	if appName == "" {
@@ -148,11 +158,6 @@ func NewClient(target string, appName string, appVersion string, apiKey string) 
 	}
 
 	target, path, tlsVerify, err := parseTarget(target)
-	if err != nil {
-		return nil, err
-	}
-
-	apiKey, err = getAPIKey(apiKey)
 	if err != nil {
 		return nil, err
 	}
@@ -183,22 +188,32 @@ func NewClient(target string, appName string, appVersion string, apiKey string) 
 	platform := fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH)
 	goVersion := runtime.Version()
 
-	md := metadata.Pairs(authAPIKeyName, apiKey, "platform", platform, "go-version", goVersion)
-
 	c := &GRPCClient{
 		logger:     logger,
 		conn:       conn,
 		client:     diodepb.NewIngesterServiceClient(conn),
 		appName:    appName,
 		appVersion: appVersion,
-		apiKey:     &apiKey,
 		target:     target,
 		path:       path,
 		tlsVerify:  tlsVerify,
 		platform:   platform,
 		goVersion:  goVersion,
-		metadata:   md,
 	}
+
+	var apiKey string
+
+	for _, o := range opts {
+		o(c)
+	}
+
+	apiKey, err = getAPIKey(c.apiKey)
+	if err != nil {
+		return nil, err
+	}
+
+	c.apiKey = apiKey
+	c.metadata = metadata.Pairs(authAPIKeyName, apiKey, "platform", platform, "go-version", goVersion)
 
 	return c, nil
 }

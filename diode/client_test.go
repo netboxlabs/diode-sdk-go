@@ -251,7 +251,12 @@ func TestNewClient(t *testing.T) {
 				_ = os.Setenv(DiodeAPIKeyEnvVarName, tt.apiKeyEnvVarValue)
 			}
 
-			client, err := NewClient(tt.target, tt.appName, tt.appVersion, tt.apiKey)
+			opts := []ClientOption{}
+			if tt.apiKey != "" {
+				opts = append(opts, WithAPIKey(tt.apiKey))
+			}
+
+			client, err := NewClient(tt.target, tt.appName, tt.appVersion, opts...)
 			require.Equal(t, tt.wantErr, err)
 			if tt.wantErr == nil {
 				require.NotNil(t, client)
@@ -331,7 +336,7 @@ func TestMethodUnaryInterceptor(t *testing.T) {
 			appVersion := "0.1.0"
 			apiKey := "abcde"
 
-			client, err := NewClient(target, appName, appVersion, apiKey)
+			client, err := NewClient(target, appName, appVersion, WithAPIKey(apiKey))
 			require.NoError(t, err)
 			require.NotNil(t, client)
 			_, err = client.Ingest(context.Background(), nil)
