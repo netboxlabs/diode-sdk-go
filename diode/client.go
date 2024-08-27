@@ -93,7 +93,7 @@ type Client interface {
 	Close() error
 
 	// Ingest sends an ingest request to the ingester service
-	Ingest(context.Context, []*diodepb.Entity) (*diodepb.IngestResponse, error)
+	Ingest(context.Context, []Entity) (*diodepb.IngestResponse, error)
 }
 
 // GRPCClient is a gRPC implementation of the ingester service
@@ -227,12 +227,17 @@ func (g *GRPCClient) Close() error {
 }
 
 // Ingest sends an ingest request to the ingester service
-func (g *GRPCClient) Ingest(ctx context.Context, entities []*diodepb.Entity) (*diodepb.IngestResponse, error) {
+func (g *GRPCClient) Ingest(ctx context.Context, entities []Entity) (*diodepb.IngestResponse, error) {
 	stream := defaultStreamName
+
+	protoEntities := make([]*diodepb.Entity, 0)
+	for _, entity := range entities {
+		protoEntities = append(protoEntities, entity.ConvertToProtoEntity())
+	}
 
 	req := &diodepb.IngestRequest{
 		Id:                 uuid.NewString(),
-		Entities:           entities,
+		Entities:           protoEntities,
 		Stream:             stream,
 		ProducerAppName:    g.appName,
 		ProducerAppVersion: g.appVersion,
