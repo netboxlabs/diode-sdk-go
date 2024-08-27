@@ -142,9 +142,9 @@ func (d *Device) GetComments() *string {
 
 // GetTags returns the Tags field
 func (d *Device) GetTags() []*diodepb.Tag {
-	tags := make([]*diodepb.Tag, len(d.Tags))
-	for i, el := range d.Tags {
-		tags[i] = el.ConvertToProtoMessage().(*diodepb.Tag)
+	var tags []*diodepb.Tag
+	for _, el := range d.Tags {
+		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
@@ -248,9 +248,9 @@ func (d *DeviceType) GetPartNumber() *string {
 
 // GetTags returns the Tags field
 func (d *DeviceType) GetTags() []*diodepb.Tag {
-	tags := make([]*diodepb.Tag, len(d.Tags))
-	for i, el := range d.Tags {
-		tags[i] = el.ConvertToProtoMessage().(*diodepb.Tag)
+	var tags []*diodepb.Tag
+	for _, el := range d.Tags {
+		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
@@ -350,9 +350,9 @@ func (d *IPAddress) GetComments() *string {
 
 // GetTags returns the Tags field
 func (d *IPAddress) GetTags() []*diodepb.Tag {
-	tags := make([]*diodepb.Tag, len(d.Tags))
-	for i, el := range d.Tags {
-		tags[i] = el.ConvertToProtoMessage().(*diodepb.Tag)
+	var tags []*diodepb.Tag
+	for _, el := range d.Tags {
+		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
@@ -510,9 +510,9 @@ func (d *Interface) GetMode() string {
 
 // GetTags returns the Tags field
 func (d *Interface) GetTags() []*diodepb.Tag {
-	tags := make([]*diodepb.Tag, len(d.Tags))
-	for i, el := range d.Tags {
-		tags[i] = el.ConvertToProtoMessage().(*diodepb.Tag)
+	var tags []*diodepb.Tag
+	for _, el := range d.Tags {
+		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
@@ -570,9 +570,9 @@ func (d *Manufacturer) GetDescription() *string {
 
 // GetTags returns the Tags field
 func (d *Manufacturer) GetTags() []*diodepb.Tag {
-	tags := make([]*diodepb.Tag, len(d.Tags))
-	for i, el := range d.Tags {
-		tags[i] = el.ConvertToProtoMessage().(*diodepb.Tag)
+	var tags []*diodepb.Tag
+	for _, el := range d.Tags {
+		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
@@ -640,9 +640,9 @@ func (d *Platform) GetDescription() *string {
 
 // GetTags returns the Tags field
 func (d *Platform) GetTags() []*diodepb.Tag {
-	tags := make([]*diodepb.Tag, len(d.Tags))
-	for i, el := range d.Tags {
-		tags[i] = el.ConvertToProtoMessage().(*diodepb.Tag)
+	var tags []*diodepb.Tag
+	for _, el := range d.Tags {
+		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
@@ -740,9 +740,9 @@ func (d *Prefix) GetComments() *string {
 
 // GetTags returns the Tags field
 func (d *Prefix) GetTags() []*diodepb.Tag {
-	tags := make([]*diodepb.Tag, len(d.Tags))
-	for i, el := range d.Tags {
-		tags[i] = el.ConvertToProtoMessage().(*diodepb.Tag)
+	var tags []*diodepb.Tag
+	for _, el := range d.Tags {
+		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
@@ -810,9 +810,9 @@ func (d *Role) GetDescription() *string {
 
 // GetTags returns the Tags field
 func (d *Role) GetTags() []*diodepb.Tag {
-	tags := make([]*diodepb.Tag, len(d.Tags))
-	for i, el := range d.Tags {
-		tags[i] = el.ConvertToProtoMessage().(*diodepb.Tag)
+	var tags []*diodepb.Tag
+	for _, el := range d.Tags {
+		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
@@ -910,9 +910,9 @@ func (d *Site) GetComments() *string {
 
 // GetTags returns the Tags field
 func (d *Site) GetTags() []*diodepb.Tag {
-	tags := make([]*diodepb.Tag, len(d.Tags))
-	for i, el := range d.Tags {
-		tags[i] = el.ConvertToProtoMessage().(*diodepb.Tag)
+	var tags []*diodepb.Tag
+	for _, el := range d.Tags {
+		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }

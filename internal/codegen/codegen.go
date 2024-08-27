@@ -282,9 +282,9 @@ func generateGetterMethod(t reflect.Type, params methodParams) {
 			fmt.Printf("\treturn nil\n")
 		} else {
 			sliceVarName := strings.ToLower(params.fieldName)
-			fmt.Printf("\t%s := make([]*diodepb.%s, len(d.%s))\n", sliceVarName, params.repeatedFieldType, params.fieldName)
-			fmt.Printf("\tfor i, el := range d.%s {\n", params.fieldName)
-			fmt.Printf("\t\t%s[i] = el.ConvertToProtoMessage().(*diodepb.%s)\n", sliceVarName, params.repeatedFieldType)
+			fmt.Printf("\tvar %s []*diodepb.%s\n", sliceVarName, params.repeatedFieldType)
+			fmt.Printf("\tfor _, el := range d.%s {\n", params.fieldName)
+			fmt.Printf("\t\t%s = append(%s, el.ConvertToProtoMessage().(*diodepb.%s))\n", sliceVarName, sliceVarName, params.repeatedFieldType)
 			fmt.Printf("\t}\n")
 			fmt.Printf("\treturn %s\n", sliceVarName)
 		}
