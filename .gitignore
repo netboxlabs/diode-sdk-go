@@ -9,3 +9,4 @@
 
 # Go
 coverage.txt
+.coverage/
