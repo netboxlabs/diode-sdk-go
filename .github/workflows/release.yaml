@@ -135,12 +135,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: package.json
-          path: ./package.json
       - name: Download artifact .releaserc.json
         uses: actions/download-artifact@v4
         with:
           name: .releaserc.json
-          path: ./.releaserc.json
       - name: setup semantic-release
         run: npm i
       - name: Release
