@@ -33,143 +33,143 @@ type Device struct {
 }
 
 // ConvertToProtoMessageDevice converts a Device to a diodepb.Device
-func (d *Device) ConvertToProtoMessage() proto.Message {
+func (e *Device) ConvertToProtoMessage() proto.Message {
 	return &diodepb.Device{
-		Name:        d.GetName(),
-		DeviceFqdn:  d.GetDeviceFqdn(),
-		DeviceType:  d.GetDeviceType(),
-		Role:        d.GetRole(),
-		Platform:    d.GetPlatform(),
-		Serial:      d.GetSerial(),
-		Site:        d.GetSite(),
-		AssetTag:    d.GetAssetTag(),
-		Status:      d.GetStatus(),
-		Description: d.GetDescription(),
-		Comments:    d.GetComments(),
-		Tags:        d.GetTags(),
-		PrimaryIp4:  d.GetPrimaryIp4(),
-		PrimaryIp6:  d.GetPrimaryIp6(),
+		Name:        e.GetName(),
+		DeviceFqdn:  e.GetDeviceFqdn(),
+		DeviceType:  e.GetDeviceType(),
+		Role:        e.GetRole(),
+		Platform:    e.GetPlatform(),
+		Serial:      e.GetSerial(),
+		Site:        e.GetSite(),
+		AssetTag:    e.GetAssetTag(),
+		Status:      e.GetStatus(),
+		Description: e.GetDescription(),
+		Comments:    e.GetComments(),
+		Tags:        e.GetTags(),
+		PrimaryIp4:  e.GetPrimaryIp4(),
+		PrimaryIp6:  e.GetPrimaryIp6(),
 	}
 }
 
 // GetName returns the Name field
-func (d *Device) GetName() string {
-	if d != nil && d.Name != nil {
-		return *d.Name
+func (e *Device) GetName() string {
+	if e != nil && e.Name != nil {
+		return *e.Name
 	}
 	return ""
 }
 
 // GetDeviceFqdn returns the DeviceFqdn field
-func (d *Device) GetDeviceFqdn() *string {
-	if d != nil && d.DeviceFqdn != nil {
-		return d.DeviceFqdn
+func (e *Device) GetDeviceFqdn() *string {
+	if e != nil && e.DeviceFqdn != nil {
+		return e.DeviceFqdn
 	}
 	return nil
 }
 
 // GetDeviceType returns the DeviceType field
-func (d *Device) GetDeviceType() *diodepb.DeviceType {
-	if d != nil && d.DeviceType != nil {
-		return d.DeviceType.ConvertToProtoMessage().(*diodepb.DeviceType)
+func (e *Device) GetDeviceType() *diodepb.DeviceType {
+	if e != nil && e.DeviceType != nil {
+		return e.DeviceType.ConvertToProtoMessage().(*diodepb.DeviceType)
 	}
 	return nil
 }
 
 // GetRole returns the Role field
-func (d *Device) GetRole() *diodepb.Role {
-	if d != nil && d.Role != nil {
-		return d.Role.ConvertToProtoMessage().(*diodepb.Role)
+func (e *Device) GetRole() *diodepb.Role {
+	if e != nil && e.Role != nil {
+		return e.Role.ConvertToProtoMessage().(*diodepb.Role)
 	}
 	return nil
 }
 
 // GetPlatform returns the Platform field
-func (d *Device) GetPlatform() *diodepb.Platform {
-	if d != nil && d.Platform != nil {
-		return d.Platform.ConvertToProtoMessage().(*diodepb.Platform)
+func (e *Device) GetPlatform() *diodepb.Platform {
+	if e != nil && e.Platform != nil {
+		return e.Platform.ConvertToProtoMessage().(*diodepb.Platform)
 	}
 	return nil
 }
 
 // GetSerial returns the Serial field
-func (d *Device) GetSerial() *string {
-	if d != nil && d.Serial != nil {
-		return d.Serial
+func (e *Device) GetSerial() *string {
+	if e != nil && e.Serial != nil {
+		return e.Serial
 	}
 	return nil
 }
 
 // GetSite returns the Site field
-func (d *Device) GetSite() *diodepb.Site {
-	if d != nil && d.Site != nil {
-		return d.Site.ConvertToProtoMessage().(*diodepb.Site)
+func (e *Device) GetSite() *diodepb.Site {
+	if e != nil && e.Site != nil {
+		return e.Site.ConvertToProtoMessage().(*diodepb.Site)
 	}
 	return nil
 }
 
 // GetAssetTag returns the AssetTag field
-func (d *Device) GetAssetTag() *string {
-	if d != nil && d.AssetTag != nil {
-		return d.AssetTag
+func (e *Device) GetAssetTag() *string {
+	if e != nil && e.AssetTag != nil {
+		return e.AssetTag
 	}
 	return nil
 }
 
 // GetStatus returns the Status field
-func (d *Device) GetStatus() string {
-	if d != nil && d.Status != nil {
-		return *d.Status
+func (e *Device) GetStatus() string {
+	if e != nil && e.Status != nil {
+		return *e.Status
 	}
 	return ""
 }
 
 // GetDescription returns the Description field
-func (d *Device) GetDescription() *string {
-	if d != nil && d.Description != nil {
-		return d.Description
+func (e *Device) GetDescription() *string {
+	if e != nil && e.Description != nil {
+		return e.Description
 	}
 	return nil
 }
 
 // GetComments returns the Comments field
-func (d *Device) GetComments() *string {
-	if d != nil && d.Comments != nil {
-		return d.Comments
+func (e *Device) GetComments() *string {
+	if e != nil && e.Comments != nil {
+		return e.Comments
 	}
 	return nil
 }
 
 // GetTags returns the Tags field
-func (d *Device) GetTags() []*diodepb.Tag {
+func (e *Device) GetTags() []*diodepb.Tag {
 	var tags []*diodepb.Tag
-	for _, el := range d.Tags {
+	for _, el := range e.Tags {
 		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
 
 // GetPrimaryIp4 returns the PrimaryIp4 field
-func (d *Device) GetPrimaryIp4() *diodepb.IPAddress {
-	if d != nil && d.PrimaryIp4 != nil {
-		return d.PrimaryIp4.ConvertToProtoMessage().(*diodepb.IPAddress)
+func (e *Device) GetPrimaryIp4() *diodepb.IPAddress {
+	if e != nil && e.PrimaryIp4 != nil {
+		return e.PrimaryIp4.ConvertToProtoMessage().(*diodepb.IPAddress)
 	}
 	return nil
 }
 
 // GetPrimaryIp6 returns the PrimaryIp6 field
-func (d *Device) GetPrimaryIp6() *diodepb.IPAddress {
-	if d != nil && d.PrimaryIp6 != nil {
-		return d.PrimaryIp6.ConvertToProtoMessage().(*diodepb.IPAddress)
+func (e *Device) GetPrimaryIp6() *diodepb.IPAddress {
+	if e != nil && e.PrimaryIp6 != nil {
+		return e.PrimaryIp6.ConvertToProtoMessage().(*diodepb.IPAddress)
 	}
 	return nil
 }
 
 // ConvertToProtoEntityDevice converts a Device to a diodepb.Entity
-func (d *Device) ConvertToProtoEntity() *diodepb.Entity {
+func (e *Device) ConvertToProtoEntity() *diodepb.Entity {
 	return &diodepb.Entity{
 		Entity: &diodepb.Entity_Device{
-			Device: d.ConvertToProtoMessage().(*diodepb.Device),
+			Device: e.ConvertToProtoMessage().(*diodepb.Device),
 		},
 	}
 }
@@ -186,80 +186,80 @@ type DeviceType struct {
 }
 
 // ConvertToProtoMessageDeviceType converts a DeviceType to a diodepb.DeviceType
-func (d *DeviceType) ConvertToProtoMessage() proto.Message {
+func (e *DeviceType) ConvertToProtoMessage() proto.Message {
 	return &diodepb.DeviceType{
-		Model:        d.GetModel(),
-		Slug:         d.GetSlug(),
-		Manufacturer: d.GetManufacturer(),
-		Description:  d.GetDescription(),
-		Comments:     d.GetComments(),
-		PartNumber:   d.GetPartNumber(),
-		Tags:         d.GetTags(),
+		Model:        e.GetModel(),
+		Slug:         e.GetSlug(),
+		Manufacturer: e.GetManufacturer(),
+		Description:  e.GetDescription(),
+		Comments:     e.GetComments(),
+		PartNumber:   e.GetPartNumber(),
+		Tags:         e.GetTags(),
 	}
 }
 
 // GetModel returns the Model field
-func (d *DeviceType) GetModel() string {
-	if d != nil && d.Model != nil {
-		return *d.Model
+func (e *DeviceType) GetModel() string {
+	if e != nil && e.Model != nil {
+		return *e.Model
 	}
 	return ""
 }
 
 // GetSlug returns the Slug field
-func (d *DeviceType) GetSlug() string {
-	if d != nil && d.Slug != nil {
-		return *d.Slug
+func (e *DeviceType) GetSlug() string {
+	if e != nil && e.Slug != nil {
+		return *e.Slug
 	}
 	return ""
 }
 
 // GetManufacturer returns the Manufacturer field
-func (d *DeviceType) GetManufacturer() *diodepb.Manufacturer {
-	if d != nil && d.Manufacturer != nil {
-		return d.Manufacturer.ConvertToProtoMessage().(*diodepb.Manufacturer)
+func (e *DeviceType) GetManufacturer() *diodepb.Manufacturer {
+	if e != nil && e.Manufacturer != nil {
+		return e.Manufacturer.ConvertToProtoMessage().(*diodepb.Manufacturer)
 	}
 	return nil
 }
 
 // GetDescription returns the Description field
-func (d *DeviceType) GetDescription() *string {
-	if d != nil && d.Description != nil {
-		return d.Description
+func (e *DeviceType) GetDescription() *string {
+	if e != nil && e.Description != nil {
+		return e.Description
 	}
 	return nil
 }
 
 // GetComments returns the Comments field
-func (d *DeviceType) GetComments() *string {
-	if d != nil && d.Comments != nil {
-		return d.Comments
+func (e *DeviceType) GetComments() *string {
+	if e != nil && e.Comments != nil {
+		return e.Comments
 	}
 	return nil
 }
 
 // GetPartNumber returns the PartNumber field
-func (d *DeviceType) GetPartNumber() *string {
-	if d != nil && d.PartNumber != nil {
-		return d.PartNumber
+func (e *DeviceType) GetPartNumber() *string {
+	if e != nil && e.PartNumber != nil {
+		return e.PartNumber
 	}
 	return nil
 }
 
 // GetTags returns the Tags field
-func (d *DeviceType) GetTags() []*diodepb.Tag {
+func (e *DeviceType) GetTags() []*diodepb.Tag {
 	var tags []*diodepb.Tag
-	for _, el := range d.Tags {
+	for _, el := range e.Tags {
 		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
 
 // ConvertToProtoEntityDeviceType converts a DeviceType to a diodepb.Entity
-func (d *DeviceType) ConvertToProtoEntity() *diodepb.Entity {
+func (e *DeviceType) ConvertToProtoEntity() *diodepb.Entity {
 	return &diodepb.Entity{
 		Entity: &diodepb.Entity_DeviceType{
-			DeviceType: d.ConvertToProtoMessage().(*diodepb.DeviceType),
+			DeviceType: e.ConvertToProtoMessage().(*diodepb.DeviceType),
 		},
 	}
 }
@@ -277,91 +277,91 @@ type IPAddress struct {
 }
 
 // ConvertToProtoMessageIPAddress converts a IPAddress to a diodepb.IPAddress
-func (d *IPAddress) ConvertToProtoMessage() proto.Message {
+func (e *IPAddress) ConvertToProtoMessage() proto.Message {
 	return &diodepb.IPAddress{
-		Address:        d.GetAddress(),
-		AssignedObject: d.GetAssignedObject(),
-		Status:         d.GetStatus(),
-		Role:           d.GetRole(),
-		DnsName:        d.GetDnsName(),
-		Description:    d.GetDescription(),
-		Comments:       d.GetComments(),
-		Tags:           d.GetTags(),
+		Address:        e.GetAddress(),
+		AssignedObject: e.GetAssignedObject(),
+		Status:         e.GetStatus(),
+		Role:           e.GetRole(),
+		DnsName:        e.GetDnsName(),
+		Description:    e.GetDescription(),
+		Comments:       e.GetComments(),
+		Tags:           e.GetTags(),
 	}
 }
 
 // GetAddress returns the Address field
-func (d *IPAddress) GetAddress() string {
-	if d != nil && d.Address != nil {
-		return *d.Address
+func (e *IPAddress) GetAddress() string {
+	if e != nil && e.Address != nil {
+		return *e.Address
 	}
 	return ""
 }
 
 // GetAssignedObject returns the AssignedObject field
-func (d *IPAddress) GetAssignedObject() *diodepb.IPAddress_Interface {
-	if d != nil && d.AssignedObject != nil {
+func (e *IPAddress) GetAssignedObject() *diodepb.IPAddress_Interface {
+	if e != nil && e.AssignedObject != nil {
 		return &diodepb.IPAddress_Interface{
-			Interface: d.AssignedObject.ConvertToProtoMessage().(*diodepb.Interface),
+			Interface: e.AssignedObject.ConvertToProtoMessage().(*diodepb.Interface),
 		}
 	}
 	return nil
 }
 
 // GetStatus returns the Status field
-func (d *IPAddress) GetStatus() string {
-	if d != nil && d.Status != nil {
-		return *d.Status
+func (e *IPAddress) GetStatus() string {
+	if e != nil && e.Status != nil {
+		return *e.Status
 	}
 	return ""
 }
 
 // GetRole returns the Role field
-func (d *IPAddress) GetRole() string {
-	if d != nil && d.Role != nil {
-		return *d.Role
+func (e *IPAddress) GetRole() string {
+	if e != nil && e.Role != nil {
+		return *e.Role
 	}
 	return ""
 }
 
 // GetDnsName returns the DnsName field
-func (d *IPAddress) GetDnsName() *string {
-	if d != nil && d.DnsName != nil {
-		return d.DnsName
+func (e *IPAddress) GetDnsName() *string {
+	if e != nil && e.DnsName != nil {
+		return e.DnsName
 	}
 	return nil
 }
 
 // GetDescription returns the Description field
-func (d *IPAddress) GetDescription() *string {
-	if d != nil && d.Description != nil {
-		return d.Description
+func (e *IPAddress) GetDescription() *string {
+	if e != nil && e.Description != nil {
+		return e.Description
 	}
 	return nil
 }
 
 // GetComments returns the Comments field
-func (d *IPAddress) GetComments() *string {
-	if d != nil && d.Comments != nil {
-		return d.Comments
+func (e *IPAddress) GetComments() *string {
+	if e != nil && e.Comments != nil {
+		return e.Comments
 	}
 	return nil
 }
 
 // GetTags returns the Tags field
-func (d *IPAddress) GetTags() []*diodepb.Tag {
+func (e *IPAddress) GetTags() []*diodepb.Tag {
 	var tags []*diodepb.Tag
-	for _, el := range d.Tags {
+	for _, el := range e.Tags {
 		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
 
 // ConvertToProtoEntityIPAddress converts a IPAddress to a diodepb.Entity
-func (d *IPAddress) ConvertToProtoEntity() *diodepb.Entity {
+func (e *IPAddress) ConvertToProtoEntity() *diodepb.Entity {
 	return &diodepb.Entity{
 		Entity: &diodepb.Entity_IpAddress{
-			IpAddress: d.ConvertToProtoMessage().(*diodepb.IPAddress),
+			IpAddress: e.ConvertToProtoMessage().(*diodepb.IPAddress),
 		},
 	}
 }
@@ -385,143 +385,143 @@ type Interface struct {
 }
 
 // ConvertToProtoMessageInterface converts a Interface to a diodepb.Interface
-func (d *Interface) ConvertToProtoMessage() proto.Message {
+func (e *Interface) ConvertToProtoMessage() proto.Message {
 	return &diodepb.Interface{
-		Device:        d.GetDevice(),
-		Name:          d.GetName(),
-		Label:         d.GetLabel(),
-		Type:          d.GetType(),
-		Enabled:       d.GetEnabled(),
-		Mtu:           d.GetMtu(),
-		MacAddress:    d.GetMacAddress(),
-		Speed:         d.GetSpeed(),
-		Wwn:           d.GetWwn(),
-		MgmtOnly:      d.GetMgmtOnly(),
-		Description:   d.GetDescription(),
-		MarkConnected: d.GetMarkConnected(),
-		Mode:          d.GetMode(),
-		Tags:          d.GetTags(),
+		Device:        e.GetDevice(),
+		Name:          e.GetName(),
+		Label:         e.GetLabel(),
+		Type:          e.GetType(),
+		Enabled:       e.GetEnabled(),
+		Mtu:           e.GetMtu(),
+		MacAddress:    e.GetMacAddress(),
+		Speed:         e.GetSpeed(),
+		Wwn:           e.GetWwn(),
+		MgmtOnly:      e.GetMgmtOnly(),
+		Description:   e.GetDescription(),
+		MarkConnected: e.GetMarkConnected(),
+		Mode:          e.GetMode(),
+		Tags:          e.GetTags(),
 	}
 }
 
 // GetDevice returns the Device field
-func (d *Interface) GetDevice() *diodepb.Device {
-	if d != nil && d.Device != nil {
-		return d.Device.ConvertToProtoMessage().(*diodepb.Device)
+func (e *Interface) GetDevice() *diodepb.Device {
+	if e != nil && e.Device != nil {
+		return e.Device.ConvertToProtoMessage().(*diodepb.Device)
 	}
 	return nil
 }
 
 // GetName returns the Name field
-func (d *Interface) GetName() string {
-	if d != nil && d.Name != nil {
-		return *d.Name
+func (e *Interface) GetName() string {
+	if e != nil && e.Name != nil {
+		return *e.Name
 	}
 	return ""
 }
 
 // GetLabel returns the Label field
-func (d *Interface) GetLabel() *string {
-	if d != nil && d.Label != nil {
-		return d.Label
+func (e *Interface) GetLabel() *string {
+	if e != nil && e.Label != nil {
+		return e.Label
 	}
 	return nil
 }
 
 // GetType returns the Type field
-func (d *Interface) GetType() string {
-	if d != nil && d.Type != nil {
-		return *d.Type
+func (e *Interface) GetType() string {
+	if e != nil && e.Type != nil {
+		return *e.Type
 	}
 	return ""
 }
 
 // GetEnabled returns the Enabled field
-func (d *Interface) GetEnabled() *bool {
-	if d != nil && d.Enabled != nil {
-		return d.Enabled
+func (e *Interface) GetEnabled() *bool {
+	if e != nil && e.Enabled != nil {
+		return e.Enabled
 	}
 	return nil
 }
 
 // GetMtu returns the Mtu field
-func (d *Interface) GetMtu() *int32 {
-	if d != nil && d.Mtu != nil {
-		return d.Mtu
+func (e *Interface) GetMtu() *int32 {
+	if e != nil && e.Mtu != nil {
+		return e.Mtu
 	}
 	return nil
 }
 
 // GetMacAddress returns the MacAddress field
-func (d *Interface) GetMacAddress() *string {
-	if d != nil && d.MacAddress != nil {
-		return d.MacAddress
+func (e *Interface) GetMacAddress() *string {
+	if e != nil && e.MacAddress != nil {
+		return e.MacAddress
 	}
 	return nil
 }
 
 // GetSpeed returns the Speed field
-func (d *Interface) GetSpeed() *int32 {
-	if d != nil && d.Speed != nil {
-		return d.Speed
+func (e *Interface) GetSpeed() *int32 {
+	if e != nil && e.Speed != nil {
+		return e.Speed
 	}
 	return nil
 }
 
 // GetWwn returns the Wwn field
-func (d *Interface) GetWwn() *string {
-	if d != nil && d.Wwn != nil {
-		return d.Wwn
+func (e *Interface) GetWwn() *string {
+	if e != nil && e.Wwn != nil {
+		return e.Wwn
 	}
 	return nil
 }
 
 // GetMgmtOnly returns the MgmtOnly field
-func (d *Interface) GetMgmtOnly() *bool {
-	if d != nil && d.MgmtOnly != nil {
-		return d.MgmtOnly
+func (e *Interface) GetMgmtOnly() *bool {
+	if e != nil && e.MgmtOnly != nil {
+		return e.MgmtOnly
 	}
 	return nil
 }
 
 // GetDescription returns the Description field
-func (d *Interface) GetDescription() *string {
-	if d != nil && d.Description != nil {
-		return d.Description
+func (e *Interface) GetDescription() *string {
+	if e != nil && e.Description != nil {
+		return e.Description
 	}
 	return nil
 }
 
 // GetMarkConnected returns the MarkConnected field
-func (d *Interface) GetMarkConnected() *bool {
-	if d != nil && d.MarkConnected != nil {
-		return d.MarkConnected
+func (e *Interface) GetMarkConnected() *bool {
+	if e != nil && e.MarkConnected != nil {
+		return e.MarkConnected
 	}
 	return nil
 }
 
 // GetMode returns the Mode field
-func (d *Interface) GetMode() string {
-	if d != nil && d.Mode != nil {
-		return *d.Mode
+func (e *Interface) GetMode() string {
+	if e != nil && e.Mode != nil {
+		return *e.Mode
 	}
 	return ""
 }
 
 // GetTags returns the Tags field
-func (d *Interface) GetTags() []*diodepb.Tag {
+func (e *Interface) GetTags() []*diodepb.Tag {
 	var tags []*diodepb.Tag
-	for _, el := range d.Tags {
+	for _, el := range e.Tags {
 		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
 
 // ConvertToProtoEntityInterface converts a Interface to a diodepb.Entity
-func (d *Interface) ConvertToProtoEntity() *diodepb.Entity {
+func (e *Interface) ConvertToProtoEntity() *diodepb.Entity {
 	return &diodepb.Entity{
 		Entity: &diodepb.Entity_Interface{
-			Interface: d.ConvertToProtoMessage().(*diodepb.Interface),
+			Interface: e.ConvertToProtoMessage().(*diodepb.Interface),
 		},
 	}
 }
@@ -535,53 +535,53 @@ type Manufacturer struct {
 }
 
 // ConvertToProtoMessageManufacturer converts a Manufacturer to a diodepb.Manufacturer
-func (d *Manufacturer) ConvertToProtoMessage() proto.Message {
+func (e *Manufacturer) ConvertToProtoMessage() proto.Message {
 	return &diodepb.Manufacturer{
-		Name:        d.GetName(),
-		Slug:        d.GetSlug(),
-		Description: d.GetDescription(),
-		Tags:        d.GetTags(),
+		Name:        e.GetName(),
+		Slug:        e.GetSlug(),
+		Description: e.GetDescription(),
+		Tags:        e.GetTags(),
 	}
 }
 
 // GetName returns the Name field
-func (d *Manufacturer) GetName() string {
-	if d != nil && d.Name != nil {
-		return *d.Name
+func (e *Manufacturer) GetName() string {
+	if e != nil && e.Name != nil {
+		return *e.Name
 	}
 	return ""
 }
 
 // GetSlug returns the Slug field
-func (d *Manufacturer) GetSlug() string {
-	if d != nil && d.Slug != nil {
-		return *d.Slug
+func (e *Manufacturer) GetSlug() string {
+	if e != nil && e.Slug != nil {
+		return *e.Slug
 	}
 	return ""
 }
 
 // GetDescription returns the Description field
-func (d *Manufacturer) GetDescription() *string {
-	if d != nil && d.Description != nil {
-		return d.Description
+func (e *Manufacturer) GetDescription() *string {
+	if e != nil && e.Description != nil {
+		return e.Description
 	}
 	return nil
 }
 
 // GetTags returns the Tags field
-func (d *Manufacturer) GetTags() []*diodepb.Tag {
+func (e *Manufacturer) GetTags() []*diodepb.Tag {
 	var tags []*diodepb.Tag
-	for _, el := range d.Tags {
+	for _, el := range e.Tags {
 		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
 
 // ConvertToProtoEntityManufacturer converts a Manufacturer to a diodepb.Entity
-func (d *Manufacturer) ConvertToProtoEntity() *diodepb.Entity {
+func (e *Manufacturer) ConvertToProtoEntity() *diodepb.Entity {
 	return &diodepb.Entity{
 		Entity: &diodepb.Entity_Manufacturer{
-			Manufacturer: d.ConvertToProtoMessage().(*diodepb.Manufacturer),
+			Manufacturer: e.ConvertToProtoMessage().(*diodepb.Manufacturer),
 		},
 	}
 }
@@ -596,62 +596,62 @@ type Platform struct {
 }
 
 // ConvertToProtoMessagePlatform converts a Platform to a diodepb.Platform
-func (d *Platform) ConvertToProtoMessage() proto.Message {
+func (e *Platform) ConvertToProtoMessage() proto.Message {
 	return &diodepb.Platform{
-		Name:         d.GetName(),
-		Slug:         d.GetSlug(),
-		Manufacturer: d.GetManufacturer(),
-		Description:  d.GetDescription(),
-		Tags:         d.GetTags(),
+		Name:         e.GetName(),
+		Slug:         e.GetSlug(),
+		Manufacturer: e.GetManufacturer(),
+		Description:  e.GetDescription(),
+		Tags:         e.GetTags(),
 	}
 }
 
 // GetName returns the Name field
-func (d *Platform) GetName() string {
-	if d != nil && d.Name != nil {
-		return *d.Name
+func (e *Platform) GetName() string {
+	if e != nil && e.Name != nil {
+		return *e.Name
 	}
 	return ""
 }
 
 // GetSlug returns the Slug field
-func (d *Platform) GetSlug() string {
-	if d != nil && d.Slug != nil {
-		return *d.Slug
+func (e *Platform) GetSlug() string {
+	if e != nil && e.Slug != nil {
+		return *e.Slug
 	}
 	return ""
 }
 
 // GetManufacturer returns the Manufacturer field
-func (d *Platform) GetManufacturer() *diodepb.Manufacturer {
-	if d != nil && d.Manufacturer != nil {
-		return d.Manufacturer.ConvertToProtoMessage().(*diodepb.Manufacturer)
+func (e *Platform) GetManufacturer() *diodepb.Manufacturer {
+	if e != nil && e.Manufacturer != nil {
+		return e.Manufacturer.ConvertToProtoMessage().(*diodepb.Manufacturer)
 	}
 	return nil
 }
 
 // GetDescription returns the Description field
-func (d *Platform) GetDescription() *string {
-	if d != nil && d.Description != nil {
-		return d.Description
+func (e *Platform) GetDescription() *string {
+	if e != nil && e.Description != nil {
+		return e.Description
 	}
 	return nil
 }
 
 // GetTags returns the Tags field
-func (d *Platform) GetTags() []*diodepb.Tag {
+func (e *Platform) GetTags() []*diodepb.Tag {
 	var tags []*diodepb.Tag
-	for _, el := range d.Tags {
+	for _, el := range e.Tags {
 		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
 
 // ConvertToProtoEntityPlatform converts a Platform to a diodepb.Entity
-func (d *Platform) ConvertToProtoEntity() *diodepb.Entity {
+func (e *Platform) ConvertToProtoEntity() *diodepb.Entity {
 	return &diodepb.Entity{
 		Entity: &diodepb.Entity_Platform{
-			Platform: d.ConvertToProtoMessage().(*diodepb.Platform),
+			Platform: e.ConvertToProtoMessage().(*diodepb.Platform),
 		},
 	}
 }
@@ -669,89 +669,89 @@ type Prefix struct {
 }
 
 // ConvertToProtoMessagePrefix converts a Prefix to a diodepb.Prefix
-func (d *Prefix) ConvertToProtoMessage() proto.Message {
+func (e *Prefix) ConvertToProtoMessage() proto.Message {
 	return &diodepb.Prefix{
-		Prefix:       d.GetPrefix(),
-		Site:         d.GetSite(),
-		Status:       d.GetStatus(),
-		IsPool:       d.GetIsPool(),
-		MarkUtilized: d.GetMarkUtilized(),
-		Description:  d.GetDescription(),
-		Comments:     d.GetComments(),
-		Tags:         d.GetTags(),
+		Prefix:       e.GetPrefix(),
+		Site:         e.GetSite(),
+		Status:       e.GetStatus(),
+		IsPool:       e.GetIsPool(),
+		MarkUtilized: e.GetMarkUtilized(),
+		Description:  e.GetDescription(),
+		Comments:     e.GetComments(),
+		Tags:         e.GetTags(),
 	}
 }
 
 // GetPrefix returns the Prefix field
-func (d *Prefix) GetPrefix() string {
-	if d != nil && d.Prefix != nil {
-		return *d.Prefix
+func (e *Prefix) GetPrefix() string {
+	if e != nil && e.Prefix != nil {
+		return *e.Prefix
 	}
 	return ""
 }
 
 // GetSite returns the Site field
-func (d *Prefix) GetSite() *diodepb.Site {
-	if d != nil && d.Site != nil {
-		return d.Site.ConvertToProtoMessage().(*diodepb.Site)
+func (e *Prefix) GetSite() *diodepb.Site {
+	if e != nil && e.Site != nil {
+		return e.Site.ConvertToProtoMessage().(*diodepb.Site)
 	}
 	return nil
 }
 
 // GetStatus returns the Status field
-func (d *Prefix) GetStatus() string {
-	if d != nil && d.Status != nil {
-		return *d.Status
+func (e *Prefix) GetStatus() string {
+	if e != nil && e.Status != nil {
+		return *e.Status
 	}
 	return ""
 }
 
 // GetIsPool returns the IsPool field
-func (d *Prefix) GetIsPool() *bool {
-	if d != nil && d.IsPool != nil {
-		return d.IsPool
+func (e *Prefix) GetIsPool() *bool {
+	if e != nil && e.IsPool != nil {
+		return e.IsPool
 	}
 	return nil
 }
 
 // GetMarkUtilized returns the MarkUtilized field
-func (d *Prefix) GetMarkUtilized() *bool {
-	if d != nil && d.MarkUtilized != nil {
-		return d.MarkUtilized
+func (e *Prefix) GetMarkUtilized() *bool {
+	if e != nil && e.MarkUtilized != nil {
+		return e.MarkUtilized
 	}
 	return nil
 }
 
 // GetDescription returns the Description field
-func (d *Prefix) GetDescription() *string {
-	if d != nil && d.Description != nil {
-		return d.Description
+func (e *Prefix) GetDescription() *string {
+	if e != nil && e.Description != nil {
+		return e.Description
 	}
 	return nil
 }
 
 // GetComments returns the Comments field
-func (d *Prefix) GetComments() *string {
-	if d != nil && d.Comments != nil {
-		return d.Comments
+func (e *Prefix) GetComments() *string {
+	if e != nil && e.Comments != nil {
+		return e.Comments
 	}
 	return nil
 }
 
 // GetTags returns the Tags field
-func (d *Prefix) GetTags() []*diodepb.Tag {
+func (e *Prefix) GetTags() []*diodepb.Tag {
 	var tags []*diodepb.Tag
-	for _, el := range d.Tags {
+	for _, el := range e.Tags {
 		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
 
 // ConvertToProtoEntityPrefix converts a Prefix to a diodepb.Entity
-func (d *Prefix) ConvertToProtoEntity() *diodepb.Entity {
+func (e *Prefix) ConvertToProtoEntity() *diodepb.Entity {
 	return &diodepb.Entity{
 		Entity: &diodepb.Entity_Prefix{
-			Prefix: d.ConvertToProtoMessage().(*diodepb.Prefix),
+			Prefix: e.ConvertToProtoMessage().(*diodepb.Prefix),
 		},
 	}
 }
@@ -766,62 +766,62 @@ type Role struct {
 }
 
 // ConvertToProtoMessageRole converts a Role to a diodepb.Role
-func (d *Role) ConvertToProtoMessage() proto.Message {
+func (e *Role) ConvertToProtoMessage() proto.Message {
 	return &diodepb.Role{
-		Name:        d.GetName(),
-		Slug:        d.GetSlug(),
-		Color:       d.GetColor(),
-		Description: d.GetDescription(),
-		Tags:        d.GetTags(),
+		Name:        e.GetName(),
+		Slug:        e.GetSlug(),
+		Color:       e.GetColor(),
+		Description: e.GetDescription(),
+		Tags:        e.GetTags(),
 	}
 }
 
 // GetName returns the Name field
-func (d *Role) GetName() string {
-	if d != nil && d.Name != nil {
-		return *d.Name
+func (e *Role) GetName() string {
+	if e != nil && e.Name != nil {
+		return *e.Name
 	}
 	return ""
 }
 
 // GetSlug returns the Slug field
-func (d *Role) GetSlug() string {
-	if d != nil && d.Slug != nil {
-		return *d.Slug
+func (e *Role) GetSlug() string {
+	if e != nil && e.Slug != nil {
+		return *e.Slug
 	}
 	return ""
 }
 
 // GetColor returns the Color field
-func (d *Role) GetColor() string {
-	if d != nil && d.Color != nil {
-		return *d.Color
+func (e *Role) GetColor() string {
+	if e != nil && e.Color != nil {
+		return *e.Color
 	}
 	return ""
 }
 
 // GetDescription returns the Description field
-func (d *Role) GetDescription() *string {
-	if d != nil && d.Description != nil {
-		return d.Description
+func (e *Role) GetDescription() *string {
+	if e != nil && e.Description != nil {
+		return e.Description
 	}
 	return nil
 }
 
 // GetTags returns the Tags field
-func (d *Role) GetTags() []*diodepb.Tag {
+func (e *Role) GetTags() []*diodepb.Tag {
 	var tags []*diodepb.Tag
-	for _, el := range d.Tags {
+	for _, el := range e.Tags {
 		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
 
 // ConvertToProtoEntityRole converts a Role to a diodepb.Entity
-func (d *Role) ConvertToProtoEntity() *diodepb.Entity {
+func (e *Role) ConvertToProtoEntity() *diodepb.Entity {
 	return &diodepb.Entity{
 		Entity: &diodepb.Entity_DeviceRole{
-			DeviceRole: d.ConvertToProtoMessage().(*diodepb.Role),
+			DeviceRole: e.ConvertToProtoMessage().(*diodepb.Role),
 		},
 	}
 }
@@ -839,89 +839,89 @@ type Site struct {
 }
 
 // ConvertToProtoMessageSite converts a Site to a diodepb.Site
-func (d *Site) ConvertToProtoMessage() proto.Message {
+func (e *Site) ConvertToProtoMessage() proto.Message {
 	return &diodepb.Site{
-		Name:        d.GetName(),
-		Slug:        d.GetSlug(),
-		Status:      d.GetStatus(),
-		Facility:    d.GetFacility(),
-		TimeZone:    d.GetTimeZone(),
-		Description: d.GetDescription(),
-		Comments:    d.GetComments(),
-		Tags:        d.GetTags(),
+		Name:        e.GetName(),
+		Slug:        e.GetSlug(),
+		Status:      e.GetStatus(),
+		Facility:    e.GetFacility(),
+		TimeZone:    e.GetTimeZone(),
+		Description: e.GetDescription(),
+		Comments:    e.GetComments(),
+		Tags:        e.GetTags(),
 	}
 }
 
 // GetName returns the Name field
-func (d *Site) GetName() string {
-	if d != nil && d.Name != nil {
-		return *d.Name
+func (e *Site) GetName() string {
+	if e != nil && e.Name != nil {
+		return *e.Name
 	}
 	return ""
 }
 
 // GetSlug returns the Slug field
-func (d *Site) GetSlug() string {
-	if d != nil && d.Slug != nil {
-		return *d.Slug
+func (e *Site) GetSlug() string {
+	if e != nil && e.Slug != nil {
+		return *e.Slug
 	}
 	return ""
 }
 
 // GetStatus returns the Status field
-func (d *Site) GetStatus() string {
-	if d != nil && d.Status != nil {
-		return *d.Status
+func (e *Site) GetStatus() string {
+	if e != nil && e.Status != nil {
+		return *e.Status
 	}
 	return ""
 }
 
 // GetFacility returns the Facility field
-func (d *Site) GetFacility() *string {
-	if d != nil && d.Facility != nil {
-		return d.Facility
+func (e *Site) GetFacility() *string {
+	if e != nil && e.Facility != nil {
+		return e.Facility
 	}
 	return nil
 }
 
 // GetTimeZone returns the TimeZone field
-func (d *Site) GetTimeZone() *string {
-	if d != nil && d.TimeZone != nil {
-		return d.TimeZone
+func (e *Site) GetTimeZone() *string {
+	if e != nil && e.TimeZone != nil {
+		return e.TimeZone
 	}
 	return nil
 }
 
 // GetDescription returns the Description field
-func (d *Site) GetDescription() *string {
-	if d != nil && d.Description != nil {
-		return d.Description
+func (e *Site) GetDescription() *string {
+	if e != nil && e.Description != nil {
+		return e.Description
 	}
 	return nil
 }
 
 // GetComments returns the Comments field
-func (d *Site) GetComments() *string {
-	if d != nil && d.Comments != nil {
-		return d.Comments
+func (e *Site) GetComments() *string {
+	if e != nil && e.Comments != nil {
+		return e.Comments
 	}
 	return nil
 }
 
 // GetTags returns the Tags field
-func (d *Site) GetTags() []*diodepb.Tag {
+func (e *Site) GetTags() []*diodepb.Tag {
 	var tags []*diodepb.Tag
-	for _, el := range d.Tags {
+	for _, el := range e.Tags {
 		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
 	}
 	return tags
 }
 
 // ConvertToProtoEntitySite converts a Site to a diodepb.Entity
-func (d *Site) ConvertToProtoEntity() *diodepb.Entity {
+func (e *Site) ConvertToProtoEntity() *diodepb.Entity {
 	return &diodepb.Entity{
 		Entity: &diodepb.Entity_Site{
-			Site: d.ConvertToProtoMessage().(*diodepb.Site),
+			Site: e.ConvertToProtoMessage().(*diodepb.Site),
 		},
 	}
 }
@@ -934,34 +934,34 @@ type Tag struct {
 }
 
 // ConvertToProtoMessageTag converts a Tag to a diodepb.Tag
-func (d *Tag) ConvertToProtoMessage() proto.Message {
+func (e *Tag) ConvertToProtoMessage() proto.Message {
 	return &diodepb.Tag{
-		Name:  d.GetName(),
-		Slug:  d.GetSlug(),
-		Color: d.GetColor(),
+		Name:  e.GetName(),
+		Slug:  e.GetSlug(),
+		Color: e.GetColor(),
 	}
 }
 
 // GetName returns the Name field
-func (d *Tag) GetName() string {
-	if d != nil && d.Name != nil {
-		return *d.Name
+func (e *Tag) GetName() string {
+	if e != nil && e.Name != nil {
+		return *e.Name
 	}
 	return ""
 }
 
 // GetSlug returns the Slug field
-func (d *Tag) GetSlug() string {
-	if d != nil && d.Slug != nil {
-		return *d.Slug
+func (e *Tag) GetSlug() string {
+	if e != nil && e.Slug != nil {
+		return *e.Slug
 	}
 	return ""
 }
 
 // GetColor returns the Color field
-func (d *Tag) GetColor() string {
-	if d != nil && d.Color != nil {
-		return *d.Color
+func (e *Tag) GetColor() string {
+	if e != nil && e.Color != nil {
+		return *e.Color
 	}
 	return ""
 }

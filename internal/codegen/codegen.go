@@ -109,7 +109,7 @@ func GenerateDiodeSDKStruct(pm protoreflect.ProtoMessage, ae assignableEntity) {
 	methodsToGenerate := make([]methodParams, 0)
 
 	fmt.Printf("// ConvertToProtoMessage%s converts a %s to a diodepb.%s\n", t.Name(), t.Name(), t.Name())
-	fmt.Printf("func (d *%s) ConvertToProtoMessage() proto.Message {\n", t.Name())
+	fmt.Printf("func (e *%s) ConvertToProtoMessage() proto.Message {\n", t.Name())
 	fmt.Printf("\treturn &diodepb.%s{\n", t.Name())
 	currentExportedFieldIdx = 0
 	for i := 0; i < t.NumField(); i++ {
@@ -141,9 +141,9 @@ func GenerateDiodeSDKStruct(pm protoreflect.ProtoMessage, ae assignableEntity) {
 				}
 				methodsToGenerate = append(methodsToGenerate, mp)
 
-				fmt.Printf("\t\t%s: d.Get%s(),\n", field.Name, field.Name)
+				fmt.Printf("\t\t%s: e.Get%s(),\n", field.Name, field.Name)
 			} else if fieldType == reflect.Ptr {
-				fmt.Printf("\t\t%s: d.Get%s(),\n", field.Name, field.Name)
+				fmt.Printf("\t\t%s: e.Get%s(),\n", field.Name, field.Name)
 
 				methodsToGenerate = append(methodsToGenerate, methodParams{
 					fieldName: field.Name,
@@ -164,7 +164,7 @@ func GenerateDiodeSDKStruct(pm protoreflect.ProtoMessage, ae assignableEntity) {
 				} else {
 					panic(fmt.Sprintf("unsupported field type %s for %s", fieldType, field.Name))
 				}
-				fmt.Printf("\t\t%s: d.Get%s(),\n", field.Name, field.Name)
+				fmt.Printf("\t\t%s: e.Get%s(),\n", field.Name, field.Name)
 
 				methodsToGenerate = append(methodsToGenerate, mp)
 			}
@@ -184,10 +184,10 @@ func GenerateDiodeSDKStruct(pm protoreflect.ProtoMessage, ae assignableEntity) {
 	}
 
 	fmt.Printf("// ConvertToProtoEntity%s converts a %s to a diodepb.Entity\n", t.Name(), t.Name())
-	fmt.Printf("func (d *%s) ConvertToProtoEntity() *diodepb.Entity {\n", t.Name())
+	fmt.Printf("func (e *%s) ConvertToProtoEntity() *diodepb.Entity {\n", t.Name())
 	fmt.Print("\treturn &diodepb.Entity{\n")
 	fmt.Printf("\t\tEntity: &diodepb.Entity_%s{\n", ae.fieldName)
-	fmt.Printf("\t\t\t%s: d.ConvertToProtoMessage().(*diodepb.%s),\n", ae.fieldName, t.Name())
+	fmt.Printf("\t\t\t%s: e.ConvertToProtoMessage().(*diodepb.%s),\n", ae.fieldName, t.Name())
 	fmt.Print("\t\t},\n")
 	fmt.Print("\t}\n")
 	fmt.Printf("}\n\n")
@@ -267,41 +267,41 @@ func generateGetterMethod(t reflect.Type, params methodParams) {
 		returnType = "*" + params.fieldType
 	}
 
-	fmt.Printf("func (d *%s) Get%s() %s {\n", t.Name(), params.fieldName, returnType)
+	fmt.Printf("func (e *%s) Get%s() %s {\n", t.Name(), params.fieldName, returnType)
 	if params.messageField {
 		if !params.repeated {
-			fmt.Printf("\tif d != nil && d.%s != nil {\n", params.fieldName)
+			fmt.Printf("\tif e != nil && e.%s != nil {\n", params.fieldName)
 			if params.nestedFieldName != "" {
 				fmt.Printf("\t\treturn &diodepb.%s{\n", params.nestedMessageName)
-				fmt.Printf("\t\t\t%s: d.%s.ConvertToProtoMessage().(*diodepb.%s),\n", params.nestedFieldName, params.fieldName, params.nestedFieldName)
+				fmt.Printf("\t\t\t%s: e.%s.ConvertToProtoMessage().(*diodepb.%s),\n", params.nestedFieldName, params.fieldName, params.nestedFieldName)
 				fmt.Printf("\t\t}\n")
 			} else {
-				fmt.Printf("\t\treturn d.%s.ConvertToProtoMessage().(*diodepb.%s)\n", params.fieldName, params.fieldType)
+				fmt.Printf("\t\treturn e.%s.ConvertToProtoMessage().(*diodepb.%s)\n", params.fieldName, params.fieldType)
 			}
 			fmt.Printf("\t}\n")
 			fmt.Printf("\treturn nil\n")
 		} else {
 			sliceVarName := strings.ToLower(params.fieldName)
 			fmt.Printf("\tvar %s []*diodepb.%s\n", sliceVarName, params.repeatedFieldType)
-			fmt.Printf("\tfor _, el := range d.%s {\n", params.fieldName)
+			fmt.Printf("\tfor _, el := range e.%s {\n", params.fieldName)
 			fmt.Printf("\t\t%s = append(%s, el.ConvertToProtoMessage().(*diodepb.%s))\n", sliceVarName, sliceVarName, params.repeatedFieldType)
 			fmt.Printf("\t}\n")
 			fmt.Printf("\treturn %s\n", sliceVarName)
 		}
 	} else if params.pointer {
-		fmt.Printf("\tif d != nil && d.%s != nil {\n", params.fieldName)
+		fmt.Printf("\tif e != nil && e.%s != nil {\n", params.fieldName)
 		if params.nestedFieldName != "" {
 			fmt.Printf("\t\treturn *diodepb.%s{\n", params.nestedFieldName)
-			fmt.Printf("\t\t\t%s: d.%s.ConvertToProtoMessage().(*diodepb.%s),\n", params.nestedFieldName, params.fieldName, params.nestedFieldName)
+			fmt.Printf("\t\t\t%s: e.%s.ConvertToProtoMessage().(*diodepb.%s),\n", params.nestedFieldName, params.fieldName, params.nestedFieldName)
 			fmt.Printf("\t\t}\n")
 		} else {
-			fmt.Printf("\t\treturn d.%s\n", params.fieldName)
+			fmt.Printf("\t\treturn e.%s\n", params.fieldName)
 		}
 		fmt.Printf("\t}\n")
 		fmt.Printf("\treturn nil\n")
 	} else {
-		fmt.Printf("\tif d != nil && d.%s != nil {\n", params.fieldName)
-		fmt.Printf("\t\treturn *d.%s\n", params.fieldName)
+		fmt.Printf("\tif e != nil && e.%s != nil {\n", params.fieldName)
+		fmt.Printf("\t\treturn *e.%s\n", params.fieldName)
 		fmt.Printf("\t}\n")
 		fmt.Printf("\treturn \"\"\n")
 	}
