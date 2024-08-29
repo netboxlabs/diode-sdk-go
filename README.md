@@ -13,7 +13,7 @@ at [https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in
 ## Installation
 
 ```bash
-go install github.com/netboxlabs/diode-sdk-go
+go get github.com/netboxlabs/diode-sdk-go
 ```
 
 ## Usage
