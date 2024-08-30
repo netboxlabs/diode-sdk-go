@@ -14,6 +14,216 @@ type Entity interface {
 	ConvertToProtoEntity() *diodepb.Entity
 }
 
+// Cluster is based on diodepb.Cluster
+type Cluster struct {
+	Name        *string
+	Type        *ClusterType
+	Group       *ClusterGroup
+	Site        *Site
+	Status      *string
+	Description *string
+	Tags        []*Tag
+}
+
+// ConvertToProtoMessageCluster converts a Cluster to a diodepb.Cluster
+func (e *Cluster) ConvertToProtoMessage() proto.Message {
+	return &diodepb.Cluster{
+		Name:        e.GetName(),
+		Type:        e.GetType(),
+		Group:       e.GetGroup(),
+		Site:        e.GetSite(),
+		Status:      e.GetStatus(),
+		Description: e.GetDescription(),
+		Tags:        e.GetTags(),
+	}
+}
+
+// GetName returns the Name field
+func (e *Cluster) GetName() string {
+	if e != nil && e.Name != nil {
+		return *e.Name
+	}
+	return ""
+}
+
+// GetType returns the Type field
+func (e *Cluster) GetType() *diodepb.ClusterType {
+	if e != nil && e.Type != nil {
+		return e.Type.ConvertToProtoMessage().(*diodepb.ClusterType)
+	}
+	return nil
+}
+
+// GetGroup returns the Group field
+func (e *Cluster) GetGroup() *diodepb.ClusterGroup {
+	if e != nil && e.Group != nil {
+		return e.Group.ConvertToProtoMessage().(*diodepb.ClusterGroup)
+	}
+	return nil
+}
+
+// GetSite returns the Site field
+func (e *Cluster) GetSite() *diodepb.Site {
+	if e != nil && e.Site != nil {
+		return e.Site.ConvertToProtoMessage().(*diodepb.Site)
+	}
+	return nil
+}
+
+// GetStatus returns the Status field
+func (e *Cluster) GetStatus() string {
+	if e != nil && e.Status != nil {
+		return *e.Status
+	}
+	return ""
+}
+
+// GetDescription returns the Description field
+func (e *Cluster) GetDescription() *string {
+	if e != nil && e.Description != nil {
+		return e.Description
+	}
+	return nil
+}
+
+// GetTags returns the Tags field
+func (e *Cluster) GetTags() []*diodepb.Tag {
+	var tags []*diodepb.Tag
+	for _, el := range e.Tags {
+		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
+	}
+	return tags
+}
+
+// ConvertToProtoEntityCluster converts a Cluster to a diodepb.Entity
+func (e *Cluster) ConvertToProtoEntity() *diodepb.Entity {
+	return &diodepb.Entity{
+		Entity: &diodepb.Entity_Cluster{
+			Cluster: e.ConvertToProtoMessage().(*diodepb.Cluster),
+		},
+	}
+}
+
+// ClusterGroup is based on diodepb.ClusterGroup
+type ClusterGroup struct {
+	Name        *string
+	Slug        *string
+	Description *string
+	Tags        []*Tag
+}
+
+// ConvertToProtoMessageClusterGroup converts a ClusterGroup to a diodepb.ClusterGroup
+func (e *ClusterGroup) ConvertToProtoMessage() proto.Message {
+	return &diodepb.ClusterGroup{
+		Name:        e.GetName(),
+		Slug:        e.GetSlug(),
+		Description: e.GetDescription(),
+		Tags:        e.GetTags(),
+	}
+}
+
+// GetName returns the Name field
+func (e *ClusterGroup) GetName() string {
+	if e != nil && e.Name != nil {
+		return *e.Name
+	}
+	return ""
+}
+
+// GetSlug returns the Slug field
+func (e *ClusterGroup) GetSlug() string {
+	if e != nil && e.Slug != nil {
+		return *e.Slug
+	}
+	return ""
+}
+
+// GetDescription returns the Description field
+func (e *ClusterGroup) GetDescription() *string {
+	if e != nil && e.Description != nil {
+		return e.Description
+	}
+	return nil
+}
+
+// GetTags returns the Tags field
+func (e *ClusterGroup) GetTags() []*diodepb.Tag {
+	var tags []*diodepb.Tag
+	for _, el := range e.Tags {
+		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
+	}
+	return tags
+}
+
+// ConvertToProtoEntityClusterGroup converts a ClusterGroup to a diodepb.Entity
+func (e *ClusterGroup) ConvertToProtoEntity() *diodepb.Entity {
+	return &diodepb.Entity{
+		Entity: &diodepb.Entity_ClusterGroup{
+			ClusterGroup: e.ConvertToProtoMessage().(*diodepb.ClusterGroup),
+		},
+	}
+}
+
+// ClusterType is based on diodepb.ClusterType
+type ClusterType struct {
+	Name        *string
+	Slug        *string
+	Description *string
+	Tags        []*Tag
+}
+
+// ConvertToProtoMessageClusterType converts a ClusterType to a diodepb.ClusterType
+func (e *ClusterType) ConvertToProtoMessage() proto.Message {
+	return &diodepb.ClusterType{
+		Name:        e.GetName(),
+		Slug:        e.GetSlug(),
+		Description: e.GetDescription(),
+		Tags:        e.GetTags(),
+	}
+}
+
+// GetName returns the Name field
+func (e *ClusterType) GetName() string {
+	if e != nil && e.Name != nil {
+		return *e.Name
+	}
+	return ""
+}
+
+// GetSlug returns the Slug field
+func (e *ClusterType) GetSlug() string {
+	if e != nil && e.Slug != nil {
+		return *e.Slug
+	}
+	return ""
+}
+
+// GetDescription returns the Description field
+func (e *ClusterType) GetDescription() *string {
+	if e != nil && e.Description != nil {
+		return e.Description
+	}
+	return nil
+}
+
+// GetTags returns the Tags field
+func (e *ClusterType) GetTags() []*diodepb.Tag {
+	var tags []*diodepb.Tag
+	for _, el := range e.Tags {
+		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
+	}
+	return tags
+}
+
+// ConvertToProtoEntityClusterType converts a ClusterType to a diodepb.Entity
+func (e *ClusterType) ConvertToProtoEntity() *diodepb.Entity {
+	return &diodepb.Entity{
+		Entity: &diodepb.Entity_ClusterType{
+			ClusterType: e.ConvertToProtoMessage().(*diodepb.ClusterType),
+		},
+	}
+}
+
 // Device is based on diodepb.Device
 type Device struct {
 	Name        *string
@@ -964,4 +1174,334 @@ func (e *Tag) GetColor() string {
 		return *e.Color
 	}
 	return ""
+}
+
+// VMInterface is based on diodepb.VMInterface
+type VMInterface struct {
+	VirtualMachine *VirtualMachine
+	Name           *string
+	Enabled        *bool
+	Mtu            *int32
+	MacAddress     *string
+	Description    *string
+	Tags           []*Tag
+}
+
+// ConvertToProtoMessageVMInterface converts a VMInterface to a diodepb.VMInterface
+func (e *VMInterface) ConvertToProtoMessage() proto.Message {
+	return &diodepb.VMInterface{
+		VirtualMachine: e.GetVirtualMachine(),
+		Name:           e.GetName(),
+		Enabled:        e.GetEnabled(),
+		Mtu:            e.GetMtu(),
+		MacAddress:     e.GetMacAddress(),
+		Description:    e.GetDescription(),
+		Tags:           e.GetTags(),
+	}
+}
+
+// GetVirtualMachine returns the VirtualMachine field
+func (e *VMInterface) GetVirtualMachine() *diodepb.VirtualMachine {
+	if e != nil && e.VirtualMachine != nil {
+		return e.VirtualMachine.ConvertToProtoMessage().(*diodepb.VirtualMachine)
+	}
+	return nil
+}
+
+// GetName returns the Name field
+func (e *VMInterface) GetName() string {
+	if e != nil && e.Name != nil {
+		return *e.Name
+	}
+	return ""
+}
+
+// GetEnabled returns the Enabled field
+func (e *VMInterface) GetEnabled() *bool {
+	if e != nil && e.Enabled != nil {
+		return e.Enabled
+	}
+	return nil
+}
+
+// GetMtu returns the Mtu field
+func (e *VMInterface) GetMtu() *int32 {
+	if e != nil && e.Mtu != nil {
+		return e.Mtu
+	}
+	return nil
+}
+
+// GetMacAddress returns the MacAddress field
+func (e *VMInterface) GetMacAddress() *string {
+	if e != nil && e.MacAddress != nil {
+		return e.MacAddress
+	}
+	return nil
+}
+
+// GetDescription returns the Description field
+func (e *VMInterface) GetDescription() *string {
+	if e != nil && e.Description != nil {
+		return e.Description
+	}
+	return nil
+}
+
+// GetTags returns the Tags field
+func (e *VMInterface) GetTags() []*diodepb.Tag {
+	var tags []*diodepb.Tag
+	for _, el := range e.Tags {
+		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
+	}
+	return tags
+}
+
+// ConvertToProtoEntityVMInterface converts a VMInterface to a diodepb.Entity
+func (e *VMInterface) ConvertToProtoEntity() *diodepb.Entity {
+	return &diodepb.Entity{
+		Entity: &diodepb.Entity_Vminterface{
+			Vminterface: e.ConvertToProtoMessage().(*diodepb.VMInterface),
+		},
+	}
+}
+
+// VirtualDisk is based on diodepb.VirtualDisk
+type VirtualDisk struct {
+	VirtualMachine *VirtualMachine
+	Name           *string
+	Size           *int32
+	Description    *string
+	Tags           []*Tag
+}
+
+// ConvertToProtoMessageVirtualDisk converts a VirtualDisk to a diodepb.VirtualDisk
+func (e *VirtualDisk) ConvertToProtoMessage() proto.Message {
+	return &diodepb.VirtualDisk{
+		VirtualMachine: e.GetVirtualMachine(),
+		Name:           e.GetName(),
+		Size:           e.GetSize(),
+		Description:    e.GetDescription(),
+		Tags:           e.GetTags(),
+	}
+}
+
+// GetVirtualMachine returns the VirtualMachine field
+func (e *VirtualDisk) GetVirtualMachine() *diodepb.VirtualMachine {
+	if e != nil && e.VirtualMachine != nil {
+		return e.VirtualMachine.ConvertToProtoMessage().(*diodepb.VirtualMachine)
+	}
+	return nil
+}
+
+// GetName returns the Name field
+func (e *VirtualDisk) GetName() string {
+	if e != nil && e.Name != nil {
+		return *e.Name
+	}
+	return ""
+}
+
+// GetSize returns the Size field
+func (e *VirtualDisk) GetSize() int32 {
+	if e != nil && e.Size != nil {
+		return *e.Size
+	}
+	return 0
+}
+
+// GetDescription returns the Description field
+func (e *VirtualDisk) GetDescription() *string {
+	if e != nil && e.Description != nil {
+		return e.Description
+	}
+	return nil
+}
+
+// GetTags returns the Tags field
+func (e *VirtualDisk) GetTags() []*diodepb.Tag {
+	var tags []*diodepb.Tag
+	for _, el := range e.Tags {
+		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
+	}
+	return tags
+}
+
+// ConvertToProtoEntityVirtualDisk converts a VirtualDisk to a diodepb.Entity
+func (e *VirtualDisk) ConvertToProtoEntity() *diodepb.Entity {
+	return &diodepb.Entity{
+		Entity: &diodepb.Entity_VirtualDisk{
+			VirtualDisk: e.ConvertToProtoMessage().(*diodepb.VirtualDisk),
+		},
+	}
+}
+
+// VirtualMachine is based on diodepb.VirtualMachine
+type VirtualMachine struct {
+	Name        *string
+	Status      *string
+	Site        *Site
+	Cluster     *Cluster
+	Role        *Role
+	Device      *Device
+	Platform    *Platform
+	PrimaryIp4  *IPAddress
+	PrimaryIp6  *IPAddress
+	Vcpus       *int32
+	Memory      *int32
+	Disk        *int32
+	Description *string
+	Comments    *string
+	Tags        []*Tag
+}
+
+// ConvertToProtoMessageVirtualMachine converts a VirtualMachine to a diodepb.VirtualMachine
+func (e *VirtualMachine) ConvertToProtoMessage() proto.Message {
+	return &diodepb.VirtualMachine{
+		Name:        e.GetName(),
+		Status:      e.GetStatus(),
+		Site:        e.GetSite(),
+		Cluster:     e.GetCluster(),
+		Role:        e.GetRole(),
+		Device:      e.GetDevice(),
+		Platform:    e.GetPlatform(),
+		PrimaryIp4:  e.GetPrimaryIp4(),
+		PrimaryIp6:  e.GetPrimaryIp6(),
+		Vcpus:       e.GetVcpus(),
+		Memory:      e.GetMemory(),
+		Disk:        e.GetDisk(),
+		Description: e.GetDescription(),
+		Comments:    e.GetComments(),
+		Tags:        e.GetTags(),
+	}
+}
+
+// GetName returns the Name field
+func (e *VirtualMachine) GetName() string {
+	if e != nil && e.Name != nil {
+		return *e.Name
+	}
+	return ""
+}
+
+// GetStatus returns the Status field
+func (e *VirtualMachine) GetStatus() string {
+	if e != nil && e.Status != nil {
+		return *e.Status
+	}
+	return ""
+}
+
+// GetSite returns the Site field
+func (e *VirtualMachine) GetSite() *diodepb.Site {
+	if e != nil && e.Site != nil {
+		return e.Site.ConvertToProtoMessage().(*diodepb.Site)
+	}
+	return nil
+}
+
+// GetCluster returns the Cluster field
+func (e *VirtualMachine) GetCluster() *diodepb.Cluster {
+	if e != nil && e.Cluster != nil {
+		return e.Cluster.ConvertToProtoMessage().(*diodepb.Cluster)
+	}
+	return nil
+}
+
+// GetRole returns the Role field
+func (e *VirtualMachine) GetRole() *diodepb.Role {
+	if e != nil && e.Role != nil {
+		return e.Role.ConvertToProtoMessage().(*diodepb.Role)
+	}
+	return nil
+}
+
+// GetDevice returns the Device field
+func (e *VirtualMachine) GetDevice() *diodepb.Device {
+	if e != nil && e.Device != nil {
+		return e.Device.ConvertToProtoMessage().(*diodepb.Device)
+	}
+	return nil
+}
+
+// GetPlatform returns the Platform field
+func (e *VirtualMachine) GetPlatform() *diodepb.Platform {
+	if e != nil && e.Platform != nil {
+		return e.Platform.ConvertToProtoMessage().(*diodepb.Platform)
+	}
+	return nil
+}
+
+// GetPrimaryIp4 returns the PrimaryIp4 field
+func (e *VirtualMachine) GetPrimaryIp4() *diodepb.IPAddress {
+	if e != nil && e.PrimaryIp4 != nil {
+		return e.PrimaryIp4.ConvertToProtoMessage().(*diodepb.IPAddress)
+	}
+	return nil
+}
+
+// GetPrimaryIp6 returns the PrimaryIp6 field
+func (e *VirtualMachine) GetPrimaryIp6() *diodepb.IPAddress {
+	if e != nil && e.PrimaryIp6 != nil {
+		return e.PrimaryIp6.ConvertToProtoMessage().(*diodepb.IPAddress)
+	}
+	return nil
+}
+
+// GetVcpus returns the Vcpus field
+func (e *VirtualMachine) GetVcpus() *int32 {
+	if e != nil && e.Vcpus != nil {
+		return e.Vcpus
+	}
+	return nil
+}
+
+// GetMemory returns the Memory field
+func (e *VirtualMachine) GetMemory() *int32 {
+	if e != nil && e.Memory != nil {
+		return e.Memory
+	}
+	return nil
+}
+
+// GetDisk returns the Disk field
+func (e *VirtualMachine) GetDisk() *int32 {
+	if e != nil && e.Disk != nil {
+		return e.Disk
+	}
+	return nil
+}
+
+// GetDescription returns the Description field
+func (e *VirtualMachine) GetDescription() *string {
+	if e != nil && e.Description != nil {
+		return e.Description
+	}
+	return nil
+}
+
+// GetComments returns the Comments field
+func (e *VirtualMachine) GetComments() *string {
+	if e != nil && e.Comments != nil {
+		return e.Comments
+	}
+	return nil
+}
+
+// GetTags returns the Tags field
+func (e *VirtualMachine) GetTags() []*diodepb.Tag {
+	var tags []*diodepb.Tag
+	for _, el := range e.Tags {
+		tags = append(tags, el.ConvertToProtoMessage().(*diodepb.Tag))
+	}
+	return tags
+}
+
+// ConvertToProtoEntityVirtualMachine converts a VirtualMachine to a diodepb.Entity
+func (e *VirtualMachine) ConvertToProtoEntity() *diodepb.Entity {
+	return &diodepb.Entity{
+		Entity: &diodepb.Entity_VirtualMachine{
+			VirtualMachine: e.ConvertToProtoMessage().(*diodepb.VirtualMachine),
+		},
+	}
 }

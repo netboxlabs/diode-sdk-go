@@ -1019,3 +1019,537 @@ func TestTagMethods(t *testing.T) {
 		})
 	}
 }
+
+func TestClusterMethods(t *testing.T) {
+	tests := []struct {
+		name     string
+		cluster  *Cluster
+		expected interface{}
+		method   func(*Cluster) interface{}
+	}{
+		{
+			name:     "GetName",
+			cluster:  &Cluster{Name: String("cluster-1")},
+			expected: "cluster-1",
+			method: func(c *Cluster) interface{} {
+				return c.GetName()
+			},
+		},
+		{
+			name:     "GetType",
+			cluster:  &Cluster{Type: &ClusterType{}},
+			expected: &diodepb.ClusterType{},
+			method: func(c *Cluster) interface{} {
+				return c.GetType()
+			},
+		},
+		{
+			name:     "GetGroup",
+			cluster:  &Cluster{Group: &ClusterGroup{}},
+			expected: &diodepb.ClusterGroup{},
+			method: func(c *Cluster) interface{} {
+				return c.GetGroup()
+			},
+		},
+		{
+			name:     "GetSite",
+			cluster:  &Cluster{Site: &Site{}},
+			expected: &diodepb.Site{},
+			method: func(c *Cluster) interface{} {
+				return c.GetSite()
+			},
+		},
+		{
+			name:     "GetStatus",
+			cluster:  &Cluster{Status: String("active")},
+			expected: "active",
+			method: func(c *Cluster) interface{} {
+				return c.GetStatus()
+			},
+		},
+		{
+			name:     "GetDescription",
+			cluster:  &Cluster{Description: String("Test description")},
+			expected: String("Test description"),
+			method: func(c *Cluster) interface{} {
+				return c.GetDescription()
+			},
+		},
+		{
+			name:     "GetTags",
+			cluster:  &Cluster{Tags: []*Tag{{Name: String("tag-1")}}},
+			expected: []*diodepb.Tag{{Name: "tag-1"}},
+			method: func(c *Cluster) interface{} {
+				return c.GetTags()
+			},
+		},
+		{
+			name:     "ConvertToProtoMessage",
+			cluster:  &Cluster{Name: String("cluster-1")},
+			expected: &diodepb.Cluster{Name: "cluster-1"},
+			method: func(c *Cluster) interface{} {
+				return c.ConvertToProtoMessage()
+			},
+		},
+		{
+			name:    "ConvertToProtoEntity",
+			cluster: &Cluster{Name: String("cluster-1")},
+			expected: &diodepb.Entity{
+				Entity: &diodepb.Entity_Cluster{
+					Cluster: &diodepb.Cluster{Name: "cluster-1"},
+				},
+			},
+			method: func(c *Cluster) interface{} {
+				return c.ConvertToProtoEntity()
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.expected, tt.method(tt.cluster))
+		})
+	}
+}
+
+func TestClusterGroupMethods(t *testing.T) {
+	tests := []struct {
+		name         string
+		clusterGroup *ClusterGroup
+		expected     interface{}
+		method       func(*ClusterGroup) interface{}
+	}{
+		{
+			name:         "GetName",
+			clusterGroup: &ClusterGroup{Name: String("group-1")},
+			expected:     "group-1",
+			method: func(cg *ClusterGroup) interface{} {
+				return cg.GetName()
+			},
+		},
+		{
+			name:         "GetSlug",
+			clusterGroup: &ClusterGroup{Slug: String("group-slug")},
+			expected:     "group-slug",
+			method: func(cg *ClusterGroup) interface{} {
+				return cg.GetSlug()
+			},
+		},
+		{
+			name:         "GetDescription",
+			clusterGroup: &ClusterGroup{Description: String("Test description")},
+			expected:     String("Test description"),
+			method: func(cg *ClusterGroup) interface{} {
+				return cg.GetDescription()
+			},
+		},
+		{
+			name:         "GetTags",
+			clusterGroup: &ClusterGroup{Tags: []*Tag{{Name: String("tag-1")}}},
+			expected:     []*diodepb.Tag{{Name: "tag-1"}},
+			method: func(cg *ClusterGroup) interface{} {
+				return cg.GetTags()
+			},
+		},
+		{
+			name:         "ConvertToProtoMessage",
+			clusterGroup: &ClusterGroup{Name: String("group-1")},
+			expected:     &diodepb.ClusterGroup{Name: "group-1"},
+			method: func(cg *ClusterGroup) interface{} {
+				return cg.ConvertToProtoMessage()
+			},
+		},
+		{
+			name:         "ConvertToProtoEntity",
+			clusterGroup: &ClusterGroup{Name: String("group-1")},
+			expected: &diodepb.Entity{
+				Entity: &diodepb.Entity_ClusterGroup{
+					ClusterGroup: &diodepb.ClusterGroup{Name: "group-1"},
+				},
+			},
+			method: func(cg *ClusterGroup) interface{} {
+				return cg.ConvertToProtoEntity()
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.expected, tt.method(tt.clusterGroup))
+		})
+	}
+}
+
+func TestClusterTypeMethods(t *testing.T) {
+	tests := []struct {
+		name        string
+		clusterType *ClusterType
+		expected    interface{}
+		method      func(*ClusterType) interface{}
+	}{
+		{
+			name:        "GetName",
+			clusterType: &ClusterType{Name: String("type-1")},
+			expected:    "type-1",
+			method: func(ct *ClusterType) interface{} {
+				return ct.GetName()
+			},
+		},
+		{
+			name:        "GetSlug",
+			clusterType: &ClusterType{Slug: String("type-slug")},
+			expected:    "type-slug",
+			method: func(ct *ClusterType) interface{} {
+				return ct.GetSlug()
+			},
+		},
+		{
+			name:        "GetDescription",
+			clusterType: &ClusterType{Description: String("Test description")},
+			expected:    String("Test description"),
+			method: func(ct *ClusterType) interface{} {
+				return ct.GetDescription()
+			},
+		},
+		{
+			name:        "GetTags",
+			clusterType: &ClusterType{Tags: []*Tag{{Name: String("tag-1")}}},
+			expected:    []*diodepb.Tag{{Name: "tag-1"}},
+			method: func(ct *ClusterType) interface{} {
+				return ct.GetTags()
+			},
+		},
+		{
+			name:        "ConvertToProtoMessage",
+			clusterType: &ClusterType{Name: String("type-1")},
+			expected:    &diodepb.ClusterType{Name: "type-1"},
+			method: func(ct *ClusterType) interface{} {
+				return ct.ConvertToProtoMessage()
+			},
+		},
+		{
+			name:        "ConvertToProtoEntity",
+			clusterType: &ClusterType{Name: String("type-1")},
+			expected: &diodepb.Entity{
+				Entity: &diodepb.Entity_ClusterType{
+					ClusterType: &diodepb.ClusterType{Name: "type-1"},
+				},
+			},
+			method: func(ct *ClusterType) interface{} {
+				return ct.ConvertToProtoEntity()
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.expected, tt.method(tt.clusterType))
+		})
+	}
+}
+
+func TestVirtualMachineMethods(t *testing.T) {
+	tests := []struct {
+		name           string
+		virtualMachine *VirtualMachine
+		expected       interface{}
+		method         func(*VirtualMachine) interface{}
+	}{
+		{
+			name:           "GetName",
+			virtualMachine: &VirtualMachine{Name: String("vm-1")},
+			expected:       "vm-1",
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.GetName()
+			},
+		},
+		{
+			name:           "GetStatus",
+			virtualMachine: &VirtualMachine{Status: String("running")},
+			expected:       "running",
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.GetStatus()
+			},
+		},
+		{
+			name:           "GetSite",
+			virtualMachine: &VirtualMachine{Site: &Site{Name: String("site-1")}},
+			expected:       &diodepb.Site{Name: "site-1"},
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.GetSite()
+			},
+		},
+		{
+			name:           "GetCluster",
+			virtualMachine: &VirtualMachine{Cluster: &Cluster{Name: String("cluster-1")}},
+			expected:       &diodepb.Cluster{Name: "cluster-1"},
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.GetCluster()
+			},
+		},
+		{
+			name:           "GetRole",
+			virtualMachine: &VirtualMachine{Role: &Role{Name: String("role-1")}},
+			expected:       &diodepb.Role{Name: "role-1"},
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.GetRole()
+			},
+		},
+		{
+			name:           "GetDevice",
+			virtualMachine: &VirtualMachine{Device: &Device{Name: String("device-1")}},
+			expected:       &diodepb.Device{Name: "device-1"},
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.GetDevice()
+			},
+		},
+		{
+			name:           "GetPlatform",
+			virtualMachine: &VirtualMachine{Platform: &Platform{Name: String("platform-1")}},
+			expected:       &diodepb.Platform{Name: "platform-1"},
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.GetPlatform()
+			},
+		},
+		{
+			name:           "GetPrimaryIp4",
+			virtualMachine: &VirtualMachine{PrimaryIp4: &IPAddress{Address: String("192.168.1.1")}},
+			expected: &diodepb.IPAddress{
+				Address:        "192.168.1.1",
+				AssignedObject: (*diodepb.IPAddress_Interface)(nil),
+			},
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.GetPrimaryIp4()
+			},
+		},
+		{
+			name:           "GetPrimaryIp6",
+			virtualMachine: &VirtualMachine{PrimaryIp6: &IPAddress{Address: String("::1")}},
+			expected: &diodepb.IPAddress{
+				Address:        "::1",
+				AssignedObject: (*diodepb.IPAddress_Interface)(nil),
+			},
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.GetPrimaryIp6()
+			},
+		},
+		{
+			name:           "GetVcpus",
+			virtualMachine: &VirtualMachine{Vcpus: Int32(4)},
+			expected:       Int32(4),
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.GetVcpus()
+			},
+		},
+		{
+			name:           "GetMemory",
+			virtualMachine: &VirtualMachine{Memory: Int32(8192)},
+			expected:       Int32(8192),
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.GetMemory()
+			},
+		},
+		{
+			name:           "GetDisk",
+			virtualMachine: &VirtualMachine{Disk: Int32(100)},
+			expected:       Int32(100),
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.GetDisk()
+			},
+		},
+		{
+			name:           "GetDescription",
+			virtualMachine: &VirtualMachine{Description: String("Test VM")},
+			expected:       String("Test VM"),
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.GetDescription()
+			},
+		},
+		{
+			name:           "GetComments",
+			virtualMachine: &VirtualMachine{Comments: String("No comments")},
+			expected:       String("No comments"),
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.GetComments()
+			},
+		},
+		{
+			name:           "GetTags",
+			virtualMachine: &VirtualMachine{Tags: []*Tag{{Name: String("tag-1")}}},
+			expected:       []*diodepb.Tag{{Name: "tag-1"}},
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.GetTags()
+			},
+		},
+		{
+			name:           "ConvertToProtoMessage",
+			virtualMachine: &VirtualMachine{Name: String("vm-1")},
+			expected:       &diodepb.VirtualMachine{Name: "vm-1"},
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.ConvertToProtoMessage()
+			},
+		},
+		{
+			name:           "ConvertToProtoEntity",
+			virtualMachine: &VirtualMachine{Name: String("vm-1")},
+			expected: &diodepb.Entity{
+				Entity: &diodepb.Entity_VirtualMachine{
+					VirtualMachine: &diodepb.VirtualMachine{Name: "vm-1"},
+				},
+			},
+			method: func(vm *VirtualMachine) interface{} {
+				return vm.ConvertToProtoEntity()
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.expected, tt.method(tt.virtualMachine))
+		})
+	}
+}
+
+func TestVMInterfaceMethods(t *testing.T) {
+	tests := []struct {
+		name        string
+		vmInterface *VMInterface
+		expected    interface{}
+		method      func(*VMInterface) interface{}
+	}{
+		{
+			name:        "GetName",
+			vmInterface: &VMInterface{Name: String("vminterface-1")},
+			expected:    "vminterface-1",
+			method: func(vmi *VMInterface) interface{} {
+				return vmi.GetName()
+			},
+		},
+		{
+			name:        "GetMacAddress",
+			vmInterface: &VMInterface{MacAddress: String("00:1A:2B:3C:4D:5E")},
+			expected:    String("00:1A:2B:3C:4D:5E"),
+			method: func(vmi *VMInterface) interface{} {
+				return vmi.GetMacAddress()
+			},
+		},
+		{
+			name:        "GetDescription",
+			vmInterface: &VMInterface{Description: String("Test description")},
+			expected:    String("Test description"),
+			method: func(vmi *VMInterface) interface{} {
+				return vmi.GetDescription()
+			},
+		},
+		{
+			name:        "GetTags",
+			vmInterface: &VMInterface{Tags: []*Tag{{Name: String("tag-1")}}},
+			expected:    []*diodepb.Tag{{Name: "tag-1"}},
+			method: func(vmi *VMInterface) interface{} {
+				return vmi.GetTags()
+			},
+		},
+		{
+			name:        "ConvertToProtoMessage",
+			vmInterface: &VMInterface{Name: String("vminterface-1")},
+			expected:    &diodepb.VMInterface{Name: "vminterface-1"},
+			method: func(vmi *VMInterface) interface{} {
+				return vmi.ConvertToProtoMessage()
+			},
+		},
+		{
+			name:        "ConvertToProtoEntity",
+			vmInterface: &VMInterface{Name: String("vminterface-1")},
+			expected: &diodepb.Entity{
+				Entity: &diodepb.Entity_Vminterface{
+					Vminterface: &diodepb.VMInterface{Name: "vminterface-1"},
+				},
+			},
+			method: func(vmi *VMInterface) interface{} {
+				return vmi.ConvertToProtoEntity()
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.expected, tt.method(tt.vmInterface))
+		})
+	}
+}
+
+func TestVirtualDiskMethods(t *testing.T) {
+	tests := []struct {
+		name        string
+		virtualDisk *VirtualDisk
+		expected    interface{}
+		method      func(*VirtualDisk) interface{}
+	}{
+		{
+			name:        "GetVirtualMachine",
+			virtualDisk: &VirtualDisk{VirtualMachine: &VirtualMachine{Name: String("vm-1")}},
+			expected:    &diodepb.VirtualMachine{Name: "vm-1"},
+			method: func(vd *VirtualDisk) interface{} {
+				return vd.GetVirtualMachine()
+			},
+		},
+		{
+			name:        "GetName",
+			virtualDisk: &VirtualDisk{Name: String("disk-1")},
+			expected:    "disk-1",
+			method: func(vd *VirtualDisk) interface{} {
+				return vd.GetName()
+			},
+		},
+		{
+			name:        "GetSize",
+			virtualDisk: &VirtualDisk{Size: Int32(1024)},
+			expected:    *Int32(1024),
+			method: func(vd *VirtualDisk) interface{} {
+				return vd.GetSize()
+			},
+		},
+		{
+			name:        "GetDescription",
+			virtualDisk: &VirtualDisk{Description: String("Test disk")},
+			expected:    String("Test disk"),
+			method: func(vd *VirtualDisk) interface{} {
+				return vd.GetDescription()
+			},
+		},
+		{
+			name:        "GetTags",
+			virtualDisk: &VirtualDisk{Tags: []*Tag{{Name: String("tag-1")}}},
+			expected:    []*diodepb.Tag{{Name: "tag-1"}},
+			method: func(vd *VirtualDisk) interface{} {
+				return vd.GetTags()
+			},
+		},
+		{
+			name:        "ConvertToProtoMessage",
+			virtualDisk: &VirtualDisk{Name: String("disk-1")},
+			expected:    &diodepb.VirtualDisk{Name: "disk-1"},
+			method: func(vd *VirtualDisk) interface{} {
+				return vd.ConvertToProtoMessage()
+			},
+		},
+		{
+			name:        "ConvertToProtoEntity",
+			virtualDisk: &VirtualDisk{Name: String("disk-1")},
+			expected: &diodepb.Entity{
+				Entity: &diodepb.Entity_VirtualDisk{
+					VirtualDisk: &diodepb.VirtualDisk{Name: "disk-1"},
+				},
+			},
+			method: func(vd *VirtualDisk) interface{} {
+				return vd.ConvertToProtoEntity()
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.expected, tt.method(tt.virtualDisk))
+		})
+	}
+}
