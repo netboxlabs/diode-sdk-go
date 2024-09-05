@@ -122,6 +122,12 @@ See all [examples](./examples/main.go) for reference.
 * Prefix
 * Role
 * Site
+* Cluster Group
+* Cluster Type
+* Cluster
+* Virtual Machine
+* Virtual Machine Interface
+* Virtual Disk
 
 #### Linting
 

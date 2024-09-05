@@ -262,6 +262,119 @@ func main() {
 		},
 	}
 
+	// Create a cluster group
+	clusterGroupEntity := &diode.ClusterGroup{
+		Name:        diode.String("cluster group B"),
+		Description: diode.String("cluster group B description"),
+		Tags: []*diode.Tag{
+			{
+				Name: diode.String("tag 1"),
+			},
+		},
+	}
+
+	// Create a cluster type
+	clusterTypeEntity := &diode.ClusterType{
+		Name:        diode.String("cluster type B"),
+		Description: diode.String("cluster type B description"),
+		Tags: []*diode.Tag{
+			{
+				Name: diode.String("tag 1"),
+			},
+		},
+	}
+
+	// Create a cluster
+	clusterEntity := &diode.Cluster{
+		Name: diode.String("cluster A"),
+		Type: &diode.ClusterType{
+			Name:        diode.String("cluster type A"),
+			Description: diode.String("cluster type A description"),
+		},
+		Group: &diode.ClusterGroup{
+			Name: diode.String("cluster group A"),
+		},
+		Site: &diode.Site{
+			Name: diode.String("site A"),
+		},
+		Status:      diode.String("active"),
+		Description: diode.String("cluster A description"),
+		Tags: []*diode.Tag{
+			{
+				Name: diode.String("tag 1"),
+			},
+		},
+	}
+
+	// Create a virtual machine
+	virtualMachineEntity := &diode.VirtualMachine{
+		Name:   diode.String("Virtual Machine A"),
+		Status: diode.String("active"),
+		Site: &diode.Site{
+			Name: diode.String("site 10"),
+		},
+		Cluster: &diode.Cluster{
+			Name: diode.String("cluster 10"),
+			Type: &diode.ClusterType{
+				Name: diode.String("cluster type 10"),
+			},
+			Group: &diode.ClusterGroup{
+				Name: diode.String("cluster group 10"),
+			},
+			Site: &diode.Site{
+				Name: diode.String("site 10"),
+			},
+			Status: diode.String("active"),
+		},
+		Role: &diode.Role{
+			Name: diode.String("Role 10"),
+		},
+		Platform: &diode.Platform{
+			Name: diode.String("Platform 10"),
+			Manufacturer: &diode.Manufacturer{
+				Name: diode.String("Manufacturer 10"),
+			},
+		},
+		Vcpus:       diode.Int32(1),
+		Memory:      diode.Int32(4096),
+		Disk:        diode.Int32(100),
+		Description: diode.String("Virtual Machine A description"),
+		Comments:    diode.String("Lorem ipsum dolor sit amet"),
+		Tags: []*diode.Tag{
+			{
+				Name: diode.String("tag 1"),
+			},
+		},
+	}
+
+	// Create a virtual machine interface
+	virtualMachineInterfaceEntity := &diode.VMInterface{
+		VirtualMachine: virtualMachineEntity,
+		Name:           diode.String("Interface A"),
+		Enabled:        diode.Bool(true),
+		Mtu:            diode.Int32(1500),
+		MacAddress:     diode.String("00:00:00:00:00:00"),
+		Description:    diode.String("Interface A description"),
+		Tags: []*diode.Tag{
+			{
+				Name: diode.String("tag 1"),
+			},
+		},
+	}
+
+	// Create a virtual disk
+	virtualDiskEntity := &diode.VirtualDisk{
+		VirtualMachine: virtualMachineEntity,
+		Name:           diode.String("Disk A"),
+		Size:           diode.Int32(100),
+		Description:    diode.String("Disk A description"),
+		Tags: []*diode.Tag{
+			{
+				Name: diode.String("tag 1"),
+			},
+		},
+	}
+
 	entities := []diode.Entity{
 		deviceEntity,
 		deviceTypeEntity,
@@ -272,8 +385,15 @@ func main() {
 		prefixEntity,
 		roleEntity,
 		siteEntity,
+		clusterGroupEntity,
+		clusterTypeEntity,
+		clusterEntity,
+		virtualMachineEntity,
+		virtualMachineInterfaceEntity,
+		virtualDiskEntity,
 	}
 
+	// Ingest entities
 	resp, err := client.Ingest(context.Background(), entities)
 	if err != nil {
 		log.Fatal(err)
