@@ -27,7 +27,7 @@ const (
 	SDKName = "diode-sdk-go"
 
 	// SDKVersion is the version of the Diode SDK
-	SDKVersion = "0.1.0"
+	SDKVersion = "0.2.0"
 
 	// DiodeAPIKeyEnvVarName is the environment variable name for the Diode API key
 	DiodeAPIKeyEnvVarName = "DIODE_API_KEY"

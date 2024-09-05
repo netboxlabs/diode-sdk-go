@@ -13,7 +13,7 @@ at [https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in
 ## Installation
 
 ```bash
-go install github.com/netboxlabs/diode-sdk-go
+go get github.com/netboxlabs/diode-sdk-go
 ```
 
 ## Usage
@@ -122,6 +122,12 @@ See all [examples](./examples/main.go) for reference.
 * Prefix
 * Role
 * Site
+* Cluster Group
+* Cluster Type
+* Cluster
+* Virtual Machine
+* Virtual Machine Interface
+* Virtual Disk
 
 #### Linting
 
