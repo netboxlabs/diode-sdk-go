@@ -132,7 +132,7 @@ See all [examples](./examples/main.go) for reference.
 #### Linting
 
 ```shell
-make list
+make lint
 ```
 
 #### Testing
