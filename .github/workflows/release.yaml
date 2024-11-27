@@ -13,6 +13,9 @@ env:
   SEMANTIC_RELEASE_PACKAGE: ${{ github.repository }}
   APP_NAME: diode-sdk-go
 
+permissions:
+  contents: write
+
 jobs:
   get-next-version:
     name: Semantic release get next version
