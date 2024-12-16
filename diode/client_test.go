@@ -20,6 +20,7 @@ import (
 )
 
 func TestLoadCerts(t *testing.T) {
+
 	certPool := loadCerts()
 	assert.NotNil(t, certPool)
 }
