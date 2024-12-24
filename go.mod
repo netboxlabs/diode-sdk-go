@@ -1,6 +1,6 @@
 module github.com/netboxlabs/diode-sdk-go
 
-go 1.22
+go 1.23.4
 
 require (
 	github.com/envoyproxy/protoc-gen-validate v1.0.4
