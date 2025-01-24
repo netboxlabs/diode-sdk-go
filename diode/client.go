@@ -12,12 +12,14 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
@@ -230,10 +232,7 @@ func (g *GRPCClient) Close() error {
 func (g *GRPCClient) Ingest(ctx context.Context, entities []Entity) (*diodepb.IngestResponse, error) {
 	stream := defaultStreamName
 
-	protoEntities := make([]*diodepb.Entity, 0)
-	for _, entity := range entities {
-		protoEntities = append(protoEntities, entity.ConvertToProtoEntity())
-	}
+	protoEntities := convertEntitiesToProto(entities)
 
 	req := &diodepb.IngestRequest{
 		Id:                 uuid.NewString(),
@@ -248,6 +247,17 @@ func (g *GRPCClient) Ingest(ctx context.Context, entities []Entity) (*diodepb.In
 	ctx = metadata.NewOutgoingContext(ctx, g.metadata)
 
 	return g.client.Ingest(ctx, req)
+}
+
+// convertEntitiesToProto converts entities to proto entities
+func convertEntitiesToProto(entities []Entity) []*diodepb.Entity {
+	protoEntities := make([]*diodepb.Entity, 0)
+	for _, entity := range entities {
+		entityPb := entity.ConvertToProtoEntity()
+		entityPb.Timestamp = timestamppb.New(time.Now().UTC())
+		protoEntities = append(protoEntities, entityPb)
+	}
+	return protoEntities
 }
 
 // methodUnaryInterceptor returns a gRPC dial option with a unary interceptor
