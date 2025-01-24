@@ -404,3 +404,35 @@ func TestNewLogger(t *testing.T) {
 		})
 	}
 }
+
+func TestConvertEntitiesToProto(t *testing.T) {
+	tests := []struct {
+		desc     string
+		entities []Entity
+	}{
+		{
+			desc:     "empty entities",
+			entities: nil,
+		},
+		{
+			desc: "non-empty entities",
+			entities: []Entity{
+				&Device{Name: String("device-1")},
+				&Site{Name: String("site-1")},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			protoEntities := convertEntitiesToProto(tt.entities)
+			require.NotNil(t, protoEntities)
+			assert.Equal(t, len(tt.entities), len(protoEntities))
+			for _, entityPb := range protoEntities {
+				assert.NotNil(t, entityPb.Timestamp)
+				assert.NotZero(t, entityPb.Timestamp.Seconds)
+				assert.NotZero(t, entityPb.Timestamp.Nanos)
+			}
+		})
+	}
+}
