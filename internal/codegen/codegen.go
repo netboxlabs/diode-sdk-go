@@ -222,7 +222,8 @@ func retrieveTypesAssignableToEntities(m protoreflect.Message, parentFieldName s
 						f := m.Type().Descriptor().Fields().Get(i)
 
 						if f.ContainingOneof() != nil && f.Kind() == protoreflect.MessageKind {
-							fieldName = exportedFields[f.Index()].Name
+							oneof := f.ContainingOneof()
+							fieldName = exportedFields[oneof.Index()].Name
 						}
 					}
 				}
