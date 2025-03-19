@@ -18,45 +18,31 @@ func TestDeviceMethods(t *testing.T) {
 		{
 			name:     "GetName",
 			device:   &Device{Name: String("device-1")},
-			expected: "device-1",
+			expected: String("device-1"),
 			method: func(d *Device) interface{} {
 				return d.GetName()
 			},
 		},
 		{
-			name:     "GetDeviceFqdn",
-			device:   &Device{DeviceFqdn: String("device-1.local")},
-			expected: String("device-1.local"),
-			method: func(d *Device) interface{} {
-				return d.GetDeviceFqdn()
-			},
-		},
-		{
-			name:   "GetDeviceType",
-			device: &Device{DeviceType: &DeviceType{Model: String("model-1")}},
-			expected: &diodepb.DeviceType{
-				Model: "model-1",
-			},
+			name:     "GetDeviceType",
+			device:   &Device{DeviceType: &DeviceType{Model: String("model-1")}},
+			expected: &diodepb.DeviceType{Model: "model-1"},
 			method: func(d *Device) interface{} {
 				return d.GetDeviceType()
 			},
 		},
 		{
-			name:   "GetRole",
-			device: &Device{Role: &Role{Name: String("role-1")}},
-			expected: &diodepb.Role{
-				Name: "role-1",
-			},
+			name:     "GetRole",
+			device:   &Device{Role: &DeviceRole{Name: String("role-1")}},
+			expected: &diodepb.DeviceRole{Name: "role-1"},
 			method: func(d *Device) interface{} {
 				return d.GetRole()
 			},
 		},
 		{
-			name:   "GetPlatform",
-			device: &Device{Platform: &Platform{Name: String("platform-1")}},
-			expected: &diodepb.Platform{
-				Name: "platform-1",
-			},
+			name:     "GetPlatform",
+			device:   &Device{Platform: &Platform{Name: String("platform-1")}},
+			expected: &diodepb.Platform{Name: "platform-1"},
 			method: func(d *Device) interface{} {
 				return d.GetPlatform()
 			},
@@ -70,11 +56,9 @@ func TestDeviceMethods(t *testing.T) {
 			},
 		},
 		{
-			name:   "GetSite",
-			device: &Device{Site: &Site{Name: String("site-1")}},
-			expected: &diodepb.Site{
-				Name: "site-1",
-			},
+			name:     "GetSite",
+			device:   &Device{Site: &Site{Name: String("site-1")}},
+			expected: &diodepb.Site{Name: "site-1"},
 			method: func(d *Device) interface{} {
 				return d.GetSite()
 			},
@@ -90,7 +74,7 @@ func TestDeviceMethods(t *testing.T) {
 		{
 			name:     "GetStatus",
 			device:   &Device{Status: String("active")},
-			expected: "active",
+			expected: String("active"),
 			method: func(d *Device) interface{} {
 				return d.GetStatus()
 			},
@@ -125,8 +109,7 @@ func TestDeviceMethods(t *testing.T) {
 			name:   "GetPrimaryIp4",
 			device: &Device{PrimaryIp4: &IPAddress{Address: String("192.168.1.1")}},
 			expected: &diodepb.IPAddress{
-				Address:        "192.168.1.1",
-				AssignedObject: (*diodepb.IPAddress_Interface)(nil),
+				Address: "192.168.1.1",
 			},
 			method: func(d *Device) interface{} {
 				return d.GetPrimaryIp4()
@@ -136,8 +119,7 @@ func TestDeviceMethods(t *testing.T) {
 			name:   "GetPrimaryIp6",
 			device: &Device{PrimaryIp6: &IPAddress{Address: String("::1")}},
 			expected: &diodepb.IPAddress{
-				Address:        "::1",
-				AssignedObject: (*diodepb.IPAddress_Interface)(nil),
+				Address: "::1",
 			},
 			method: func(d *Device) interface{} {
 				return d.GetPrimaryIp6()
@@ -147,7 +129,7 @@ func TestDeviceMethods(t *testing.T) {
 			name:   "ConvertToProtoMessage",
 			device: &Device{Name: String("device-1")},
 			expected: &diodepb.Device{
-				Name: "device-1",
+				Name: String("device-1"),
 			},
 			method: func(d *Device) interface{} {
 				return d.ConvertToProtoMessage()
@@ -159,7 +141,7 @@ func TestDeviceMethods(t *testing.T) {
 			expected: &diodepb.Entity{
 				Entity: &diodepb.Entity_Device{
 					Device: &diodepb.Device{
-						Name: "device-1",
+						Name: String("device-1"),
 					},
 				},
 			},
@@ -281,8 +263,7 @@ func TestIPAddressMethods(t *testing.T) {
 			name:      "ConvertToProtoMessage",
 			ipAddress: &IPAddress{Address: String("192.168.1.1")},
 			expected: &diodepb.IPAddress{
-				Address:        "192.168.1.1",
-				AssignedObject: (*diodepb.IPAddress_Interface)(nil),
+				Address: "192.168.1.1",
 			},
 			method: func(ip *IPAddress) interface{} {
 				return ip.ConvertToProtoMessage()
@@ -299,7 +280,7 @@ func TestIPAddressMethods(t *testing.T) {
 		{
 			name:      "GetAssignedObject",
 			ipAddress: &IPAddress{AssignedObject: &Interface{}},
-			expected:  &diodepb.IPAddress_Interface{Interface: &diodepb.Interface{}},
+			expected:  &diodepb.IPAddress_AssignedObjectInterface{AssignedObjectInterface: &diodepb.Interface{}},
 			method: func(ip *IPAddress) interface{} {
 				return ip.GetAssignedObject()
 			},
@@ -307,7 +288,7 @@ func TestIPAddressMethods(t *testing.T) {
 		{
 			name:      "GetStatus",
 			ipAddress: &IPAddress{Status: String("active")},
-			expected:  "active",
+			expected:  String("active"),
 			method: func(ip *IPAddress) interface{} {
 				return ip.GetStatus()
 			},
@@ -315,7 +296,7 @@ func TestIPAddressMethods(t *testing.T) {
 		{
 			name:      "GetRole",
 			ipAddress: &IPAddress{Role: String("admin")},
-			expected:  "admin",
+			expected:  String("admin"),
 			method: func(ip *IPAddress) interface{} {
 				return ip.GetRole()
 			},
@@ -360,8 +341,7 @@ func TestIPAddressMethods(t *testing.T) {
 			expected: &diodepb.Entity{
 				Entity: &diodepb.Entity_IpAddress{
 					IpAddress: &diodepb.IPAddress{
-						Address:        "192.168.1.1",
-						AssignedObject: (*diodepb.IPAddress_Interface)(nil),
+						Address: "192.168.1.1",
 					},
 				},
 			},
@@ -388,7 +368,7 @@ func TestInterfaceMethods(t *testing.T) {
 		{
 			name:     "GetDevice",
 			iface:    &Interface{Device: &Device{Name: String("device-1")}},
-			expected: &diodepb.Device{Name: "device-1"},
+			expected: &diodepb.Device{Name: String("device-1")},
 			method: func(i *Interface) interface{} {
 				return i.GetDevice()
 			},
@@ -427,24 +407,24 @@ func TestInterfaceMethods(t *testing.T) {
 		},
 		{
 			name:     "GetMtu",
-			iface:    &Interface{Mtu: Int32(1500)},
-			expected: Int32(1500),
+			iface:    &Interface{Mtu: Int64(1500)},
+			expected: Int64(1500),
 			method: func(i *Interface) interface{} {
 				return i.GetMtu()
 			},
 		},
 		{
-			name:     "GetMacAddress",
-			iface:    &Interface{MacAddress: String("00:1A:2B:3C:4D:5E")},
-			expected: String("00:1A:2B:3C:4D:5E"),
+			name:     "GetPrimaryMacAddress",
+			iface:    &Interface{PrimaryMacAddress: &MACAddress{MacAddress: String("00:1A:2B:3C:4D:5E")}},
+			expected: &diodepb.MACAddress{MacAddress: "00:1A:2B:3C:4D:5E"},
 			method: func(i *Interface) interface{} {
-				return i.GetMacAddress()
+				return i.GetPrimaryMacAddress()
 			},
 		},
 		{
 			name:     "GetSpeed",
-			iface:    &Interface{Speed: Int32(1000)},
-			expected: Int32(1000),
+			iface:    &Interface{Speed: Int64(1000)},
+			expected: Int64(1000),
 			method: func(i *Interface) interface{} {
 				return i.GetSpeed()
 			},
@@ -484,7 +464,7 @@ func TestInterfaceMethods(t *testing.T) {
 		{
 			name:     "GetMode",
 			iface:    &Interface{Mode: String("mode-1")},
-			expected: "mode-1",
+			expected: String("mode-1"),
 			method: func(i *Interface) interface{} {
 				return i.GetMode()
 			},
@@ -700,17 +680,17 @@ func TestPrefixMethods(t *testing.T) {
 			},
 		},
 		{
-			name:     "GetSite",
-			prefix:   &Prefix{Site: &Site{Name: String("site-1")}},
-			expected: &diodepb.Site{Name: "site-1"},
+			name:     "GetScope",
+			prefix:   &Prefix{Scope: &Site{Name: String("site-1")}},
+			expected: &diodepb.Prefix_ScopeSite{ScopeSite: &diodepb.Site{Name: "site-1"}},
 			method: func(p *Prefix) interface{} {
-				return p.GetSite()
+				return p.GetScope()
 			},
 		},
 		{
 			name:     "GetStatus",
 			prefix:   &Prefix{Status: String("active")},
-			expected: "active",
+			expected: String("active"),
 			method: func(p *Prefix) interface{} {
 				return p.GetStatus()
 			},
@@ -788,74 +768,74 @@ func TestPrefixMethods(t *testing.T) {
 	}
 }
 
-func TestRoleMethods(t *testing.T) {
+func TestDeviceRoleMethods(t *testing.T) {
 	tests := []struct {
 		name     string
-		role     *Role
+		role     *DeviceRole
 		expected interface{}
-		method   func(*Role) interface{}
+		method   func(*DeviceRole) interface{}
 	}{
 		{
 			name:     "GetName",
-			role:     &Role{Name: String("role-1")},
+			role:     &DeviceRole{Name: String("role-1")},
 			expected: "role-1",
-			method: func(r *Role) interface{} {
+			method: func(r *DeviceRole) interface{} {
 				return r.GetName()
 			},
 		},
 		{
 			name:     "GetSlug",
-			role:     &Role{Slug: String("slug-1")},
+			role:     &DeviceRole{Slug: String("slug-1")},
 			expected: "slug-1",
-			method: func(r *Role) interface{} {
+			method: func(r *DeviceRole) interface{} {
 				return r.GetSlug()
 			},
 		},
 		{
 			name:     "GetColor",
-			role:     &Role{Color: String("color-1")},
-			expected: "color-1",
-			method: func(r *Role) interface{} {
+			role:     &DeviceRole{Color: String("color-1")},
+			expected: String("color-1"),
+			method: func(r *DeviceRole) interface{} {
 				return r.GetColor()
 			},
 		},
 		{
 			name:     "GetDescription",
-			role:     &Role{Description: String("Test description")},
+			role:     &DeviceRole{Description: String("Test description")},
 			expected: String("Test description"),
-			method: func(r *Role) interface{} {
+			method: func(r *DeviceRole) interface{} {
 				return r.GetDescription()
 			},
 		},
 		{
 			name: "GetTags",
-			role: &Role{Tags: []*Tag{
+			role: &DeviceRole{Tags: []*Tag{
 				{Name: String("tag-1")},
 			}},
 			expected: []*diodepb.Tag{
 				{Name: "tag-1"},
 			},
-			method: func(r *Role) interface{} {
+			method: func(r *DeviceRole) interface{} {
 				return r.GetTags()
 			},
 		},
 		{
 			name:     "ConvertToProtoMessage",
-			role:     &Role{Name: String("role-1")},
-			expected: &diodepb.Role{Name: "role-1"},
-			method: func(r *Role) interface{} {
+			role:     &DeviceRole{Name: String("role-1")},
+			expected: &diodepb.DeviceRole{Name: "role-1"},
+			method: func(r *DeviceRole) interface{} {
 				return r.ConvertToProtoMessage()
 			},
 		},
 		{
 			name: "ConvertToProtoEntity",
-			role: &Role{Name: String("role-1")},
+			role: &DeviceRole{Name: String("role-1")},
 			expected: &diodepb.Entity{
 				Entity: &diodepb.Entity_DeviceRole{
-					DeviceRole: &diodepb.Role{Name: "role-1"},
+					DeviceRole: &diodepb.DeviceRole{Name: "role-1"},
 				},
 			},
-			method: func(r *Role) interface{} {
+			method: func(r *DeviceRole) interface{} {
 				return r.ConvertToProtoEntity()
 			},
 		},
@@ -894,7 +874,7 @@ func TestSiteMethods(t *testing.T) {
 		{
 			name:     "GetStatus",
 			site:     &Site{Status: String("active")},
-			expected: "active",
+			expected: String("active"),
 			method: func(s *Site) interface{} {
 				return s.GetStatus()
 			},
@@ -998,7 +978,7 @@ func TestTagMethods(t *testing.T) {
 		{
 			name:     "GetColor",
 			tag:      &Tag{Color: String("color-1")},
-			expected: "color-1",
+			expected: String("color-1"),
 			method: func(t *Tag) interface{} {
 				return t.GetColor()
 			},
@@ -1052,17 +1032,19 @@ func TestClusterMethods(t *testing.T) {
 			},
 		},
 		{
-			name:     "GetSite",
-			cluster:  &Cluster{Site: &Site{}},
-			expected: &diodepb.Site{},
+			name:    "GetScope",
+			cluster: &Cluster{Scope: &Site{}},
+			expected: &diodepb.Cluster_ScopeSite{
+				ScopeSite: &diodepb.Site{},
+			},
 			method: func(c *Cluster) interface{} {
-				return c.GetSite()
+				return c.GetScope()
 			},
 		},
 		{
 			name:     "GetStatus",
 			cluster:  &Cluster{Status: String("active")},
-			expected: "active",
+			expected: String("active"),
 			method: func(c *Cluster) interface{} {
 				return c.GetStatus()
 			},
@@ -1266,7 +1248,7 @@ func TestVirtualMachineMethods(t *testing.T) {
 		{
 			name:           "GetStatus",
 			virtualMachine: &VirtualMachine{Status: String("running")},
-			expected:       "running",
+			expected:       String("running"),
 			method: func(vm *VirtualMachine) interface{} {
 				return vm.GetStatus()
 			},
@@ -1289,8 +1271,8 @@ func TestVirtualMachineMethods(t *testing.T) {
 		},
 		{
 			name:           "GetRole",
-			virtualMachine: &VirtualMachine{Role: &Role{Name: String("role-1")}},
-			expected:       &diodepb.Role{Name: "role-1"},
+			virtualMachine: &VirtualMachine{Role: &DeviceRole{Name: String("role-1")}},
+			expected:       &diodepb.DeviceRole{Name: "role-1"},
 			method: func(vm *VirtualMachine) interface{} {
 				return vm.GetRole()
 			},
@@ -1298,7 +1280,7 @@ func TestVirtualMachineMethods(t *testing.T) {
 		{
 			name:           "GetDevice",
 			virtualMachine: &VirtualMachine{Device: &Device{Name: String("device-1")}},
-			expected:       &diodepb.Device{Name: "device-1"},
+			expected:       &diodepb.Device{Name: String("device-1")},
 			method: func(vm *VirtualMachine) interface{} {
 				return vm.GetDevice()
 			},
@@ -1314,10 +1296,7 @@ func TestVirtualMachineMethods(t *testing.T) {
 		{
 			name:           "GetPrimaryIp4",
 			virtualMachine: &VirtualMachine{PrimaryIp4: &IPAddress{Address: String("192.168.1.1")}},
-			expected: &diodepb.IPAddress{
-				Address:        "192.168.1.1",
-				AssignedObject: (*diodepb.IPAddress_Interface)(nil),
-			},
+			expected:       &diodepb.IPAddress{Address: "192.168.1.1"},
 			method: func(vm *VirtualMachine) interface{} {
 				return vm.GetPrimaryIp4()
 			},
@@ -1325,34 +1304,31 @@ func TestVirtualMachineMethods(t *testing.T) {
 		{
 			name:           "GetPrimaryIp6",
 			virtualMachine: &VirtualMachine{PrimaryIp6: &IPAddress{Address: String("::1")}},
-			expected: &diodepb.IPAddress{
-				Address:        "::1",
-				AssignedObject: (*diodepb.IPAddress_Interface)(nil),
-			},
+			expected:       &diodepb.IPAddress{Address: "::1"},
 			method: func(vm *VirtualMachine) interface{} {
 				return vm.GetPrimaryIp6()
 			},
 		},
 		{
 			name:           "GetVcpus",
-			virtualMachine: &VirtualMachine{Vcpus: Int32(4)},
-			expected:       Int32(4),
+			virtualMachine: &VirtualMachine{Vcpus: Float64(4)},
+			expected:       Float64(4),
 			method: func(vm *VirtualMachine) interface{} {
 				return vm.GetVcpus()
 			},
 		},
 		{
 			name:           "GetMemory",
-			virtualMachine: &VirtualMachine{Memory: Int32(8192)},
-			expected:       Int32(8192),
+			virtualMachine: &VirtualMachine{Memory: Int64(8192)},
+			expected:       Int64(8192),
 			method: func(vm *VirtualMachine) interface{} {
 				return vm.GetMemory()
 			},
 		},
 		{
 			name:           "GetDisk",
-			virtualMachine: &VirtualMachine{Disk: Int32(100)},
-			expected:       Int32(100),
+			virtualMachine: &VirtualMachine{Disk: Int64(100)},
+			expected:       Int64(100),
 			method: func(vm *VirtualMachine) interface{} {
 				return vm.GetDisk()
 			},
@@ -1426,11 +1402,11 @@ func TestVMInterfaceMethods(t *testing.T) {
 			},
 		},
 		{
-			name:        "GetMacAddress",
-			vmInterface: &VMInterface{MacAddress: String("00:1A:2B:3C:4D:5E")},
-			expected:    String("00:1A:2B:3C:4D:5E"),
+			name:        "GetPrimaryMacAddress",
+			vmInterface: &VMInterface{PrimaryMacAddress: &MACAddress{MacAddress: String("00:1A:2B:3C:4D:5E")}},
+			expected:    &diodepb.MACAddress{MacAddress: "00:1A:2B:3C:4D:5E"},
 			method: func(vmi *VMInterface) interface{} {
-				return vmi.GetMacAddress()
+				return vmi.GetPrimaryMacAddress()
 			},
 		},
 		{
@@ -1461,8 +1437,8 @@ func TestVMInterfaceMethods(t *testing.T) {
 			name:        "ConvertToProtoEntity",
 			vmInterface: &VMInterface{Name: String("vminterface-1")},
 			expected: &diodepb.Entity{
-				Entity: &diodepb.Entity_Vminterface{
-					Vminterface: &diodepb.VMInterface{Name: "vminterface-1"},
+				Entity: &diodepb.Entity_VmInterface{
+					VmInterface: &diodepb.VMInterface{Name: "vminterface-1"},
 				},
 			},
 			method: func(vmi *VMInterface) interface{} {
@@ -1503,8 +1479,8 @@ func TestVirtualDiskMethods(t *testing.T) {
 		},
 		{
 			name:        "GetSize",
-			virtualDisk: &VirtualDisk{Size: Int32(1024)},
-			expected:    *Int32(1024),
+			virtualDisk: &VirtualDisk{Size: Int64(1024)},
+			expected:    *Int64(1024),
 			method: func(vd *VirtualDisk) interface{} {
 				return vd.GetSize()
 			},
