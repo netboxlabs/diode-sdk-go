@@ -1,5 +1,5 @@
 // Generated code. DO NOT EDIT.
-// Timestamp: 2025-03-19 19:34:03Z
+// Timestamp: 2025-04-01 21:05:15Z
 //
 
 package diode
@@ -3282,6 +3282,7 @@ type IKEPolicy struct {
     Comments *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Proposals []*IKEProposal
 }
 
 func (e *IKEPolicy) ConvertToProtoMessage() proto.Message {
@@ -3294,6 +3295,7 @@ func (e *IKEPolicy) ConvertToProtoMessage() proto.Message {
         Comments: e.GetComments(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Proposals: e.GetProposals(),
     }
     return r
 }
@@ -3377,6 +3379,16 @@ func (e *IKEPolicy) GetCustomFields() map[string]*pb.CustomFieldValue {
         r = make(map[string]*pb.CustomFieldValue)
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+        }
+    }
+    return r
+}
+
+func (e *IKEPolicy) GetProposals() []*pb.IKEProposal {
+    var r []*pb.IKEProposal
+    if e != nil && e.Proposals != nil {
+        for _, v := range e.Proposals {
+            r = append(r, v.ConvertToProtoMessage().(*pb.IKEProposal))
         }
     }
     return r
@@ -3814,6 +3826,7 @@ type IPSecPolicy struct {
     Comments *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Proposals []*IPSecProposal
 }
 
 func (e *IPSecPolicy) ConvertToProtoMessage() proto.Message {
@@ -3824,6 +3837,7 @@ func (e *IPSecPolicy) ConvertToProtoMessage() proto.Message {
         Comments: e.GetComments(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Proposals: e.GetProposals(),
     }
     return r
 }
@@ -3891,6 +3905,16 @@ func (e *IPSecPolicy) GetCustomFields() map[string]*pb.CustomFieldValue {
         r = make(map[string]*pb.CustomFieldValue)
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+        }
+    }
+    return r
+}
+
+func (e *IPSecPolicy) GetProposals() []*pb.IPSecProposal {
+    var r []*pb.IPSecProposal
+    if e != nil && e.Proposals != nil {
+        for _, v := range e.Proposals {
+            r = append(r, v.ConvertToProtoMessage().(*pb.IPSecProposal))
         }
     }
     return r
@@ -4156,6 +4180,9 @@ type Interface struct {
     Vrf *VRF
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Vdcs []*VirtualDeviceContext
+    TaggedVlans []*VLAN
+    WirelessLans []*WirelessLAN
 }
 
 func (e *Interface) ConvertToProtoMessage() proto.Message {
@@ -4191,6 +4218,9 @@ func (e *Interface) ConvertToProtoMessage() proto.Message {
         Vrf: e.GetVrf(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Vdcs: e.GetVdcs(),
+        TaggedVlans: e.GetTaggedVlans(),
+        WirelessLans: e.GetWirelessLans(),
     }
     return r
 }
@@ -4458,6 +4488,36 @@ func (e *Interface) GetCustomFields() map[string]*pb.CustomFieldValue {
         r = make(map[string]*pb.CustomFieldValue)
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+        }
+    }
+    return r
+}
+
+func (e *Interface) GetVdcs() []*pb.VirtualDeviceContext {
+    var r []*pb.VirtualDeviceContext
+    if e != nil && e.Vdcs != nil {
+        for _, v := range e.Vdcs {
+            r = append(r, v.ConvertToProtoMessage().(*pb.VirtualDeviceContext))
+        }
+    }
+    return r
+}
+
+func (e *Interface) GetTaggedVlans() []*pb.VLAN {
+    var r []*pb.VLAN
+    if e != nil && e.TaggedVlans != nil {
+        for _, v := range e.TaggedVlans {
+            r = append(r, v.ConvertToProtoMessage().(*pb.VLAN))
+        }
+    }
+    return r
+}
+
+func (e *Interface) GetWirelessLans() []*pb.WirelessLAN {
+    var r []*pb.WirelessLAN
+    if e != nil && e.WirelessLans != nil {
+        for _, v := range e.WirelessLans {
+            r = append(r, v.ConvertToProtoMessage().(*pb.WirelessLAN))
         }
     }
     return r
@@ -4753,6 +4813,8 @@ type L2VPN struct {
     Tenant *Tenant
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    ImportTargets []*RouteTarget
+    ExportTargets []*RouteTarget
 }
 
 func (e *L2VPN) ConvertToProtoMessage() proto.Message {
@@ -4766,6 +4828,8 @@ func (e *L2VPN) ConvertToProtoMessage() proto.Message {
         Tenant: e.GetTenant(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        ImportTargets: e.GetImportTargets(),
+        ExportTargets: e.GetExportTargets(),
     }
     return r
 }
@@ -4857,6 +4921,26 @@ func (e *L2VPN) GetCustomFields() map[string]*pb.CustomFieldValue {
         r = make(map[string]*pb.CustomFieldValue)
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+        }
+    }
+    return r
+}
+
+func (e *L2VPN) GetImportTargets() []*pb.RouteTarget {
+    var r []*pb.RouteTarget
+    if e != nil && e.ImportTargets != nil {
+        for _, v := range e.ImportTargets {
+            r = append(r, v.ConvertToProtoMessage().(*pb.RouteTarget))
+        }
+    }
+    return r
+}
+
+func (e *L2VPN) GetExportTargets() []*pb.RouteTarget {
+    var r []*pb.RouteTarget
+    if e != nil && e.ExportTargets != nil {
+        for _, v := range e.ExportTargets {
+            r = append(r, v.ConvertToProtoMessage().(*pb.RouteTarget))
         }
     }
     return r
@@ -6460,6 +6544,8 @@ type Provider struct {
     Comments *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Accounts []*ProviderAccount
+    Asns []*ASN
 }
 
 func (e *Provider) ConvertToProtoMessage() proto.Message {
@@ -6470,6 +6556,8 @@ func (e *Provider) ConvertToProtoMessage() proto.Message {
         Comments: e.GetComments(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Accounts: e.GetAccounts(),
+        Asns: e.GetAsns(),
     }
     return r
 }
@@ -6537,6 +6625,26 @@ func (e *Provider) GetCustomFields() map[string]*pb.CustomFieldValue {
         r = make(map[string]*pb.CustomFieldValue)
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+        }
+    }
+    return r
+}
+
+func (e *Provider) GetAccounts() []*pb.ProviderAccount {
+    var r []*pb.ProviderAccount
+    if e != nil && e.Accounts != nil {
+        for _, v := range e.Accounts {
+            r = append(r, v.ConvertToProtoMessage().(*pb.ProviderAccount))
+        }
+    }
+    return r
+}
+
+func (e *Provider) GetAsns() []*pb.ASN {
+    var r []*pb.ASN
+    if e != nil && e.Asns != nil {
+        for _, v := range e.Asns {
+            r = append(r, v.ConvertToProtoMessage().(*pb.ASN))
         }
     }
     return r
@@ -7953,6 +8061,7 @@ type Service struct {
     Comments *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Ipaddresses []*IPAddress
 }
 
 func (e *Service) ConvertToProtoMessage() proto.Message {
@@ -7966,6 +8075,7 @@ func (e *Service) ConvertToProtoMessage() proto.Message {
         Comments: e.GetComments(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Ipaddresses: e.GetIpaddresses(),
     }
     return r
 }
@@ -8064,6 +8174,16 @@ func (e *Service) GetCustomFields() map[string]*pb.CustomFieldValue {
     return r
 }
 
+func (e *Service) GetIpaddresses() []*pb.IPAddress {
+    var r []*pb.IPAddress
+    if e != nil && e.Ipaddresses != nil {
+        for _, v := range e.Ipaddresses {
+            r = append(r, v.ConvertToProtoMessage().(*pb.IPAddress))
+        }
+    }
+    return r
+}
+
 type Site struct {
     Name *string
     Slug *string
@@ -8081,6 +8201,7 @@ type Site struct {
     Comments *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Asns []*ASN
 }
 
 func (e *Site) ConvertToProtoMessage() proto.Message {
@@ -8101,6 +8222,7 @@ func (e *Site) ConvertToProtoMessage() proto.Message {
         Comments: e.GetComments(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Asns: e.GetAsns(),
     }
     return r
 }
@@ -8248,6 +8370,16 @@ func (e *Site) GetCustomFields() map[string]*pb.CustomFieldValue {
         r = make(map[string]*pb.CustomFieldValue)
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+        }
+    }
+    return r
+}
+
+func (e *Site) GetAsns() []*pb.ASN {
+    var r []*pb.ASN
+    if e != nil && e.Asns != nil {
+        for _, v := range e.Asns {
+            r = append(r, v.ConvertToProtoMessage().(*pb.ASN))
         }
     }
     return r
@@ -9271,6 +9403,7 @@ type VMInterface struct {
     Vrf *VRF
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    TaggedVlans []*VLAN
 }
 
 func (e *VMInterface) ConvertToProtoMessage() proto.Message {
@@ -9290,6 +9423,7 @@ func (e *VMInterface) ConvertToProtoMessage() proto.Message {
         Vrf: e.GetVrf(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        TaggedVlans: e.GetTaggedVlans(),
     }
     return r
 }
@@ -9434,6 +9568,16 @@ func (e *VMInterface) GetCustomFields() map[string]*pb.CustomFieldValue {
     return r
 }
 
+func (e *VMInterface) GetTaggedVlans() []*pb.VLAN {
+    var r []*pb.VLAN
+    if e != nil && e.TaggedVlans != nil {
+        for _, v := range e.TaggedVlans {
+            r = append(r, v.ConvertToProtoMessage().(*pb.VLAN))
+        }
+    }
+    return r
+}
+
 type VRF struct {
     Name *string
     Rd *string
@@ -9443,6 +9587,8 @@ type VRF struct {
     Comments *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    ImportTargets []*RouteTarget
+    ExportTargets []*RouteTarget
 }
 
 func (e *VRF) ConvertToProtoMessage() proto.Message {
@@ -9455,6 +9601,8 @@ func (e *VRF) ConvertToProtoMessage() proto.Message {
         Comments: e.GetComments(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        ImportTargets: e.GetImportTargets(),
+        ExportTargets: e.GetExportTargets(),
     }
     return r
 }
@@ -9538,6 +9686,26 @@ func (e *VRF) GetCustomFields() map[string]*pb.CustomFieldValue {
         r = make(map[string]*pb.CustomFieldValue)
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+        }
+    }
+    return r
+}
+
+func (e *VRF) GetImportTargets() []*pb.RouteTarget {
+    var r []*pb.RouteTarget
+    if e != nil && e.ImportTargets != nil {
+        for _, v := range e.ImportTargets {
+            r = append(r, v.ConvertToProtoMessage().(*pb.RouteTarget))
+        }
+    }
+    return r
+}
+
+func (e *VRF) GetExportTargets() []*pb.RouteTarget {
+    var r []*pb.RouteTarget
+    if e != nil && e.ExportTargets != nil {
+        for _, v := range e.ExportTargets {
+            r = append(r, v.ConvertToProtoMessage().(*pb.RouteTarget))
         }
     }
     return r
