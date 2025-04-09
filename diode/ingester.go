@@ -1,5 +1,5 @@
 // Generated code. DO NOT EDIT.
-// Timestamp: 2025-04-01 21:05:15Z
+// Timestamp: 2025-04-10 15:41:02Z
 //
 
 package diode
@@ -7,7 +7,7 @@ package diode
 import (
     "fmt"
     "time"
-
+    "encoding/json"
     "google.golang.org/protobuf/proto"
     "google.golang.org/protobuf/types/known/timestamppb"
 
@@ -2182,25 +2182,50 @@ func (e *CustomFieldObjectReference) GetObject() any {
 }
 
 type CustomFieldValue struct {
+    MultipleSelection []string
+    MultipleObjects []*CustomFieldObjectReference
     // Value can be:
     //  - CustomFieldValueText (alias for string)
+    //  - CustomFieldValueLongText (alias for string)
     //  - CustomFieldValueInteger (alias for int64)
     //  - CustomFieldValueDecimal (alias for float64)
     //  - CustomFieldValueBoolean (alias for bool)
-    //  - CustomFieldValueTimestamp (alias for time.Time)
+    //  - CustomFieldValueDate (alias for time.Time)
+    //  - CustomFieldValueDatetime (alias for time.Time)
+    //  - CustomFieldValueUrl (alias for string)
+    //  - CustomFieldValueJson (alias for string)
+    //  - CustomFieldValueSelection (alias for string)
     //  - CustomFieldObjectReference
     Value anyCustomFieldValueValueValue
-    StringArray []string
-    ObjectArray []*CustomFieldObjectReference
 }
 
 func (e *CustomFieldValue) ConvertToProtoMessage() proto.Message {
     r := &pb.CustomFieldValue {
-        StringArray: e.GetStringArray(),
-        ObjectArray: e.GetObjectArray(),
+        MultipleSelection: e.GetMultipleSelection(),
+        MultipleObjects: e.GetMultipleObjects(),
     }
     if e.Value != nil {
         e.Value.anyCustomFieldValueValueValueApplyTo(r)
+    }
+    return r
+}
+
+func (e *CustomFieldValue) GetMultipleSelection() []string {
+    var r []string
+    if e != nil && e.MultipleSelection != nil {
+        for _, v := range e.MultipleSelection {
+            r = append(r, v)
+        }
+    }
+    return r
+}
+
+func (e *CustomFieldValue) GetMultipleObjects() []*pb.CustomFieldObjectReference {
+    var r []*pb.CustomFieldObjectReference
+    if e != nil && e.MultipleObjects != nil {
+        for _, v := range e.MultipleObjects {
+            r = append(r, v.ConvertToProtoMessage().(*pb.CustomFieldObjectReference))
+        }
     }
     return r
 }
@@ -2211,26 +2236,6 @@ func (e *CustomFieldValue) GetValue() any {
         var tmp pb.CustomFieldValue
         e.Value.anyCustomFieldValueValueValueApplyTo(&tmp)
         r = tmp.Value
-    }
-    return r
-}
-
-func (e *CustomFieldValue) GetStringArray() []string {
-    var r []string
-    if e != nil && e.StringArray != nil {
-        for _, v := range e.StringArray {
-            r = append(r, v)
-        }
-    }
-    return r
-}
-
-func (e *CustomFieldValue) GetObjectArray() []*pb.CustomFieldObjectReference {
-    var r []*pb.CustomFieldObjectReference
-    if e != nil && e.ObjectArray != nil {
-        for _, v := range e.ObjectArray {
-            r = append(r, v.ConvertToProtoMessage().(*pb.CustomFieldObjectReference))
-        }
     }
     return r
 }
@@ -3253,14 +3258,6 @@ func (e *GenericObject) ConvertToProtoMessage() proto.Message {
         e.Object.anyGenericObjectObjectValueApplyTo(r)
     }
     return r
-}
-
-func (e *GenericObject) ConvertToProtoEntity() *pb.Entity {
-    return &pb.Entity{
-        Entity: &pb.Entity_GenericObject {
-            GenericObject: e.ConvertToProtoMessage().(*pb.GenericObject),
-        },
-    }
 }
 
 func (e *GenericObject) GetObject() any {
@@ -10982,6 +10979,10 @@ func (e *WirelessLink) GetCustomFields() map[string]*pb.CustomFieldValue {
 
 func setCustomField(cf map[string]*CustomFieldValue, key string, value any) error {
     switch v := value.(type) {
+    case json.RawMessage:
+        cf[key] = &CustomFieldValue{
+            Value: CustomFieldValueJson(string(v)),
+        }
     case string:
         cf[key] = &CustomFieldValue{
             Value: CustomFieldValueText(v),
@@ -11008,7 +11009,7 @@ func setCustomField(cf map[string]*CustomFieldValue, key string, value any) erro
         }
     case time.Time:
         cf[key] = &CustomFieldValue{
-            Value: CustomFieldValueTimestamp(v),
+            Value: CustomFieldValueDatetime(v),
         }
     case *CustomFieldValue:
         cf[key] = v
@@ -11022,7 +11023,7 @@ func setCustomField(cf map[string]*CustomFieldValue, key string, value any) erro
         }
     case []string:
         cf[key] = &CustomFieldValue{
-            StringArray: value.([]string),
+            MultipleSelection: value.([]string),
         }
     case []Entity:
         vals := make([]*CustomFieldObjectReference, 0)
@@ -11036,7 +11037,7 @@ func setCustomField(cf map[string]*CustomFieldValue, key string, value any) erro
             }
         }
         cf[key] = &CustomFieldValue{
-            ObjectArray: vals,
+            MultipleObjects: vals,
         }
     default:
         return fmt.Errorf("Unsupported custom field value type: %T", v)
@@ -11985,12 +11986,6 @@ func (e *FrontPort) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTerm
 }
 
 // implementation of oneof interfaces for GenericObject.
-
-func (e *GenericObject) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference)  {
-    p.Object = &pb.CustomFieldObjectReference_GenericObject {
-        GenericObject: e.ConvertToProtoMessage().(*pb.GenericObject),
-    }
-}
 
 // implementation of oneof interfaces for IKEPolicy.
 
@@ -14220,6 +14215,14 @@ func (e CustomFieldValueText) anyCustomFieldValueValueValueApplyTo(p *pb.CustomF
     }
 }
 
+type CustomFieldValueLongText string
+
+func (e CustomFieldValueLongText) anyCustomFieldValueValueValueApplyTo(p *pb.CustomFieldValue) {
+    p.Value = &pb.CustomFieldValue_LongText {
+        LongText: string(e),
+    }
+}
+
 type CustomFieldValueInteger int64
 
 func (e CustomFieldValueInteger) anyCustomFieldValueValueValueApplyTo(p *pb.CustomFieldValue) {
@@ -14244,11 +14247,43 @@ func (e CustomFieldValueBoolean) anyCustomFieldValueValueValueApplyTo(p *pb.Cust
     }
 }
 
-type CustomFieldValueTimestamp time.Time
+type CustomFieldValueDate time.Time
 
-func (e CustomFieldValueTimestamp) anyCustomFieldValueValueValueApplyTo(p *pb.CustomFieldValue) {
-    p.Value = &pb.CustomFieldValue_Timestamp {
-        Timestamp: timestamppb.New(time.Time(e)),
+func (e CustomFieldValueDate) anyCustomFieldValueValueValueApplyTo(p *pb.CustomFieldValue) {
+    p.Value = &pb.CustomFieldValue_Date {
+        Date: timestamppb.New(time.Time(e)),
+    }
+}
+
+type CustomFieldValueDatetime time.Time
+
+func (e CustomFieldValueDatetime) anyCustomFieldValueValueValueApplyTo(p *pb.CustomFieldValue) {
+    p.Value = &pb.CustomFieldValue_Datetime {
+        Datetime: timestamppb.New(time.Time(e)),
+    }
+}
+
+type CustomFieldValueUrl string
+
+func (e CustomFieldValueUrl) anyCustomFieldValueValueValueApplyTo(p *pb.CustomFieldValue) {
+    p.Value = &pb.CustomFieldValue_Url {
+        Url: string(e),
+    }
+}
+
+type CustomFieldValueJson string
+
+func (e CustomFieldValueJson) anyCustomFieldValueValueValueApplyTo(p *pb.CustomFieldValue) {
+    p.Value = &pb.CustomFieldValue_Json {
+        Json: string(e),
+    }
+}
+
+type CustomFieldValueSelection string
+
+func (e CustomFieldValueSelection) anyCustomFieldValueValueValueApplyTo(p *pb.CustomFieldValue) {
+    p.Value = &pb.CustomFieldValue_Selection {
+        Selection: string(e),
     }
 }
 
