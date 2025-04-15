@@ -4,9 +4,11 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"net/url"
 	"os"
 	"regexp"
@@ -31,8 +33,11 @@ const (
 	// SDKVersion is the version of the Diode SDK
 	SDKVersion = "0.2.0"
 
-	// DiodeAPIKeyEnvVarName is the environment variable name for the Diode API key
-	DiodeAPIKeyEnvVarName = "DIODE_API_KEY"
+	// DiodeClientIDEnvVarName is the environment variable name for the Diode Client ID
+	DiodeClientIDEnvVarName = "DIODE_CLIENT_ID"
+
+	// DiodeClientSecretEnvVarName is the environment variable name for the Diode Client Secret
+	DiodeClientSecretEnvVarName = "DIODE_CLIENT_SECRET"
 
 	// DiodeSDKLogLevelEnvVarName is the environment variable name for the Diode SDK log level
 	DiodeSDKLogLevelEnvVarName = "DIODE_SDK_LOG_LEVEL"
@@ -76,17 +81,30 @@ func parseTarget(target string) (string, string, bool, error) {
 	return authority, path, tlsVerify, nil
 }
 
-// getAPIKey returns the API key either from provided value or environment variable
-func getAPIKey(apiKey string) (string, error) {
-	if apiKey == "" {
-		apiKey = os.Getenv(DiodeAPIKeyEnvVarName)
+// getClientID returns the client ID either from provided value or environment variable
+func getClientID(clientID string) (string, error) {
+	if clientID == "" {
+		clientID = os.Getenv(DiodeClientIDEnvVarName)
 	}
 
-	if apiKey == "" {
-		return "", fmt.Errorf("api_key param or %s environment variable required", DiodeAPIKeyEnvVarName)
+	if clientID == "" {
+		return "", fmt.Errorf("client_id param or %s environment variable required", DiodeClientIDEnvVarName)
 	}
 
-	return apiKey, nil
+	return clientID, nil
+}
+
+// getClientSecret returns the client secret either from provided value or environment variable
+func getClientSecret(clientSecret string) (string, error) {
+	if clientSecret == "" {
+		clientSecret = os.Getenv(DiodeClientSecretEnvVarName)
+	}
+
+	if clientSecret == "" {
+		return "", fmt.Errorf("client_secret param or %s environment variable required", DiodeClientSecretEnvVarName)
+	}
+
+	return clientSecret, nil
 }
 
 // Client is an interface that defines the methods available from Diode API
@@ -115,8 +133,11 @@ type GRPCClient struct {
 	// Producer's application version
 	appVersion string
 
-	// An API key for the Diode API
-	apiKey string
+	// The client ID for the API
+	clientID string
+
+	// The client secret for the API
+	clientSecret string
 
 	// GRPC target
 	target string
@@ -140,11 +161,99 @@ type GRPCClient struct {
 // ClientOption is a functional option for the GRPCClient
 type ClientOption func(*GRPCClient)
 
-// WithAPIKey sets the API key for the client
-func WithAPIKey(apiKey string) ClientOption {
+// WithClientID sets the client ID for the GRPCClient
+func WithClientID(clientID string) ClientOption {
 	return func(c *GRPCClient) {
-		c.apiKey = apiKey
+		c.clientID = clientID
 	}
+}
+
+// WithClientSecret sets the client secret for the GRPCClient
+func WithClientSecret(clientSecret string) ClientOption {
+	return func(c *GRPCClient) {
+		c.clientSecret = clientSecret
+	}
+}
+
+// authenticate fetches an OAuth2 token using client credentials and updates the metadata with the token.
+func (g *GRPCClient) authenticate(ctx context.Context) error {
+	authClient := newDiodeAuthentication(g.target, g.tlsVerify, g.clientID, g.clientSecret)
+	accessToken, err := authClient.authenticate(ctx)
+	if err != nil {
+		return fmt.Errorf("authentication failed: %w", err)
+	}
+
+	// Update metadata with the new authorization token
+	g.metadata.Set("authorization", fmt.Sprintf("Bearer %s", accessToken))
+	return nil
+}
+
+// DiodeAuthentication handles OAuth2 authentication for the Diode API.
+type diodeAuthentication struct {
+	target       string
+	tlsVerify    bool
+	clientID     string
+	clientSecret string
+}
+
+// NewDiodeAuthentication creates a new instance of DiodeAuthentication.
+func newDiodeAuthentication(target string, tlsVerify bool, clientID, clientSecret string) *diodeAuthentication {
+	return &diodeAuthentication{
+		target:       target,
+		tlsVerify:    tlsVerify,
+		clientID:     clientID,
+		clientSecret: clientSecret,
+	}
+}
+
+// Authenticate requests an OAuth2 token using client credentials and returns it.
+func (d *diodeAuthentication) authenticate(ctx context.Context) (string, error) {
+	scheme := "http"
+	if d.tlsVerify {
+		scheme = "https"
+	}
+
+	authURL := fmt.Sprintf("%s://%s/diode/auth/token", scheme, d.target)
+	data := url.Values{}
+	data.Set("grant_type", "client_credentials")
+	data.Set("client_id", d.clientID)
+	data.Set("client_secret", d.clientSecret)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, authURL, strings.NewReader(data.Encode()))
+	if err != nil {
+		return "", fmt.Errorf("failed to create request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	client := &http.Client{}
+	if !d.tlsVerify {
+		client.Transport = &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("failed to send request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("authentication failed: %s", resp.Status)
+	}
+
+	var result struct {
+		AccessToken string `json:"access_token"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return "", fmt.Errorf("failed to parse response: %w", err)
+	}
+
+	if result.AccessToken == "" {
+		return "", errors.New("access token not found in response")
+	}
+
+	return result.AccessToken, nil
 }
 
 // NewClient creates a new diode client based on gRPC
@@ -203,19 +312,26 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 		goVersion:  goVersion,
 	}
 
-	var apiKey string
+	var clientID string
+	var clientSecret string
 
 	for _, o := range opts {
 		o(c)
 	}
 
-	apiKey, err = getAPIKey(c.apiKey)
+	clientID, err = getClientID(c.clientID)
+	if err != nil {
+		return nil, err
+	}
+	clientSecret, err = getClientSecret(c.clientSecret)
 	if err != nil {
 		return nil, err
 	}
 
-	c.apiKey = apiKey
-	c.metadata = metadata.Pairs(authAPIKeyName, c.apiKey, "platform", platform, "go-version", goVersion)
+	c.clientID = clientID
+	c.clientSecret = clientSecret
+
+	c.metadata = metadata.Pairs("platform", platform, "go-version", goVersion)
 
 	return c, nil
 }

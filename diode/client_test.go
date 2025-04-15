@@ -102,158 +102,186 @@ func TestParseTarget(t *testing.T) {
 	}
 }
 
-func TestGetAPIKey(t *testing.T) {
+func TestGetClientCredentials(t *testing.T) {
 	tests := []struct {
-		desc              string
-		apiKey            string
-		apiKeyEnvVarValue string
-		wantAPIKey        string
-		wantErr           error
+		desc                    string
+		clientID                string
+		clientSecret            string
+		clientIDEnvVarValue     string
+		clientSecretEnvVarValue string
+		wantClientID            string
+		wantClientSecret        string
+		wantIdErr               error
+		wantSecretErr           error
 	}{
 		{
-			desc:              "API key provided explicitly",
-			apiKey:            "foobar",
-			apiKeyEnvVarValue: "",
-			wantAPIKey:        "foobar",
-			wantErr:           nil,
+			desc:                    "Client credentials provided explicitly",
+			clientID:                "client-id-123",
+			clientSecret:            "client-secret-456",
+			clientIDEnvVarValue:     "",
+			clientSecretEnvVarValue: "",
+			wantClientID:            "client-id-123",
+			wantClientSecret:        "client-secret-456",
+			wantIdErr:               nil,
+			wantSecretErr:           nil,
 		},
 		{
-			desc:              "API key provided with environment variable",
-			apiKey:            "",
-			apiKeyEnvVarValue: "barfoo",
-			wantAPIKey:        "barfoo",
-			wantErr:           nil,
+			desc:                    "Client credentials provided via environment variables",
+			clientID:                "",
+			clientSecret:            "",
+			clientIDEnvVarValue:     "env-client-id",
+			clientSecretEnvVarValue: "env-client-secret",
+			wantClientID:            "env-client-id",
+			wantClientSecret:        "env-client-secret",
+			wantIdErr:               nil,
+			wantSecretErr:           nil,
 		},
 		{
-			desc:              "API key not provided either explicitly or with environment variable",
-			apiKey:            "",
-			apiKeyEnvVarValue: "",
-			wantAPIKey:        "",
-			wantErr:           errors.New("api_key param or DIODE_API_KEY environment variable required"),
+			desc:                    "Missing clientID and clientSecret",
+			clientID:                "",
+			clientSecret:            "",
+			clientIDEnvVarValue:     "",
+			clientSecretEnvVarValue: "",
+			wantClientID:            "",
+			wantClientSecret:        "",
+			wantIdErr:               errors.New("client_id param or DIODE_CLIENT_ID environment variable required"),
+			wantSecretErr:           errors.New("client_secret param or DIODE_CLIENT_SECRET environment variable required"),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			if tt.apiKeyEnvVarValue != "" {
-				_ = os.Setenv(DiodeAPIKeyEnvVarName, tt.apiKeyEnvVarValue)
+			if tt.clientIDEnvVarValue != "" {
+				_ = os.Setenv(DiodeClientIDEnvVarName, tt.clientIDEnvVarValue)
 				defer func() {
-					_ = os.Unsetenv(DiodeAPIKeyEnvVarName)
+					_ = os.Unsetenv(DiodeClientIDEnvVarName)
 				}()
 			}
-			apiKey, err := getAPIKey(tt.apiKey)
-			require.Equal(t, tt.wantAPIKey, apiKey)
-			require.Equal(t, tt.wantErr, err)
+			if tt.clientSecretEnvVarValue != "" {
+				_ = os.Setenv(DiodeClientSecretEnvVarName, tt.clientSecretEnvVarValue)
+				defer func() {
+					_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+				}()
+			}
+
+			clientID, err := getClientID(tt.clientID)
+			require.Equal(t, tt.wantClientID, clientID)
+			require.Equal(t, tt.wantIdErr, err)
+
+			clientSecret, err := getClientSecret(tt.clientSecret)
+			require.Equal(t, tt.wantClientSecret, clientSecret)
+			require.Equal(t, tt.wantSecretErr, err)
 		})
 	}
 }
 
 func TestNewClient(t *testing.T) {
 	tests := []struct {
-		desc                string
-		target              string
-		appName             string
-		appVersion          string
-		apiKey              string
-		apiKeyEnvVarValue   string
-		logLevelEnvVarValue string
-		wantErr             error
+		desc                    string
+		target                  string
+		appName                 string
+		appVersion              string
+		clientID                string
+		clientSecret            string
+		clientIDEnvVarValue     string
+		clientSecretEnvVarValue string
+		logLevelEnvVarValue     string
+		wantErr                 error
 	}{
 		{
-			desc:                "explicit arguments provided",
-			target:              "grpc://localhost:8081",
-			appName:             "my-producer",
-			appVersion:          "0.1.0",
-			apiKey:              "foobar",
-			apiKeyEnvVarValue:   "",
-			logLevelEnvVarValue: "",
-			wantErr:             nil,
+			desc:                    "explicit arguments provided",
+			target:                  "grpc://localhost:8081",
+			appName:                 "my-producer",
+			appVersion:              "0.1.0",
+			clientID:                "client-id-123",
+			clientSecret:            "client-secret-456",
+			clientIDEnvVarValue:     "",
+			clientSecretEnvVarValue: "",
+			logLevelEnvVarValue:     "",
+			wantErr:                 nil,
 		},
 		{
-			desc:                "API key provided with environment variable",
-			target:              "grpc://localhost:8081",
-			appName:             "my-producer",
-			appVersion:          "0.1.0",
-			apiKey:              "",
-			apiKeyEnvVarValue:   "foo.bar",
-			logLevelEnvVarValue: "",
-			wantErr:             nil,
+			desc:                    "Client credentials provided via environment variables",
+			target:                  "grpc://localhost:8081",
+			appName:                 "my-producer",
+			appVersion:              "0.1.0",
+			clientID:                "",
+			clientSecret:            "",
+			clientIDEnvVarValue:     "env-client-id",
+			clientSecretEnvVarValue: "env-client-secret",
+			logLevelEnvVarValue:     "",
+			wantErr:                 nil,
 		},
 		{
-			desc:                "target with path",
-			target:              "grpc://localhost:8081/abcdef",
-			appName:             "my-producer",
-			appVersion:          "0.1.0",
-			apiKey:              "",
-			apiKeyEnvVarValue:   "foo.bar",
-			logLevelEnvVarValue: "",
-			wantErr:             nil,
+			desc:                    "app name not provided",
+			target:                  "grpc://localhost:8081",
+			appName:                 "",
+			appVersion:              "0.1.0",
+			clientID:                "client-id-123",
+			clientSecret:            "client-secret-456",
+			clientIDEnvVarValue:     "",
+			clientSecretEnvVarValue: "",
+			logLevelEnvVarValue:     "",
+			wantErr:                 errors.New("app name is required"),
 		},
 		{
-			desc:                "target with grpcs scheme",
-			target:              "grpcs://localhost:8081",
-			appName:             "my-producer",
-			appVersion:          "0.1.0",
-			apiKey:              "",
-			apiKeyEnvVarValue:   "foo.bar",
-			logLevelEnvVarValue: "",
-			wantErr:             nil,
+			desc:                    "app version not provided",
+			target:                  "grpc://localhost:8081",
+			appName:                 "my-producer",
+			appVersion:              "",
+			clientID:                "client-id-123",
+			clientSecret:            "client-secret-456",
+			clientIDEnvVarValue:     "",
+			clientSecretEnvVarValue: "",
+			logLevelEnvVarValue:     "",
+			wantErr:                 errors.New("app version is required"),
 		},
 		{
-			desc:                "app name not provided",
-			target:              "grpc://localhost:8081",
-			appName:             "",
-			appVersion:          "0.1.0",
-			apiKey:              "foobar",
-			apiKeyEnvVarValue:   "",
-			logLevelEnvVarValue: "",
-			wantErr:             errors.New("app name is required"),
+			desc:                    "invalid target",
+			target:                  "http://localhost:8081",
+			appName:                 "my-producer",
+			appVersion:              "0.1.0",
+			clientID:                "client-id-123",
+			clientSecret:            "client-secret-456",
+			clientIDEnvVarValue:     "",
+			clientSecretEnvVarValue: "",
+			logLevelEnvVarValue:     "",
+			wantErr:                 errors.New("target should start with grpc:// or grpcs://"),
 		},
 		{
-			desc:                "app version not provided",
-			target:              "grpc://localhost:8081",
-			appName:             "my-producer",
-			appVersion:          "",
-			apiKey:              "foobar",
-			apiKeyEnvVarValue:   "",
-			logLevelEnvVarValue: "",
-			wantErr:             errors.New("app version is required"),
-		},
-		{
-			desc:                "invalid target",
-			target:              "http://localhost:8081",
-			appName:             "my-producer",
-			appVersion:          "0.1.0",
-			apiKey:              "foobar",
-			apiKeyEnvVarValue:   "",
-			logLevelEnvVarValue: "",
-			wantErr:             errors.New("target should start with grpc:// or grpcs://"),
-		},
-		{
-			desc:              "missing API key",
-			target:            "grpc://localhost:8081",
-			appName:           "my-producer",
-			appVersion:        "0.1.0",
-			apiKey:            "",
-			apiKeyEnvVarValue: "",
-			wantErr:           errors.New("api_key param or DIODE_API_KEY environment variable required"),
+			desc:                    "missing clientID and clientSecret",
+			target:                  "grpc://localhost:8081",
+			appName:                 "my-producer",
+			appVersion:              "0.1.0",
+			clientID:                "",
+			clientSecret:            "",
+			clientIDEnvVarValue:     "",
+			clientSecretEnvVarValue: "",
+			wantErr:                 errors.New("client_id param or DIODE_CLIENT_ID environment variable required"),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			defer func() {
-				_ = os.Unsetenv(DiodeAPIKeyEnvVarName)
+				_ = os.Unsetenv(DiodeClientIDEnvVarName)
+				_ = os.Unsetenv(DiodeClientSecretEnvVarName)
 				_ = os.Unsetenv(DiodeSDKLogLevelEnvVarName)
 			}()
 
-			if tt.apiKeyEnvVarValue != "" {
-				_ = os.Setenv(DiodeAPIKeyEnvVarName, tt.apiKeyEnvVarValue)
+			if tt.clientIDEnvVarValue != "" {
+				_ = os.Setenv(DiodeClientIDEnvVarName, tt.clientIDEnvVarValue)
+			}
+			if tt.clientSecretEnvVarValue != "" {
+				_ = os.Setenv(DiodeClientSecretEnvVarName, tt.clientSecretEnvVarValue)
 			}
 
 			opts := []ClientOption{}
-			if tt.apiKey != "" {
-				opts = append(opts, WithAPIKey(tt.apiKey))
+			if tt.clientID != "" {
+				opts = append(opts, WithClientID(tt.clientID))
+			}
+			if tt.clientSecret != "" {
+				opts = append(opts, WithClientSecret(tt.clientSecret))
 			}
 
 			client, err := NewClient(tt.target, tt.appName, tt.appVersion, opts...)
@@ -334,9 +362,10 @@ func TestMethodUnaryInterceptor(t *testing.T) {
 			target := fmt.Sprintf("grpc://%s/%s", listener.Addr().String(), tt.path)
 			appName := "my-producer"
 			appVersion := "0.1.0"
-			apiKey := "abcde"
+			clientID := "abcde"
+			clientSecret := "123345"
 
-			client, err := NewClient(target, appName, appVersion, WithAPIKey(apiKey))
+			client, err := NewClient(target, appName, appVersion, WithClientID(clientID), WithClientSecret(clientSecret))
 			require.NoError(t, err)
 			require.NotNil(t, client)
 			_, err = client.Ingest(context.Background(), nil)

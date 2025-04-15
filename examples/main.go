@@ -12,7 +12,8 @@ func main() {
 		"grpc://localhost:8080/diode",
 		"example-app",
 		"0.1.0",
-		diode.WithAPIKey("YOUR_API_KEY"),
+		diode.WithClientID("YOUR_CLIENT_ID"),
+		diode.WithClientSecret("YOUR_CLIENT_SECRET"),
 	)
 	if err != nil {
 		log.Fatal(err)
