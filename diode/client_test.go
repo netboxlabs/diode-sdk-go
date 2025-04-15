@@ -111,7 +111,7 @@ func TestGetClientCredentials(t *testing.T) {
 		clientSecretEnvVarValue string
 		wantClientID            string
 		wantClientSecret        string
-		wantIdErr               error
+		wantIDErr               error
 		wantSecretErr           error
 	}{
 		{
@@ -122,7 +122,7 @@ func TestGetClientCredentials(t *testing.T) {
 			clientSecretEnvVarValue: "",
 			wantClientID:            "client-id-123",
 			wantClientSecret:        "client-secret-456",
-			wantIdErr:               nil,
+			wantIDErr:               nil,
 			wantSecretErr:           nil,
 		},
 		{
@@ -133,7 +133,7 @@ func TestGetClientCredentials(t *testing.T) {
 			clientSecretEnvVarValue: "env-client-secret",
 			wantClientID:            "env-client-id",
 			wantClientSecret:        "env-client-secret",
-			wantIdErr:               nil,
+			wantIDErr:               nil,
 			wantSecretErr:           nil,
 		},
 		{
@@ -144,7 +144,7 @@ func TestGetClientCredentials(t *testing.T) {
 			clientSecretEnvVarValue: "",
 			wantClientID:            "",
 			wantClientSecret:        "",
-			wantIdErr:               errors.New("client_id param or DIODE_CLIENT_ID environment variable required"),
+			wantIDErr:               errors.New("client_id param or DIODE_CLIENT_ID environment variable required"),
 			wantSecretErr:           errors.New("client_secret param or DIODE_CLIENT_SECRET environment variable required"),
 		},
 	}
@@ -166,7 +166,7 @@ func TestGetClientCredentials(t *testing.T) {
 
 			clientID, err := getClientID(tt.clientID)
 			require.Equal(t, tt.wantClientID, clientID)
-			require.Equal(t, tt.wantIdErr, err)
+			require.Equal(t, tt.wantIDErr, err)
 
 			clientSecret, err := getClientSecret(tt.clientSecret)
 			require.Equal(t, tt.wantClientSecret, clientSecret)

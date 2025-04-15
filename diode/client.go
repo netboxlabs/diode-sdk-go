@@ -43,8 +43,6 @@ const (
 	DiodeSDKLogLevelEnvVarName = "DIODE_SDK_LOG_LEVEL"
 
 	defaultStreamName = "latest"
-
-	authAPIKeyName = "diode-api-key"
 )
 
 var allowedSchemesRe = regexp.MustCompile(`grpc|grpcs`)
@@ -178,7 +176,7 @@ func WithClientSecret(clientSecret string) ClientOption {
 // authenticate fetches an OAuth2 token using client credentials and updates the metadata with the token.
 func (g *GRPCClient) authenticate(ctx context.Context) error {
 	authClient := newDiodeAuthentication(g.target, g.tlsVerify, g.clientID, g.clientSecret)
-	accessToken, err := authClient.authenticate(ctx)
+	accessToken, err := authClient.authenticate(ctx, g.logger)
 	if err != nil {
 		return fmt.Errorf("authentication failed: %w", err)
 	}
@@ -207,7 +205,7 @@ func newDiodeAuthentication(target string, tlsVerify bool, clientID, clientSecre
 }
 
 // Authenticate requests an OAuth2 token using client credentials and returns it.
-func (d *diodeAuthentication) authenticate(ctx context.Context) (string, error) {
+func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Logger) (string, error) {
 	scheme := "http"
 	if d.tlsVerify {
 		scheme = "https"
@@ -236,8 +234,11 @@ func (d *diodeAuthentication) authenticate(ctx context.Context) (string, error) 
 	if err != nil {
 		return "", fmt.Errorf("failed to send request: %w", err)
 	}
-	defer resp.Body.Close()
-
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			logger.Error("failed to close response body", "error", err)
+		}
+	}()
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("authentication failed: %s", resp.Status)
 	}
@@ -330,6 +331,10 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 
 	c.clientID = clientID
 	c.clientSecret = clientSecret
+
+	if err = c.authenticate(context.Background()); err != nil {
+		return nil, err
+	}
 
 	c.metadata = metadata.Pairs("platform", platform, "go-version", goVersion)
 
