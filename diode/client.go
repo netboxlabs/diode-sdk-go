@@ -200,7 +200,7 @@ func WithClientSecret(clientSecret string) ClientOption {
 
 // authenticate fetches an OAuth2 token using client credentials and updates the metadata with the token.
 func (g *GRPCClient) authenticate(ctx context.Context) error {
-	authClient := newDiodeAuthentication(g.target, g.tlsVerify, g.clientID, g.clientSecret)
+	authClient := newDiodeAuthentication(g.target, g.path, g.tlsVerify, g.clientID, g.clientSecret)
 	accessToken, err := authClient.authenticate(ctx, g.logger)
 	if err != nil {
 		return fmt.Errorf("authentication failed: %w", err)
@@ -214,15 +214,17 @@ func (g *GRPCClient) authenticate(ctx context.Context) error {
 // DiodeAuthentication handles OAuth2 authentication for the Diode API.
 type diodeAuthentication struct {
 	target       string
+	path         string
 	tlsVerify    bool
 	clientID     string
 	clientSecret string
 }
 
 // NewDiodeAuthentication creates a new instance of DiodeAuthentication.
-func newDiodeAuthentication(target string, tlsVerify bool, clientID, clientSecret string) *diodeAuthentication {
+func newDiodeAuthentication(target string, path string, tlsVerify bool, clientID, clientSecret string) *diodeAuthentication {
 	return &diodeAuthentication{
 		target:       target,
+		path:         path,
 		tlsVerify:    tlsVerify,
 		clientID:     clientID,
 		clientSecret: clientSecret,
@@ -236,7 +238,7 @@ func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Log
 		scheme = "https"
 	}
 
-	authURL := fmt.Sprintf("%s://%s/diode/auth/token", scheme, d.target)
+	authURL := fmt.Sprintf("%s://%s/%s/auth/token", scheme, d.target, d.path)
 	data := url.Values{}
 	data.Set("grant_type", "client_credentials")
 	data.Set("client_id", d.clientID)
