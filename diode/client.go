@@ -13,14 +13,17 @@ import (
 	"os"
 	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
@@ -41,6 +44,9 @@ const (
 
 	// DiodeSDKLogLevelEnvVarName is the environment variable name for the Diode SDK log level
 	DiodeSDKLogLevelEnvVarName = "DIODE_SDK_LOG_LEVEL"
+
+	// DiodeMaxAuthRetriesEnvVarName is the environment variable name for the maximum number of authentication retries
+	DiodeMaxAuthRetriesEnvVarName = "DIODE_MAX_AUTH_RETRIES"
 
 	defaultStreamName = "latest"
 )
@@ -105,6 +111,22 @@ func getClientSecret(clientSecret string) (string, error) {
 	return clientSecret, nil
 }
 
+// getAuthRetries returns the maximum number of authentication retries
+func getAuthRetries(maxAuthRetries int) (int, error) {
+	maxAuthRetriesStr := os.Getenv(DiodeMaxAuthRetriesEnvVarName)
+	if maxAuthRetriesStr != "" {
+		retries, err := strconv.Atoi(maxAuthRetriesStr)
+		if err != nil {
+			return 0, fmt.Errorf("invalid value for %s: %w", DiodeMaxAuthRetriesEnvVarName, err)
+		}
+		maxAuthRetries = retries
+	}
+	if maxAuthRetries <= 0 {
+		return 0, fmt.Errorf("max_auth_retries param or %s environment variable must be greater than 0", DiodeMaxAuthRetriesEnvVarName)
+	}
+	return maxAuthRetries, nil
+}
+
 // Client is an interface that defines the methods available from Diode API
 type Client interface {
 	// Close closes the connection to the API service
@@ -136,6 +158,9 @@ type GRPCClient struct {
 
 	// The client secret for the API
 	clientSecret string
+
+	// The maximum number of authentication retries
+	maxAuthRetries int
 
 	// GRPC target
 	target string
@@ -301,16 +326,17 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 	goVersion := runtime.Version()
 
 	c := &GRPCClient{
-		logger:     logger,
-		conn:       conn,
-		client:     diodepb.NewIngesterServiceClient(conn),
-		appName:    appName,
-		appVersion: appVersion,
-		target:     target,
-		path:       path,
-		tlsVerify:  tlsVerify,
-		platform:   platform,
-		goVersion:  goVersion,
+		logger:         logger,
+		conn:           conn,
+		client:         diodepb.NewIngesterServiceClient(conn),
+		appName:        appName,
+		appVersion:     appVersion,
+		target:         target,
+		path:           path,
+		tlsVerify:      tlsVerify,
+		platform:       platform,
+		goVersion:      goVersion,
+		maxAuthRetries: 3,
 	}
 
 	var clientID string
@@ -318,6 +344,13 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 
 	for _, o := range opts {
 		o(c)
+	}
+
+	c.metadata = metadata.Pairs("platform", platform, "go-version", goVersion)
+
+	c.maxAuthRetries, err = getAuthRetries(c.maxAuthRetries)
+	if err != nil {
+		return nil, err
 	}
 
 	clientID, err = getClientID(c.clientID)
@@ -335,8 +368,6 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 	if err = c.authenticate(context.Background()); err != nil {
 		return nil, err
 	}
-
-	c.metadata = metadata.Pairs("platform", platform, "go-version", goVersion)
 
 	return c, nil
 }
@@ -367,7 +398,29 @@ func (g *GRPCClient) Ingest(ctx context.Context, entities []Entity) (*diodepb.In
 
 	ctx = metadata.NewOutgoingContext(ctx, g.metadata)
 
-	return g.client.Ingest(ctx, req)
+	var err error
+	var res *diodepb.IngestResponse
+
+	attempt := 0
+	for {
+		res, err = g.client.Ingest(ctx, req)
+		if err != nil {
+			if status.Code(err) == codes.Unauthenticated {
+				attempt++
+				if attempt >= g.maxAuthRetries {
+					return nil, fmt.Errorf("authentication failed after %d attempts: %w", attempt, err)
+				}
+				g.logger.Debug("Authentication failed, retrying...", "attempt", attempt)
+				if err := g.authenticate(ctx); err != nil {
+					g.logger.Error("Failed to re-authenticate", "error", err)
+				}
+				continue
+			}
+			return nil, err
+		}
+		break
+	}
+	return res, nil
 }
 
 // convertEntitiesToProto converts entities to proto entities
