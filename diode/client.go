@@ -199,9 +199,9 @@ func WithClientSecret(clientSecret string) ClientOption {
 }
 
 // authenticate fetches an OAuth2 token using client credentials and updates the metadata with the token.
-func (g *GRPCClient) authenticate(ctx context.Context) error {
+func (g *GRPCClient) authenticate() error {
 	authClient := newDiodeAuthentication(g.target, g.path, g.tlsVerify, g.clientID, g.clientSecret)
-	accessToken, err := authClient.authenticate(ctx, g.logger)
+	accessToken, err := authClient.authenticate(g.logger)
 	if err != nil {
 		return fmt.Errorf("authentication failed: %w", err)
 	}
@@ -232,7 +232,7 @@ func newDiodeAuthentication(target string, path string, tlsVerify bool, clientID
 }
 
 // Authenticate requests an OAuth2 token using client credentials and returns it.
-func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Logger) (string, error) {
+func (d *diodeAuthentication) authenticate(logger *slog.Logger) (string, error) {
 	scheme := "http"
 	if d.tlsVerify {
 		scheme = "https"
@@ -244,7 +244,7 @@ func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Log
 	data.Set("client_id", d.clientID)
 	data.Set("client_secret", d.clientSecret)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, authURL, strings.NewReader(data.Encode()))
+	req, err := http.NewRequest(http.MethodPost, authURL, strings.NewReader(data.Encode()))
 	if err != nil {
 		return "", fmt.Errorf("failed to create request: %w", err)
 	}
@@ -367,7 +367,7 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 	c.clientID = clientID
 	c.clientSecret = clientSecret
 
-	if err = c.authenticate(context.Background()); err != nil {
+	if err = c.authenticate(); err != nil {
 		return nil, err
 	}
 
@@ -413,7 +413,7 @@ func (g *GRPCClient) Ingest(ctx context.Context, entities []Entity) (*diodepb.In
 					return nil, fmt.Errorf("authentication failed after %d attempts: %w", attempt, err)
 				}
 				g.logger.Debug("Authentication failed, retrying...", "attempt", attempt)
-				if err := g.authenticate(ctx); err != nil {
+				if err := g.authenticate(); err != nil {
 					g.logger.Error("Failed to re-authenticate", "error", err)
 				}
 				continue

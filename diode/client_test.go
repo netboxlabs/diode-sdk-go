@@ -7,6 +7,7 @@ import (
 	"log"
 	"log/slog"
 	"net"
+	"net/http"
 	"net/url"
 	"os"
 	"strconv"
@@ -175,7 +176,55 @@ func TestGetClientCredentials(t *testing.T) {
 	}
 }
 
+type MockAuthServer struct {
+	listener net.Listener
+	server   *http.Server
+}
+
+func (m *MockAuthServer) Close() {
+	m.server.Shutdown(context.Background())
+	_ = m.listener.Close()
+}
+
+func startMockAuthServer(port string) (*MockAuthServer, error) {
+	listener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%s", port))
+	if err != nil {
+		return nil, err
+	}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/auth/token", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "invalid method", http.StatusMethodNotAllowed)
+			return
+		}
+		_ = r.ParseForm()
+		clientID := r.FormValue("client_id")
+		clientSecret := r.FormValue("client_secret")
+		if clientID == "abcde" && clientSecret == "123345" {
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"access_token": "mock-token"}`))
+		} else {
+			http.Error(w, "invalid credentials", http.StatusUnauthorized)
+		}
+	})
+
+	server := &http.Server{Handler: mux}
+	go func() {
+		_ = server.Serve(listener)
+	}()
+
+	return &MockAuthServer{listener: listener, server: server}, nil
+}
+
 func TestNewClient(t *testing.T) {
+	port, err := getFreePort()
+	require.NoError(t, err)
+
+	authServer, err := startMockAuthServer(port)
+	require.NoError(t, err)
+	defer authServer.Close()
+
 	tests := []struct {
 		desc                    string
 		target                  string
@@ -185,31 +234,28 @@ func TestNewClient(t *testing.T) {
 		clientSecret            string
 		clientIDEnvVarValue     string
 		clientSecretEnvVarValue string
-		logLevelEnvVarValue     string
 		wantErr                 error
 	}{
 		{
 			desc:                    "explicit arguments provided",
-			target:                  "grpc://localhost:8081",
+			target:                  fmt.Sprintf("grpc://localhost:%s", port),
 			appName:                 "my-producer",
 			appVersion:              "0.1.0",
 			clientID:                "client-id-123",
 			clientSecret:            "client-secret-456",
 			clientIDEnvVarValue:     "",
 			clientSecretEnvVarValue: "",
-			logLevelEnvVarValue:     "",
 			wantErr:                 nil,
 		},
 		{
 			desc:                    "Client credentials provided via environment variables",
-			target:                  "grpc://localhost:8081",
+			target:                  fmt.Sprintf("grpc://localhost:%s", port),
 			appName:                 "my-producer",
 			appVersion:              "0.1.0",
 			clientID:                "",
 			clientSecret:            "",
 			clientIDEnvVarValue:     "env-client-id",
 			clientSecretEnvVarValue: "env-client-secret",
-			logLevelEnvVarValue:     "",
 			wantErr:                 nil,
 		},
 		{
@@ -221,7 +267,6 @@ func TestNewClient(t *testing.T) {
 			clientSecret:            "client-secret-456",
 			clientIDEnvVarValue:     "",
 			clientSecretEnvVarValue: "",
-			logLevelEnvVarValue:     "",
 			wantErr:                 errors.New("app name is required"),
 		},
 		{
@@ -233,7 +278,6 @@ func TestNewClient(t *testing.T) {
 			clientSecret:            "client-secret-456",
 			clientIDEnvVarValue:     "",
 			clientSecretEnvVarValue: "",
-			logLevelEnvVarValue:     "",
 			wantErr:                 errors.New("app version is required"),
 		},
 		{
@@ -245,7 +289,6 @@ func TestNewClient(t *testing.T) {
 			clientSecret:            "client-secret-456",
 			clientIDEnvVarValue:     "",
 			clientSecretEnvVarValue: "",
-			logLevelEnvVarValue:     "",
 			wantErr:                 errors.New("target should start with grpc:// or grpcs://"),
 		},
 		{
@@ -337,6 +380,13 @@ func startMockServer() (net.Listener, error) {
 }
 
 func TestMethodUnaryInterceptor(t *testing.T) {
+	port, err := getFreePort()
+	require.NoError(t, err)
+
+	authServer, err := startMockAuthServer(port)
+	require.NoError(t, err)
+	defer authServer.Close()
+
 	tests := []struct {
 		desc    string
 		path    string
@@ -356,18 +406,21 @@ func TestMethodUnaryInterceptor(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			listener, err := startMockServer()
+			listener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%s", port))
 			require.NoError(t, err)
 
-			target := fmt.Sprintf("grpc://%s/%s", listener.Addr().String(), tt.path)
-			appName := "my-producer"
-			appVersion := "0.1.0"
-			clientID := "abcde"
-			clientSecret := "123345"
+			server := grpc.NewServer()
+			diodepb.RegisterIngesterServiceServer(server, &MockIngesterServiceServer{})
+			go func() {
+				_ = server.Serve(listener)
+			}()
+			defer server.Stop()
 
-			client, err := NewClient(target, appName, appVersion, WithClientID(clientID), WithClientSecret(clientSecret))
+			target := fmt.Sprintf("grpc://localhost:%s/%s", port, tt.path)
+			client, err := NewClient(target, "my-producer", "0.1.0", WithClientID("abcde"), WithClientSecret("123345"))
 			require.NoError(t, err)
 			require.NotNil(t, client)
+
 			_, err = client.Ingest(context.Background(), nil)
 			if tt.wantErr != nil {
 				require.Equal(t, tt.wantErr.Error(), err.Error())
