@@ -237,8 +237,10 @@ func (d *diodeAuthentication) authenticate(logger *slog.Logger) (string, error) 
 	if d.tlsVerify {
 		scheme = "https"
 	}
-
-	authURL := fmt.Sprintf("%s://%s/%s/auth/token", scheme, d.target, d.path)
+	authURL := fmt.Sprintf("%s://%s/auth/token", scheme, d.target)
+	if d.path != "" {
+		authURL = fmt.Sprintf("%s://%s%s/auth/token", scheme, d.target, d.path)
+	}
 	data := url.Values{}
 	data.Set("grant_type", "client_credentials")
 	data.Set("client_id", d.clientID)

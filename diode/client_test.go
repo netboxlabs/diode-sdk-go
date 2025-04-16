@@ -11,10 +11,13 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
 
 	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
@@ -177,23 +180,34 @@ func TestGetClientCredentials(t *testing.T) {
 }
 
 type MockAuthServer struct {
-	listener net.Listener
-	server   *http.Server
+	listener   net.Listener
+	httpServer *http.Server
+	grpcServer *grpc.Server
 }
 
 func (m *MockAuthServer) Close() {
-	m.server.Shutdown(context.Background())
+	m.grpcServer.GracefulStop()
+	_ = m.httpServer.Shutdown(context.Background())
 	_ = m.listener.Close()
 }
 
-func startMockAuthServer(port string) (*MockAuthServer, error) {
-	listener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%s", port))
+func startMockAuthServer(port string, path string) (*MockAuthServer, error) {
+	listener, err := net.Listen("tcp", "127.0.0.1:"+port)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to listen: %w", err)
 	}
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/auth/token", func(w http.ResponseWriter, r *http.Request) {
+	grpcServer := grpc.NewServer()
+	diodepb.RegisterIngesterServiceServer(grpcServer, &MockIngesterServiceServer{})
+
+	// HTTP handler
+	httpMux := http.NewServeMux()
+
+	newPath := "/auth/token"
+	if path != "" {
+		newPath = fmt.Sprintf("/%s/auth/token", path)
+	}
+	httpMux.HandleFunc(newPath, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "invalid method", http.StatusMethodNotAllowed)
 			return
@@ -201,7 +215,7 @@ func startMockAuthServer(port string) (*MockAuthServer, error) {
 		_ = r.ParseForm()
 		clientID := r.FormValue("client_id")
 		clientSecret := r.FormValue("client_secret")
-		if clientID == "abcde" && clientSecret == "123345" {
+		if strings.Contains(clientID, "client-id") && strings.Contains(clientSecret, "client-secret") {
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte(`{"access_token": "mock-token"}`))
 		} else {
@@ -209,19 +223,37 @@ func startMockAuthServer(port string) (*MockAuthServer, error) {
 		}
 	})
 
-	server := &http.Server{Handler: mux}
+	// Wrap the mux with h2c-compatible handler that detects gRPC
+	handler := h2c.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.ProtoMajor == 2 && strings.HasPrefix(r.Header.Get("Content-Type"), "application/grpc") {
+			grpcServer.ServeHTTP(w, r)
+		} else {
+			httpMux.ServeHTTP(w, r)
+		}
+	}), &http2.Server{})
+
+	httpServer := &http.Server{
+		Handler: handler,
+	}
+
 	go func() {
-		_ = server.Serve(listener)
+		if err := httpServer.Serve(listener); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Server error: %v", err)
+		}
 	}()
 
-	return &MockAuthServer{listener: listener, server: server}, nil
+	return &MockAuthServer{
+		listener:   listener,
+		httpServer: httpServer,
+		grpcServer: grpcServer,
+	}, nil
 }
 
 func TestNewClient(t *testing.T) {
 	port, err := getFreePort()
 	require.NoError(t, err)
 
-	authServer, err := startMockAuthServer(port)
+	authServer, err := startMockAuthServer(port, "")
 	require.NoError(t, err)
 	defer authServer.Close()
 
@@ -359,34 +391,7 @@ func (MockIngesterServiceServer) Ingest(_ context.Context, _ *diodepb.IngestRequ
 	return &diodepb.IngestResponse{Errors: nil}, nil
 }
 
-func startMockServer() (net.Listener, error) {
-	port, _ := getFreePort()
-	grpcListener, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
-	if err != nil {
-		return nil, fmt.Errorf("failed to listen on port %s: %v", port, err)
-	}
-
-	server := grpc.NewServer()
-
-	diodepb.RegisterIngesterServiceServer(server, &MockIngesterServiceServer{})
-
-	go func() {
-		if err := server.Serve(grpcListener); err != nil {
-			log.Fatal(err)
-		}
-	}()
-
-	return grpcListener, nil
-}
-
 func TestMethodUnaryInterceptor(t *testing.T) {
-	port, err := getFreePort()
-	require.NoError(t, err)
-
-	authServer, err := startMockAuthServer(port)
-	require.NoError(t, err)
-	defer authServer.Close()
-
 	tests := []struct {
 		desc    string
 		path    string
@@ -406,18 +411,15 @@ func TestMethodUnaryInterceptor(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			listener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%s", port))
+			port, err := getFreePort()
 			require.NoError(t, err)
 
-			server := grpc.NewServer()
-			diodepb.RegisterIngesterServiceServer(server, &MockIngesterServiceServer{})
-			go func() {
-				_ = server.Serve(listener)
-			}()
-			defer server.Stop()
+			authServer, err := startMockAuthServer(port, tt.path)
+			require.NoError(t, err)
+			defer authServer.Close()
 
 			target := fmt.Sprintf("grpc://localhost:%s/%s", port, tt.path)
-			client, err := NewClient(target, "my-producer", "0.1.0", WithClientID("abcde"), WithClientSecret("123345"))
+			client, err := NewClient(target, "my-producer", "0.1.0", WithClientID("client-id"), WithClientSecret("client-secret"))
 			require.NoError(t, err)
 			require.NotNil(t, client)
 
