@@ -19,6 +19,8 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
@@ -191,14 +193,14 @@ func (m *MockAuthServer) Close() {
 	_ = m.listener.Close()
 }
 
-func startMockAuthServer(port string, path string) (*MockAuthServer, error) {
+func startMockAuthServer(port string, path string, authErrorGrpc bool) (*MockAuthServer, error) {
 	listener, err := net.Listen("tcp", "127.0.0.1:"+port)
 	if err != nil {
 		return nil, fmt.Errorf("failed to listen: %w", err)
 	}
 
 	grpcServer := grpc.NewServer()
-	diodepb.RegisterIngesterServiceServer(grpcServer, &MockIngesterServiceServer{})
+	diodepb.RegisterIngesterServiceServer(grpcServer, &MockIngesterServiceServer{unauthenticatedError: authErrorGrpc})
 
 	// HTTP handler
 	httpMux := http.NewServeMux()
@@ -253,7 +255,7 @@ func TestNewClient(t *testing.T) {
 	port, err := getFreePort()
 	require.NoError(t, err)
 
-	authServer, err := startMockAuthServer(port, "")
+	authServer, err := startMockAuthServer(port, "", false)
 	require.NoError(t, err)
 	defer authServer.Close()
 
@@ -385,9 +387,13 @@ func getFreePort() (string, error) {
 
 type MockIngesterServiceServer struct {
 	diodepb.UnimplementedIngesterServiceServer
+	unauthenticatedError bool
 }
 
-func (MockIngesterServiceServer) Ingest(_ context.Context, _ *diodepb.IngestRequest) (*diodepb.IngestResponse, error) {
+func (m MockIngesterServiceServer) Ingest(_ context.Context, _ *diodepb.IngestRequest) (*diodepb.IngestResponse, error) {
+	if m.unauthenticatedError {
+		return nil, status.Error(codes.Unauthenticated, "mock auth failure")
+	}
 	return &diodepb.IngestResponse{Errors: nil}, nil
 }
 
@@ -414,7 +420,7 @@ func TestMethodUnaryInterceptor(t *testing.T) {
 			port, err := getFreePort()
 			require.NoError(t, err)
 
-			authServer, err := startMockAuthServer(port, tt.path)
+			authServer, err := startMockAuthServer(port, tt.path, false)
 			require.NoError(t, err)
 			defer authServer.Close()
 
@@ -519,4 +525,88 @@ func TestConvertEntitiesToProto(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestIngest(t *testing.T) {
+	tests := []struct {
+		desc            string
+		entities        []Entity
+		authRetries     int
+		mockAuthFailure bool
+		wantErr         error
+	}{
+		{
+			desc: "successful ingest",
+			entities: []Entity{
+				&Device{Name: String("device-1")},
+				&Site{Name: String("site-1")},
+			},
+			authRetries:     3,
+			mockAuthFailure: false,
+			wantErr:         nil,
+		},
+		{
+			desc:            "authentication failure after retries",
+			entities:        nil,
+			authRetries:     2,
+			mockAuthFailure: true,
+			wantErr:         errors.New("authentication failed after 2 attempts: rpc error: code = Unauthenticated desc = mock auth failure"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			defer func() {
+				_ = os.Unsetenv(DiodeClientIDEnvVarName)
+				_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+			}()
+
+			_ = os.Setenv(DiodeClientIDEnvVarName, "client-id")
+			_ = os.Setenv(DiodeClientSecretEnvVarName, "client-secret")
+
+			port, err := getFreePort()
+			require.NoError(t, err)
+
+			authServer, err := startMockAuthServer(port, "", tt.mockAuthFailure)
+			require.NoError(t, err)
+			defer authServer.Close()
+
+			client, err := NewClient(fmt.Sprintf("grpc://localhost:%s", port), "my-producer", "0.1.0")
+			require.NoError(t, err)
+			defer func() {
+				err := client.Close()
+				require.NoError(t, err)
+			}()
+
+			grpcClient := client.(*GRPCClient)
+			grpcClient.maxAuthRetries = tt.authRetries
+
+			_, err = grpcClient.Ingest(context.Background(), tt.entities)
+			if tt.wantErr != nil {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr.Error())
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestHTTPAuthError(t *testing.T) {
+	port, err := getFreePort()
+	require.NoError(t, err)
+
+	authServer, err := startMockAuthServer(port, "", false)
+	require.NoError(t, err)
+	defer authServer.Close()
+
+	_ = os.Setenv(DiodeClientIDEnvVarName, "invalid-client")
+	_ = os.Setenv(DiodeClientSecretEnvVarName, "invalid-client-sct")
+	defer func() {
+		_ = os.Unsetenv(DiodeClientIDEnvVarName)
+		_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+	}()
+
+	_, err = NewClient(fmt.Sprintf("grpc://localhost:%s", port), "my-producer", "0.1.0")
+	require.Error(t, err)
 }
