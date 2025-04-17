@@ -602,11 +602,70 @@ func TestHTTPAuthError(t *testing.T) {
 
 	_ = os.Setenv(DiodeClientIDEnvVarName, "invalid-client")
 	_ = os.Setenv(DiodeClientSecretEnvVarName, "invalid-client-sct")
+	_ = os.Setenv(DiodeMaxAuthRetriesEnvVarName, "2")
 	defer func() {
 		_ = os.Unsetenv(DiodeClientIDEnvVarName)
 		_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+		_ = os.Unsetenv(DiodeMaxAuthRetriesEnvVarName)
 	}()
 
 	_, err = NewClient(fmt.Sprintf("grpc://localhost:%s", port), "my-producer", "0.1.0")
 	require.Error(t, err)
+}
+
+func TestAuthRetryEnv(t *testing.T) {
+	tests := []struct {
+		desc       string
+		retryValue string
+		wantErr    error
+	}{
+		{
+			desc:       "valid value",
+			retryValue: "2",
+			wantErr:    nil,
+		},
+		{
+			desc:       "empty value",
+			retryValue: "",
+			wantErr:    nil,
+		},
+		{
+			desc:       "invalid value",
+			retryValue: "invalid",
+			wantErr:    errors.New("invalid value for DIODE_MAX_AUTH_RETRIES: strconv.Atoi: parsing \"invalid\": invalid syntax"),
+		},
+		{
+			desc:       "negative value",
+			retryValue: "-1",
+			wantErr:    errors.New("max_auth_retries param or DIODE_MAX_AUTH_RETRIES environment variable must be greater than 0"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			port, err := getFreePort()
+			require.NoError(t, err)
+
+			authServer, err := startMockAuthServer(port, "", false)
+			require.NoError(t, err)
+			defer authServer.Close()
+
+			_ = os.Setenv(DiodeClientIDEnvVarName, "client-id")
+			_ = os.Setenv(DiodeClientSecretEnvVarName, "client-secret")
+			_ = os.Setenv(DiodeMaxAuthRetriesEnvVarName, tt.retryValue)
+			defer func() {
+				_ = os.Unsetenv(DiodeClientIDEnvVarName)
+				_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+				_ = os.Unsetenv(DiodeMaxAuthRetriesEnvVarName)
+			}()
+
+			_, err = NewClient(fmt.Sprintf("grpc://localhost:%s", port), "my-producer", "0.1.0")
+			if tt.wantErr != nil {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr.Error())
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
 }
