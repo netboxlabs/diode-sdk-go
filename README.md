@@ -20,8 +20,9 @@ go get github.com/netboxlabs/diode-sdk-go
 
 ### Environment variables
 
-* `DIODE_API_KEY` - API key for the Diode service
 * `DIODE_SDK_LOG_LEVEL` - Log level for the SDK (default: `INFO`)
+* `DIODE_CLIENT_ID` - Client ID for OAuth2 authentication
+* `DIODE_CLIENT_SECRET` - Client Secret for OAuth2 authentication
 
 ### Example
 
