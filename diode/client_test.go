@@ -217,7 +217,8 @@ func startMockAuthServer(port string, path string, authErrorGrpc bool) (*MockAut
 		_ = r.ParseForm()
 		clientID := r.FormValue("client_id")
 		clientSecret := r.FormValue("client_secret")
-		if strings.Contains(clientID, "client-id") && strings.Contains(clientSecret, "client-secret") {
+		scope := r.FormValue("scope")
+		if strings.Contains(clientID, "client-id") && strings.Contains(clientSecret, "client-secret") && strings.Contains(scope, DiodeOAuth2IngestScope) {
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte(`{"access_token": "mock-token"}`))
 		} else {

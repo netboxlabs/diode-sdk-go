@@ -48,6 +48,9 @@ const (
 	// DiodeMaxAuthRetriesEnvVarName is the environment variable name for the maximum number of authentication retries
 	DiodeMaxAuthRetriesEnvVarName = "DIODE_MAX_AUTH_RETRIES"
 
+	// DiodeOAuth2IngestScope is the OAuth2 scope for the data ingestion
+	DiodeOAuth2IngestScope = "diode:ingest"
+
 	defaultStreamName = "latest"
 )
 
@@ -201,7 +204,7 @@ func WithClientSecret(clientSecret string) ClientOption {
 // authenticate fetches an OAuth2 token using client credentials and updates the metadata with the token.
 func (g *GRPCClient) authenticate() error {
 	authClient := newDiodeAuthentication(g.target, g.path, g.tlsVerify, g.clientID, g.clientSecret)
-	accessToken, err := authClient.authenticate(g.logger)
+	accessToken, err := authClient.authenticate(g.logger, []string{DiodeOAuth2IngestScope})
 	if err != nil {
 		return fmt.Errorf("authentication failed: %w", err)
 	}
@@ -232,7 +235,7 @@ func newDiodeAuthentication(target string, path string, tlsVerify bool, clientID
 }
 
 // Authenticate requests an OAuth2 token using client credentials and returns it.
-func (d *diodeAuthentication) authenticate(logger *slog.Logger) (string, error) {
+func (d *diodeAuthentication) authenticate(logger *slog.Logger, scopes []string) (string, error) {
 	scheme := "http"
 	if d.tlsVerify {
 		scheme = "https"
@@ -245,7 +248,7 @@ func (d *diodeAuthentication) authenticate(logger *slog.Logger) (string, error) 
 	data.Set("grant_type", "client_credentials")
 	data.Set("client_id", d.clientID)
 	data.Set("client_secret", d.clientSecret)
-
+	data.Set("scope", strings.Join(scopes, " "))
 	req, err := http.NewRequest(http.MethodPost, authURL, strings.NewReader(data.Encode()))
 	if err != nil {
 		return "", fmt.Errorf("failed to create request: %w", err)
