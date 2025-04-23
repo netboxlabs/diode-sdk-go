@@ -20,12 +20,13 @@ go get github.com/netboxlabs/diode-sdk-go
 
 ### Environment variables
 
-* `DIODE_API_KEY` - API key for the Diode service
 * `DIODE_SDK_LOG_LEVEL` - Log level for the SDK (default: `INFO`)
+* `DIODE_CLIENT_ID` - Client ID for OAuth2 authentication
+* `DIODE_CLIENT_SECRET` - Client Secret for OAuth2 authentication
 
 ### Example
 
-* `target` should be the address of the Diode service, e.g. `grpc://localhost:8081` for insecure connection
+* `target` should be the address of the Diode service, e.g. `grpc://localhost:8080/diode` for insecure connection
   or `grpcs://example.com` for secure connection.
 
 ```go
@@ -43,7 +44,8 @@ func main() {
 		"grpc://localhost:8080/diode",
 		"example-app",
 		"0.1.0",
-		diode.WithAPIKey("YOUR_API_KEY"),
+		diode.WithClientID("YOUR_CLIENT_ID"),
+		diode.WithClientSecret("YOUR_CLIENT_SECRET"),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -113,26 +115,95 @@ See all [examples](./examples/main.go) for reference.
 
 ## Supported entities (object types)
 
-* Device
-* Device Type
-* IP Address
-* Interface
-* Manufacturer
-* Platform
-* Prefix
-* Role
-* Site
+* ASN
+* ASN Range
+* Aggregate
+* Circuit
+* Circuit Group
+* Circuit Group Assignment
+* Circuit Termination
+* Circuit Type
+* Cluster
 * Cluster Group
 * Cluster Type
-* Cluster
-* Virtual Machine
-* Virtual Machine Interface
+* Console Port
+* Console Server Port
+* Contact
+* Contact Assignment
+* Contact Group
+* Contact Role
+* Device
+* Device Bay
+* Device Role
+* Device Type
+* FHRP Group
+* FHRP Group Assignment
+* Front Port
+* IKE Policy
+* IKE Proposal
+* IP Address
+* IP Range
+* IP Sec Policy
+* IP Sec Profile
+* IP Sec Proposal
+* Interface
+* Inventory Item
+* Inventory Item Role
+* L2VPN
+* L2VPN Termination
+* Location
+* MAC Address
+* Manufacturer
+* Module
+* Module Bay
+* Module Type
+* Platform
+* Power Feed
+* Power Outlet
+* Power Panel
+* Power Port
+* Prefix
+* Provider
+* Provider Account
+* Provider Network
+* RIR
+* Rack
+* Rack Role
+* Rack Type
+* Rear Port
+* Region
+* Role
+* Route Target
+* Service
+* Site
+* Site Group
+* Tag
+* Tenant
+* Tenant Group
+* Tunnel
+* Tunnel Group
+* Tunnel Termination
+* VLAN
+* VLAN Group
+* VLAN Translation Policy
+* VLAN Translation Rule
+* VM Interface
+* VRF
+* Virtual Chassis
+* Virtual Circuit
+* Virtual Circuit Termination
+* Virtual Circuit Type
+* Virtual Device Context
 * Virtual Disk
+* Virtual Machine
+* Wireless Lan
+* Wireless Lan Group
+* Wireless Link
 
 #### Linting
 
 ```shell
-make list
+make lint
 ```
 
 #### Testing
