@@ -168,6 +168,7 @@ See all [examples](./examples/main.go) for reference.
 * Provider Network
 * RIR
 * Rack
+* Rack Role
 * Rack Type
 * Rear Port
 * Region
