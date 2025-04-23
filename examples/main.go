@@ -12,7 +12,8 @@ func main() {
 		"grpc://localhost:8080/diode",
 		"example-app",
 		"0.1.0",
-		diode.WithAPIKey("YOUR_API_KEY"),
+		diode.WithClientID("YOUR_CLIENT_ID"),
+		diode.WithClientSecret("YOUR_CLIENT_SECRET"),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -36,7 +37,7 @@ func main() {
 		Site: &diode.Site{
 			Name: diode.String("Site ABC"),
 		},
-		Role: &diode.Role{
+		Role: &diode.DeviceRole{
 			Name: diode.String("Role ABC"),
 			Tags: []*diode.Tag{
 				{
@@ -102,7 +103,7 @@ func main() {
 				Site: &diode.Site{
 					Name: diode.String("Site ABC"),
 				},
-				Role: &diode.Role{
+				Role: &diode.DeviceRole{
 					Name: diode.String("Role ABC"),
 					Tags: []*diode.Tag{
 						{
@@ -149,7 +150,7 @@ func main() {
 			Site: &diode.Site{
 				Name: diode.String("Site ABC"),
 			},
-			Role: &diode.Role{
+			Role: &diode.DeviceRole{
 				Name: diode.String("Role ABC"),
 				Tags: []*diode.Tag{
 					{
@@ -161,10 +162,12 @@ func main() {
 				},
 			},
 		},
-		Type:        diode.String("virtual"),
-		Enabled:     diode.Bool(true),
-		Mtu:         diode.Int32(1500),
-		MacAddress:  diode.String("00:00:00:00:00:00"),
+		Type:    diode.String("virtual"),
+		Enabled: diode.Bool(true),
+		Mtu:     diode.Int64(1500),
+		PrimaryMacAddress: &diode.MACAddress{
+			MacAddress: diode.String("00:00:00:00:00:00"),
+		},
 		Description: diode.String("Interface A description"),
 		Tags: []*diode.Tag{
 			{
@@ -218,7 +221,7 @@ func main() {
 	// Create a prefix
 	prefixEntity := &diode.Prefix{
 		Prefix: diode.String("192.168.0.0/32"),
-		Site: &diode.Site{
+		Scope: &diode.Site{
 			Name: diode.String("Site ABC"),
 		},
 		Status:       diode.String("active"),
@@ -237,7 +240,7 @@ func main() {
 	}
 
 	// Create a role
-	roleEntity := &diode.Role{
+	roleEntity := &diode.DeviceRole{
 		Name:        diode.String("Role A"),
 		Color:       diode.String("ffffff"),
 		Description: diode.String("Role A description"),
@@ -294,7 +297,7 @@ func main() {
 		Group: &diode.ClusterGroup{
 			Name: diode.String("cluster group A"),
 		},
-		Site: &diode.Site{
+		Scope: &diode.Site{
 			Name: diode.String("site A"),
 		},
 		Status:      diode.String("active"),
@@ -321,12 +324,12 @@ func main() {
 			Group: &diode.ClusterGroup{
 				Name: diode.String("cluster group 10"),
 			},
-			Site: &diode.Site{
+			Scope: &diode.Site{
 				Name: diode.String("site 10"),
 			},
 			Status: diode.String("active"),
 		},
-		Role: &diode.Role{
+		Role: &diode.DeviceRole{
 			Name: diode.String("Role 10"),
 		},
 		Platform: &diode.Platform{
@@ -335,9 +338,9 @@ func main() {
 				Name: diode.String("Manufacturer 10"),
 			},
 		},
-		Vcpus:       diode.Int32(1),
-		Memory:      diode.Int32(4096),
-		Disk:        diode.Int32(100),
+		Vcpus:       diode.Float64(1),
+		Memory:      diode.Int64(4096),
+		Disk:        diode.Int64(100),
 		Description: diode.String("Virtual Machine A description"),
 		Comments:    diode.String("Lorem ipsum dolor sit amet"),
 		Tags: []*diode.Tag{
@@ -352,9 +355,11 @@ func main() {
 		VirtualMachine: virtualMachineEntity,
 		Name:           diode.String("Interface A"),
 		Enabled:        diode.Bool(true),
-		Mtu:            diode.Int32(1500),
-		MacAddress:     diode.String("00:00:00:00:00:00"),
-		Description:    diode.String("Interface A description"),
+		Mtu:            diode.Int64(1500),
+		PrimaryMacAddress: &diode.MACAddress{
+			MacAddress: diode.String("00:00:00:00:00:00"),
+		},
+		Description: diode.String("Interface A description"),
 		Tags: []*diode.Tag{
 			{
 				Name: diode.String("tag 1"),
@@ -366,7 +371,7 @@ func main() {
 	virtualDiskEntity := &diode.VirtualDisk{
 		VirtualMachine: virtualMachineEntity,
 		Name:           diode.String("Disk A"),
-		Size:           diode.Int32(100),
+		Size:           diode.Int64(100),
 		Description:    diode.String("Disk A description"),
 		Tags: []*diode.Tag{
 			{
@@ -403,5 +408,4 @@ func main() {
 	} else {
 		log.Printf("Success\n")
 	}
-
 }

@@ -7,14 +7,20 @@ import (
 	"log"
 	"log/slog"
 	"net"
+	"net/http"
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
@@ -102,158 +108,258 @@ func TestParseTarget(t *testing.T) {
 	}
 }
 
-func TestGetAPIKey(t *testing.T) {
+func TestGetClientCredentials(t *testing.T) {
 	tests := []struct {
-		desc              string
-		apiKey            string
-		apiKeyEnvVarValue string
-		wantAPIKey        string
-		wantErr           error
+		desc                    string
+		clientID                string
+		clientSecret            string
+		clientIDEnvVarValue     string
+		clientSecretEnvVarValue string
+		wantClientID            string
+		wantClientSecret        string
+		wantIDErr               error
+		wantSecretErr           error
 	}{
 		{
-			desc:              "API key provided explicitly",
-			apiKey:            "foobar",
-			apiKeyEnvVarValue: "",
-			wantAPIKey:        "foobar",
-			wantErr:           nil,
+			desc:                    "Client credentials provided explicitly",
+			clientID:                "client-id-123",
+			clientSecret:            "client-secret-456",
+			clientIDEnvVarValue:     "",
+			clientSecretEnvVarValue: "",
+			wantClientID:            "client-id-123",
+			wantClientSecret:        "client-secret-456",
+			wantIDErr:               nil,
+			wantSecretErr:           nil,
 		},
 		{
-			desc:              "API key provided with environment variable",
-			apiKey:            "",
-			apiKeyEnvVarValue: "barfoo",
-			wantAPIKey:        "barfoo",
-			wantErr:           nil,
+			desc:                    "Client credentials provided via environment variables",
+			clientID:                "",
+			clientSecret:            "",
+			clientIDEnvVarValue:     "env-client-id",
+			clientSecretEnvVarValue: "env-client-secret",
+			wantClientID:            "env-client-id",
+			wantClientSecret:        "env-client-secret",
+			wantIDErr:               nil,
+			wantSecretErr:           nil,
 		},
 		{
-			desc:              "API key not provided either explicitly or with environment variable",
-			apiKey:            "",
-			apiKeyEnvVarValue: "",
-			wantAPIKey:        "",
-			wantErr:           errors.New("api_key param or DIODE_API_KEY environment variable required"),
+			desc:                    "Missing clientID and clientSecret",
+			clientID:                "",
+			clientSecret:            "",
+			clientIDEnvVarValue:     "",
+			clientSecretEnvVarValue: "",
+			wantClientID:            "",
+			wantClientSecret:        "",
+			wantIDErr:               errors.New("client_id param or DIODE_CLIENT_ID environment variable required"),
+			wantSecretErr:           errors.New("client_secret param or DIODE_CLIENT_SECRET environment variable required"),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			if tt.apiKeyEnvVarValue != "" {
-				_ = os.Setenv(DiodeAPIKeyEnvVarName, tt.apiKeyEnvVarValue)
+			if tt.clientIDEnvVarValue != "" {
+				_ = os.Setenv(DiodeClientIDEnvVarName, tt.clientIDEnvVarValue)
 				defer func() {
-					_ = os.Unsetenv(DiodeAPIKeyEnvVarName)
+					_ = os.Unsetenv(DiodeClientIDEnvVarName)
 				}()
 			}
-			apiKey, err := getAPIKey(tt.apiKey)
-			require.Equal(t, tt.wantAPIKey, apiKey)
-			require.Equal(t, tt.wantErr, err)
+			if tt.clientSecretEnvVarValue != "" {
+				_ = os.Setenv(DiodeClientSecretEnvVarName, tt.clientSecretEnvVarValue)
+				defer func() {
+					_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+				}()
+			}
+
+			clientID, err := getClientID(tt.clientID)
+			require.Equal(t, tt.wantClientID, clientID)
+			require.Equal(t, tt.wantIDErr, err)
+
+			clientSecret, err := getClientSecret(tt.clientSecret)
+			require.Equal(t, tt.wantClientSecret, clientSecret)
+			require.Equal(t, tt.wantSecretErr, err)
 		})
 	}
 }
 
+type MockAuthServer struct {
+	listener   net.Listener
+	httpServer *http.Server
+	grpcServer *grpc.Server
+}
+
+func (m *MockAuthServer) Close() {
+	m.grpcServer.GracefulStop()
+	_ = m.httpServer.Shutdown(context.Background())
+	_ = m.listener.Close()
+}
+
+func startMockAuthServer(port string, path string, authErrorGrpc bool) (*MockAuthServer, error) {
+	listener, err := net.Listen("tcp", "127.0.0.1:"+port)
+	if err != nil {
+		return nil, fmt.Errorf("failed to listen: %w", err)
+	}
+
+	grpcServer := grpc.NewServer()
+	diodepb.RegisterIngesterServiceServer(grpcServer, &MockIngesterServiceServer{unauthenticatedError: authErrorGrpc})
+
+	// HTTP handler
+	httpMux := http.NewServeMux()
+
+	newPath := "/auth/token"
+	if path != "" {
+		newPath = fmt.Sprintf("/%s/auth/token", path)
+	}
+	httpMux.HandleFunc(newPath, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "invalid method", http.StatusMethodNotAllowed)
+			return
+		}
+		_ = r.ParseForm()
+		clientID := r.FormValue("client_id")
+		clientSecret := r.FormValue("client_secret")
+		scope := r.FormValue("scope")
+		if strings.Contains(clientID, "client-id") && strings.Contains(clientSecret, "client-secret") && strings.Contains(scope, DiodeOAuth2IngestScope) {
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"access_token": "mock-token"}`))
+		} else {
+			http.Error(w, "invalid credentials", http.StatusUnauthorized)
+		}
+	})
+
+	// Wrap the mux with h2c-compatible handler that detects gRPC
+	handler := h2c.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.ProtoMajor == 2 && strings.HasPrefix(r.Header.Get("Content-Type"), "application/grpc") {
+			grpcServer.ServeHTTP(w, r)
+		} else {
+			httpMux.ServeHTTP(w, r)
+		}
+	}), &http2.Server{})
+
+	httpServer := &http.Server{
+		Handler: handler,
+	}
+
+	go func() {
+		if err := httpServer.Serve(listener); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Server error: %v", err)
+		}
+	}()
+
+	return &MockAuthServer{
+		listener:   listener,
+		httpServer: httpServer,
+		grpcServer: grpcServer,
+	}, nil
+}
+
 func TestNewClient(t *testing.T) {
+	port, err := getFreePort()
+	require.NoError(t, err)
+
+	authServer, err := startMockAuthServer(port, "", false)
+	require.NoError(t, err)
+	defer authServer.Close()
+
 	tests := []struct {
-		desc                string
-		target              string
-		appName             string
-		appVersion          string
-		apiKey              string
-		apiKeyEnvVarValue   string
-		logLevelEnvVarValue string
-		wantErr             error
+		desc                    string
+		target                  string
+		appName                 string
+		appVersion              string
+		clientID                string
+		clientSecret            string
+		clientIDEnvVarValue     string
+		clientSecretEnvVarValue string
+		wantErr                 error
 	}{
 		{
-			desc:                "explicit arguments provided",
-			target:              "grpc://localhost:8081",
-			appName:             "my-producer",
-			appVersion:          "0.1.0",
-			apiKey:              "foobar",
-			apiKeyEnvVarValue:   "",
-			logLevelEnvVarValue: "",
-			wantErr:             nil,
+			desc:                    "explicit arguments provided",
+			target:                  fmt.Sprintf("grpc://localhost:%s", port),
+			appName:                 "my-producer",
+			appVersion:              "0.1.0",
+			clientID:                "client-id-123",
+			clientSecret:            "client-secret-456",
+			clientIDEnvVarValue:     "",
+			clientSecretEnvVarValue: "",
+			wantErr:                 nil,
 		},
 		{
-			desc:                "API key provided with environment variable",
-			target:              "grpc://localhost:8081",
-			appName:             "my-producer",
-			appVersion:          "0.1.0",
-			apiKey:              "",
-			apiKeyEnvVarValue:   "foo.bar",
-			logLevelEnvVarValue: "",
-			wantErr:             nil,
+			desc:                    "Client credentials provided via environment variables",
+			target:                  fmt.Sprintf("grpc://localhost:%s", port),
+			appName:                 "my-producer",
+			appVersion:              "0.1.0",
+			clientID:                "",
+			clientSecret:            "",
+			clientIDEnvVarValue:     "env-client-id",
+			clientSecretEnvVarValue: "env-client-secret",
+			wantErr:                 nil,
 		},
 		{
-			desc:                "target with path",
-			target:              "grpc://localhost:8081/abcdef",
-			appName:             "my-producer",
-			appVersion:          "0.1.0",
-			apiKey:              "",
-			apiKeyEnvVarValue:   "foo.bar",
-			logLevelEnvVarValue: "",
-			wantErr:             nil,
+			desc:                    "app name not provided",
+			target:                  "grpc://localhost:8081",
+			appName:                 "",
+			appVersion:              "0.1.0",
+			clientID:                "client-id-123",
+			clientSecret:            "client-secret-456",
+			clientIDEnvVarValue:     "",
+			clientSecretEnvVarValue: "",
+			wantErr:                 errors.New("app name is required"),
 		},
 		{
-			desc:                "target with grpcs scheme",
-			target:              "grpcs://localhost:8081",
-			appName:             "my-producer",
-			appVersion:          "0.1.0",
-			apiKey:              "",
-			apiKeyEnvVarValue:   "foo.bar",
-			logLevelEnvVarValue: "",
-			wantErr:             nil,
+			desc:                    "app version not provided",
+			target:                  "grpc://localhost:8081",
+			appName:                 "my-producer",
+			appVersion:              "",
+			clientID:                "client-id-123",
+			clientSecret:            "client-secret-456",
+			clientIDEnvVarValue:     "",
+			clientSecretEnvVarValue: "",
+			wantErr:                 errors.New("app version is required"),
 		},
 		{
-			desc:                "app name not provided",
-			target:              "grpc://localhost:8081",
-			appName:             "",
-			appVersion:          "0.1.0",
-			apiKey:              "foobar",
-			apiKeyEnvVarValue:   "",
-			logLevelEnvVarValue: "",
-			wantErr:             errors.New("app name is required"),
+			desc:                    "invalid target",
+			target:                  "http://localhost:8081",
+			appName:                 "my-producer",
+			appVersion:              "0.1.0",
+			clientID:                "client-id-123",
+			clientSecret:            "client-secret-456",
+			clientIDEnvVarValue:     "",
+			clientSecretEnvVarValue: "",
+			wantErr:                 errors.New("target should start with grpc:// or grpcs://"),
 		},
 		{
-			desc:                "app version not provided",
-			target:              "grpc://localhost:8081",
-			appName:             "my-producer",
-			appVersion:          "",
-			apiKey:              "foobar",
-			apiKeyEnvVarValue:   "",
-			logLevelEnvVarValue: "",
-			wantErr:             errors.New("app version is required"),
-		},
-		{
-			desc:                "invalid target",
-			target:              "http://localhost:8081",
-			appName:             "my-producer",
-			appVersion:          "0.1.0",
-			apiKey:              "foobar",
-			apiKeyEnvVarValue:   "",
-			logLevelEnvVarValue: "",
-			wantErr:             errors.New("target should start with grpc:// or grpcs://"),
-		},
-		{
-			desc:              "missing API key",
-			target:            "grpc://localhost:8081",
-			appName:           "my-producer",
-			appVersion:        "0.1.0",
-			apiKey:            "",
-			apiKeyEnvVarValue: "",
-			wantErr:           errors.New("api_key param or DIODE_API_KEY environment variable required"),
+			desc:                    "missing clientID and clientSecret",
+			target:                  "grpc://localhost:8081",
+			appName:                 "my-producer",
+			appVersion:              "0.1.0",
+			clientID:                "",
+			clientSecret:            "",
+			clientIDEnvVarValue:     "",
+			clientSecretEnvVarValue: "",
+			wantErr:                 errors.New("client_id param or DIODE_CLIENT_ID environment variable required"),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			defer func() {
-				_ = os.Unsetenv(DiodeAPIKeyEnvVarName)
+				_ = os.Unsetenv(DiodeClientIDEnvVarName)
+				_ = os.Unsetenv(DiodeClientSecretEnvVarName)
 				_ = os.Unsetenv(DiodeSDKLogLevelEnvVarName)
 			}()
 
-			if tt.apiKeyEnvVarValue != "" {
-				_ = os.Setenv(DiodeAPIKeyEnvVarName, tt.apiKeyEnvVarValue)
+			if tt.clientIDEnvVarValue != "" {
+				_ = os.Setenv(DiodeClientIDEnvVarName, tt.clientIDEnvVarValue)
+			}
+			if tt.clientSecretEnvVarValue != "" {
+				_ = os.Setenv(DiodeClientSecretEnvVarName, tt.clientSecretEnvVarValue)
 			}
 
 			opts := []ClientOption{}
-			if tt.apiKey != "" {
-				opts = append(opts, WithAPIKey(tt.apiKey))
+			if tt.clientID != "" {
+				opts = append(opts, WithClientID(tt.clientID))
+			}
+			if tt.clientSecret != "" {
+				opts = append(opts, WithClientSecret(tt.clientSecret))
 			}
 
 			client, err := NewClient(tt.target, tt.appName, tt.appVersion, opts...)
@@ -282,30 +388,14 @@ func getFreePort() (string, error) {
 
 type MockIngesterServiceServer struct {
 	diodepb.UnimplementedIngesterServiceServer
+	unauthenticatedError bool
 }
 
-func (MockIngesterServiceServer) Ingest(_ context.Context, _ *diodepb.IngestRequest) (*diodepb.IngestResponse, error) {
-	return &diodepb.IngestResponse{Errors: nil}, nil
-}
-
-func startMockServer() (net.Listener, error) {
-	port, _ := getFreePort()
-	grpcListener, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
-	if err != nil {
-		return nil, fmt.Errorf("failed to listen on port %s: %v", port, err)
+func (m MockIngesterServiceServer) Ingest(_ context.Context, _ *diodepb.IngestRequest) (*diodepb.IngestResponse, error) {
+	if m.unauthenticatedError {
+		return nil, status.Error(codes.Unauthenticated, "mock auth failure")
 	}
-
-	server := grpc.NewServer()
-
-	diodepb.RegisterIngesterServiceServer(server, &MockIngesterServiceServer{})
-
-	go func() {
-		if err := server.Serve(grpcListener); err != nil {
-			log.Fatal(err)
-		}
-	}()
-
-	return grpcListener, nil
+	return &diodepb.IngestResponse{Errors: nil}, nil
 }
 
 func TestMethodUnaryInterceptor(t *testing.T) {
@@ -328,17 +418,18 @@ func TestMethodUnaryInterceptor(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			listener, err := startMockServer()
+			port, err := getFreePort()
 			require.NoError(t, err)
 
-			target := fmt.Sprintf("grpc://%s/%s", listener.Addr().String(), tt.path)
-			appName := "my-producer"
-			appVersion := "0.1.0"
-			apiKey := "abcde"
+			authServer, err := startMockAuthServer(port, tt.path, false)
+			require.NoError(t, err)
+			defer authServer.Close()
 
-			client, err := NewClient(target, appName, appVersion, WithAPIKey(apiKey))
+			target := fmt.Sprintf("grpc://localhost:%s/%s", port, tt.path)
+			client, err := NewClient(target, "my-producer", "0.1.0", WithClientID("client-id"), WithClientSecret("client-secret"))
 			require.NoError(t, err)
 			require.NotNil(t, client)
+
 			_, err = client.Ingest(context.Background(), nil)
 			if tt.wantErr != nil {
 				require.Equal(t, tt.wantErr.Error(), err.Error())
@@ -432,6 +523,149 @@ func TestConvertEntitiesToProto(t *testing.T) {
 				assert.NotNil(t, entityPb.Timestamp)
 				assert.NotZero(t, entityPb.Timestamp.Seconds)
 				assert.NotZero(t, entityPb.Timestamp.Nanos)
+			}
+		})
+	}
+}
+
+func TestIngest(t *testing.T) {
+	tests := []struct {
+		desc            string
+		entities        []Entity
+		authRetries     int
+		mockAuthFailure bool
+		wantErr         error
+	}{
+		{
+			desc: "successful ingest",
+			entities: []Entity{
+				&Device{Name: String("device-1")},
+				&Site{Name: String("site-1")},
+			},
+			authRetries:     3,
+			mockAuthFailure: false,
+			wantErr:         nil,
+		},
+		{
+			desc:            "authentication failure after retries",
+			entities:        nil,
+			authRetries:     2,
+			mockAuthFailure: true,
+			wantErr:         errors.New("authentication failed after 2 attempts: rpc error: code = Unauthenticated desc = mock auth failure"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			defer func() {
+				_ = os.Unsetenv(DiodeClientIDEnvVarName)
+				_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+			}()
+
+			_ = os.Setenv(DiodeClientIDEnvVarName, "client-id")
+			_ = os.Setenv(DiodeClientSecretEnvVarName, "client-secret")
+
+			port, err := getFreePort()
+			require.NoError(t, err)
+
+			authServer, err := startMockAuthServer(port, "", tt.mockAuthFailure)
+			require.NoError(t, err)
+			defer authServer.Close()
+
+			client, err := NewClient(fmt.Sprintf("grpc://localhost:%s", port), "my-producer", "0.1.0")
+			require.NoError(t, err)
+			defer func() {
+				err := client.Close()
+				require.NoError(t, err)
+			}()
+
+			grpcClient := client.(*GRPCClient)
+			grpcClient.maxAuthRetries = tt.authRetries
+
+			_, err = grpcClient.Ingest(context.Background(), tt.entities)
+			if tt.wantErr != nil {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr.Error())
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestHTTPAuthError(t *testing.T) {
+	port, err := getFreePort()
+	require.NoError(t, err)
+
+	authServer, err := startMockAuthServer(port, "", false)
+	require.NoError(t, err)
+	defer authServer.Close()
+
+	_ = os.Setenv(DiodeClientIDEnvVarName, "invalid-client")
+	_ = os.Setenv(DiodeClientSecretEnvVarName, "invalid-client-sct")
+	_ = os.Setenv(DiodeMaxAuthRetriesEnvVarName, "2")
+	defer func() {
+		_ = os.Unsetenv(DiodeClientIDEnvVarName)
+		_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+		_ = os.Unsetenv(DiodeMaxAuthRetriesEnvVarName)
+	}()
+
+	_, err = NewClient(fmt.Sprintf("grpc://localhost:%s", port), "my-producer", "0.1.0")
+	require.Error(t, err)
+}
+
+func TestAuthRetryEnv(t *testing.T) {
+	tests := []struct {
+		desc       string
+		retryValue string
+		wantErr    error
+	}{
+		{
+			desc:       "valid value",
+			retryValue: "2",
+			wantErr:    nil,
+		},
+		{
+			desc:       "empty value",
+			retryValue: "",
+			wantErr:    nil,
+		},
+		{
+			desc:       "invalid value",
+			retryValue: "invalid",
+			wantErr:    errors.New("invalid value for DIODE_MAX_AUTH_RETRIES: strconv.Atoi: parsing \"invalid\": invalid syntax"),
+		},
+		{
+			desc:       "negative value",
+			retryValue: "-1",
+			wantErr:    errors.New("max_auth_retries param or DIODE_MAX_AUTH_RETRIES environment variable must be greater than 0"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			port, err := getFreePort()
+			require.NoError(t, err)
+
+			authServer, err := startMockAuthServer(port, "", false)
+			require.NoError(t, err)
+			defer authServer.Close()
+
+			_ = os.Setenv(DiodeClientIDEnvVarName, "client-id")
+			_ = os.Setenv(DiodeClientSecretEnvVarName, "client-secret")
+			_ = os.Setenv(DiodeMaxAuthRetriesEnvVarName, tt.retryValue)
+			defer func() {
+				_ = os.Unsetenv(DiodeClientIDEnvVarName)
+				_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+				_ = os.Unsetenv(DiodeMaxAuthRetriesEnvVarName)
+			}()
+
+			_, err = NewClient(fmt.Sprintf("grpc://localhost:%s", port), "my-producer", "0.1.0")
+			if tt.wantErr != nil {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr.Error())
+			} else {
+				require.NoError(t, err)
 			}
 		})
 	}
