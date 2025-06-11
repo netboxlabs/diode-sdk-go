@@ -113,6 +113,52 @@ func main() {
 
 See all [examples](./examples/main.go) for reference.
 
+### Dry run client
+
+Use a `DryRunClient` to inspect what would be sent to Diode without actually sending any data. When a file path is provided the JSON payload is written to that file.
+
+```go
+// Write ingest payload to dryrun.json
+client, err := diode.NewDryRunClient("dryrun.json")
+if err != nil {
+        log.Fatal(err)
+}
+_, _ = client.Ingest(context.Background(), []diode.Entity{
+        &diode.Device{Name: diode.String("Device A")},
+})
+_ = client.Close()
+```
+
+Loaded entities can later be ingested using a real client:
+
+```go
+protoEntities, err := diode.LoadDryRunEntities("dryrun.json")
+if err != nil {
+        log.Fatal(err)
+}
+
+diodeEntities := make([]diode.Entity, len(protoEntities))
+for i, e := range protoEntities {
+        diodeEntities[i] = diode.ProtoEntity{PB: e}
+}
+
+realClient, err := diode.NewClient(
+        "grpc://localhost:8080/diode",
+        "example-app",
+        "0.1.0",
+        diode.WithClientID("YOUR_CLIENT_ID"),
+        diode.WithClientSecret("YOUR_CLIENT_SECRET"),
+)
+if err != nil {
+        log.Fatal(err)
+}
+
+_, err = realClient.Ingest(context.Background(), diodeEntities)
+if err != nil {
+        log.Fatal(err)
+}
+```
+
 ## Supported entities (object types)
 
 * ASN

@@ -44,8 +44,12 @@ func (d *DryRunClient) Close() error {
 // Ingest writes the given entities as JSON to the configured writer.
 func (d *DryRunClient) Ingest(_ context.Context, entities []Entity) (*diodepb.IngestResponse, error) {
 	protoEntities := convertEntitiesToProto(entities)
-	wrapper := &diodepb.IngestRequest{Entities: protoEntities}
-	data, err := protojson.MarshalOptions{Indent: "  "}.Marshal(wrapper)
+	wrapper := &diodepb.IngestRequest{
+		Entities:   protoEntities,
+		SdkName:    SDKName,
+		SdkVersion: SDKVersion,
+	}
+	data, err := protojson.MarshalOptions{UseProtoNames: true}.Marshal(wrapper)
 	if err != nil {
 		return nil, err
 	}
