@@ -137,7 +137,7 @@ func (d *DryRunClient) Ingest(_ context.Context, entities []Entity) (*diodepb.In
 
 // LoadDryRunEntities loads entities written by DryRunClient from the file path
 // and returns them as protobuf entities from all IngestRequests in the JSON array.
-func LoadDryRunEntities(path string) ([]*diodepb.Entity, error) {
+func LoadDryRunEntities(path string) ([]Entity, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -149,7 +149,7 @@ func LoadDryRunEntities(path string) ([]*diodepb.Entity, error) {
 		return nil, err
 	}
 
-	var allEntities []*diodepb.Entity
+	var allEntities []Entity
 
 	// Convert each JSON object to IngestRequest and collect entities
 	for _, reqJSON := range requestsJSON {
@@ -157,8 +157,17 @@ func LoadDryRunEntities(path string) ([]*diodepb.Entity, error) {
 		if err := protojson.Unmarshal(reqJSON, wrapper); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal request: %w", err)
 		}
-		allEntities = append(allEntities, wrapper.Entities...)
+		allEntities = append(allEntities, convertProtoEntitiesToEntity(wrapper.Entities)...)
 	}
 
 	return allEntities, nil
+}
+
+// convertProtoEntitiesToEntity converts protobuf entities to Entity implementations
+func convertProtoEntitiesToEntity(protoEntities []*diodepb.Entity) []Entity {
+	entities := make([]Entity, 0, len(protoEntities))
+	for _, protoEntity := range protoEntities {
+		entities = append(entities, ProtoEntity{PB: protoEntity})
+	}
+	return entities
 }

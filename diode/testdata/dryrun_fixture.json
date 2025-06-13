@@ -253,7 +253,7 @@
     ],
     "id": "ae9c981f-685c-4fbc-b9ce-b5fa00135b8c",
     "sdk_name": "diode-sdk-go",
-    "sdk_version": "0.0.0"
+    "sdk_version": "0.2.0"
   },
   {
     "stream": "latest",
@@ -579,7 +579,7 @@
     ],
     "id": "029704fa-d34d-4d8b-a8e0-87ccdd3cb811",
     "sdk_name": "diode-sdk-go",
-    "sdk_version": "0.0.0"
+    "sdk_version": "0.2.0"
   },
   {
     "stream": "latest",
@@ -917,7 +917,7 @@
     ],
     "id": "6cbad6f7-e950-40c8-b6cb-4f1603629dd8",
     "sdk_name": "diode-sdk-go",
-    "sdk_version": "0.0.0"
+    "sdk_version": "0.2.0"
   },
   {
     "stream": "latest",
@@ -1100,7 +1100,7 @@
             "type": "1000base-t"
           },
           "nat_inside": {
-            "address": "10.0.0.1/24"
+            "address": "10.2.0.1/24"
           },
           "dns_name": "prod-vip.example.com",
           "description": "Production VIP Address",
@@ -1588,7 +1588,7 @@
     ],
     "id": "67cc662a-4598-4fb2-a39c-788344fb0e55",
     "sdk_name": "diode-sdk-go",
-    "sdk_version": "0.0.0"
+    "sdk_version": "0.2.0"
   },
   {
     "stream": "latest",
@@ -2155,7 +2155,7 @@
     ],
     "id": "5a0eb383-c2b5-439b-be75-444c547a3d9e",
     "sdk_name": "diode-sdk-go",
-    "sdk_version": "0.0.0"
+    "sdk_version": "0.2.0"
   },
   {
     "stream": "latest",
@@ -2440,7 +2440,7 @@
       {
         "timestamp": "2025-06-13T13:05:01.416909Z",
         "prefix": {
-          "prefix": "10.100.0.0/16",
+          "prefix": "10.100.2.0/16",
           "vrf": {
             "name": "PROD-VRF",
             "rd": "65000:1"
@@ -2567,7 +2567,7 @@
     ],
     "id": "479f1a4c-9503-448c-a9f8-63d759b5ad0b",
     "sdk_name": "diode-sdk-go",
-    "sdk_version": "0.0.0"
+    "sdk_version": "0.2.0"
   },
   {
     "stream": "latest",
@@ -2912,7 +2912,7 @@
     ],
     "id": "ba68d239-8d88-4350-9692-16020ab14b9f",
     "sdk_name": "diode-sdk-go",
-    "sdk_version": "0.0.0"
+    "sdk_version": "0.2.0"
   },
   {
     "stream": "latest",
@@ -3192,7 +3192,7 @@
     ],
     "id": "287f8602-868b-41d4-92fe-47bb9fc84fbb",
     "sdk_name": "diode-sdk-go",
-    "sdk_version": "0.0.0"
+    "sdk_version": "0.2.0"
   },
   {
     "stream": "latest",
@@ -3566,7 +3566,7 @@
     ],
     "id": "f1faa85b-e0a9-4c20-9134-1c86f14f663b",
     "sdk_name": "diode-sdk-go",
-    "sdk_version": "0.0.0"
+    "sdk_version": "0.2.0"
   },
   {
     "stream": "latest",
@@ -3805,6 +3805,6 @@
     ],
     "id": "2f100ecf-9b81-45e6-bd36-d37e7761db91",
     "sdk_name": "diode-sdk-go",
-    "sdk_version": "0.0.0"
+    "sdk_version": "0.2.0"
   }
 ]

@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -39,9 +40,12 @@ func TestDryRunClientIngestAndLoad(t *testing.T) {
 	loaded, err := LoadDryRunEntities(file)
 	require.NoError(t, err)
 	require.Len(t, loaded, 2)
-	require.Equal(t, "dev1", loaded[0].GetDevice().GetName())
-	require.Equal(t, "Test device", loaded[0].GetDevice().GetDescription())
-	require.Equal(t, "dev2", loaded[1].GetDevice().GetName())
+	first := loaded[0].ConvertToProtoEntity()
+	require.Equal(t, "dev1", first.GetDevice().GetName())
+	require.Equal(t, "Test device", first.GetDevice().GetDescription())
+
+	second := loaded[1].ConvertToProtoEntity()
+	require.Equal(t, "dev2", second.GetDevice().GetName())
 }
 
 func TestNewDryRunClientEnvVar(t *testing.T) {
@@ -67,73 +71,59 @@ func TestNewDryRunClientEnvVar(t *testing.T) {
 	require.NoError(t, err)
 }
 
-// func TestLoadDryRunEntitiesFixture(t *testing.T) {
-// 	// Test loading from fixture
-// 	fixtureFile := filepath.Join("testdata", "dryrun_fixture.json")
+func TestLoadDryRunEntitiesFixture(t *testing.T) {
+	// Test loading from fixture
+	fixtureFile := filepath.Join("testdata", "dryrun_fixture.json")
 
-// 	entities, err := LoadDryRunEntities(fixtureFile)
-// 	require.NoError(t, err)
-// 	require.Len(t, entities, 94)
+	entities, err := LoadDryRunEntities(fixtureFile)
+	require.NoError(t, err)
+	require.Len(t, entities, 94)
 
-// 	// Verify first entity (ASN)
-// 	asn, ok := entities[0].Entity.(*diodepb.Entity_Asn)
-// 	require.True(t, ok, "Entity at index 0 should be ASN")
-// 	require.NotNil(t, asn.Asn)
-// 	assert.Equal(t, int32(555), asn.Asn.Asn)
+	// Verify first entity (ASN)
+	first := entities[0].ConvertToProtoEntity()
+	require.Equal(t, int64(555), first.GetAsn().GetAsn())
+	// Verify entity at index 33 (IP Address)
+	ipAddr := entities[33].ConvertToProtoEntity()
+	require.Equal(t, "192.168.100.1/24", ipAddr.GetIpAddress().GetAddress())
+	require.NotNil(t, ipAddr.GetIpAddress().GetAssignedObjectInterface())
+	require.Equal(t, "GigabitEthernet1/0/1", ipAddr.GetIpAddress().GetAssignedObjectInterface().GetName())
+	// Verify last entity (Wireless Link)
+	last := entities[93].ConvertToProtoEntity()
+	require.Equal(t, "P2P-Link-1", last.GetWirelessLink().GetSsid())
 
-// 	// Verify entity at index 33 (IP Address)
-// 	ipAddr, ok := entities[33].Entity.(*diodepb.Entity_IpAddress)
-// 	require.True(t, ok, "Entity at index 33 should be IP Address")
-// 	require.NotNil(t, ipAddr.IpAddress)
-// 	assert.Equal(t, "192.168.100.1/24", ipAddr.IpAddress.Address)
-// 	require.NotNil(t, ipAddr.IpAddress.AssignedObjectInterface)
-// 	assert.Equal(t, "GigabitEthernet1/0/1", ipAddr.IpAddress.AssignedObjectInterface.Name)
+	// Test dry run client with output file
+	tmpDir := t.TempDir()
+	outputFile := filepath.Join(tmpDir, "out.json")
 
-// 	// Verify last entity (Wireless Link)
-// 	wirelessLink, ok := entities[93].Entity.(*diodepb.Entity_WirelessLink)
-// 	require.True(t, ok, "Entity at index 93 should be Wireless Link")
-// 	require.NotNil(t, wirelessLink.WirelessLink)
-// 	assert.Equal(t, "P2P-Link-1", wirelessLink.WirelessLink.Ssid)
+	c, err := NewDryRunClient(outputFile)
+	require.NoError(t, err)
+	drc := c.(*DryRunClient)
 
-// 	// Test dry run client with output file
-// 	tmpDir := t.TempDir()
-// 	outputFile := filepath.Join(tmpDir, "out.json")
+	_, err = drc.Ingest(context.Background(), entities)
+	require.NoError(t, err)
 
-// 	c, err := NewDryRunClient(outputFile)
-// 	require.NoError(t, err)
-// 	drc := c.(*DryRunClient)
+	// Verify output file exists and starts with "["
+	content, err := os.ReadFile(outputFile)
+	require.NoError(t, err)
+	require.True(t, strings.HasPrefix(string(content), "["))
 
-// 	_, err = drc.Ingest(context.Background(), entities)
-// 	require.NoError(t, err)
+	// Load entities from output file and verify
+	reloadedEntities, err := LoadDryRunEntities(outputFile)
+	require.NoError(t, err)
+	require.Len(t, reloadedEntities, 94)
 
-// 	// Verify output file exists and starts with "["
-// 	content, err := os.ReadFile(outputFile)
-// 	require.NoError(t, err)
-// 	assert.True(t, strings.HasPrefix(string(content), "["))
-
-// 	// Load entities from output file and verify
-// 	reloadedEntities, err := LoadDryRunEntities(outputFile)
-// 	require.NoError(t, err)
-// 	require.Len(t, reloadedEntities, 94)
-
-// 	// Verify reloaded entities have same properties
-// 	asn2, ok := reloadedEntities[0].Entity.(*diodepb.Entity_Asn)
-// 	require.True(t, ok, "Reloaded entity at index 0 should be ASN")
-// 	require.NotNil(t, asn2.Asn)
-// 	assert.Equal(t, int32(555), asn2.Asn.Asn)
-
-// 	ipAddr2, ok := reloadedEntities[33].Entity.(*diodepb.Entity_IpAddress)
-// 	require.True(t, ok, "Reloaded entity at index 33 should be IP Address")
-// 	require.NotNil(t, ipAddr2.IpAddress)
-// 	assert.Equal(t, "192.168.100.1/24", ipAddr2.IpAddress.Address)
-// 	require.NotNil(t, ipAddr2.IpAddress.AssignedObjectInterface)
-// 	assert.Equal(t, "GigabitEthernet1/0/1", ipAddr2.IpAddress.AssignedObjectInterface.Name)
-
-// 	wirelessLink2, ok := reloadedEntities[93].Entity.(*diodepb.Entity_WirelessLink)
-// 	require.True(t, ok, "Reloaded entity at index 93 should be Wireless Link")
-// 	require.NotNil(t, wirelessLink2.WirelessLink)
-// 	assert.Equal(t, "P2P-Link-1", wirelessLink2.WirelessLink.Ssid)
-// }
+	// Verify first entity (ASN)
+	first = entities[0].ConvertToProtoEntity()
+	require.Equal(t, int64(555), first.GetAsn().GetAsn())
+	// Verify entity at index 33 (IP Address)
+	ipAddr = entities[33].ConvertToProtoEntity()
+	require.Equal(t, "192.168.100.1/24", ipAddr.GetIpAddress().GetAddress())
+	require.NotNil(t, ipAddr.GetIpAddress().GetAssignedObjectInterface())
+	require.Equal(t, "GigabitEthernet1/0/1", ipAddr.GetIpAddress().GetAssignedObjectInterface().GetName())
+	// Verify last entity (Wireless Link)
+	last = entities[93].ConvertToProtoEntity()
+	require.Equal(t, "P2P-Link-1", last.GetWirelessLink().GetSsid())
+}
 
 func TestLoadDryRunEntitiesError(t *testing.T) {
 	_, err := LoadDryRunEntities("not-exist.json")
