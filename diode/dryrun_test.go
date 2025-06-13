@@ -40,6 +40,25 @@ func TestDryRunClientIngestAndLoad(t *testing.T) {
 	require.Equal(t, "dev1", loaded[0].GetDevice().GetName())
 }
 
+func TestNewDryRunClientEnvVar(t *testing.T) {
+	dir := t.TempDir()
+	file := filepath.Join(dir, "out.json")
+
+	_ = os.Setenv(DiodeDryRunFileEnvVarName, file)
+	defer os.Unsetenv(DiodeDryRunFileEnvVarName)
+
+	c, err := NewDryRunClient("")
+	require.NoError(t, err)
+	drc := c.(*DryRunClient)
+
+	_, err = drc.Ingest(context.Background(), []Entity{&Device{Name: String("dev1")}})
+	require.NoError(t, err)
+	require.NoError(t, drc.Close())
+
+	_, err = os.Stat(file)
+	require.NoError(t, err)
+}
+
 func TestLoadDryRunEntitiesError(t *testing.T) {
 	_, err := LoadDryRunEntities("not-exist.json")
 	require.Error(t, err)

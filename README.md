@@ -23,6 +23,7 @@ go get github.com/netboxlabs/diode-sdk-go
 * `DIODE_SDK_LOG_LEVEL` - Log level for the SDK (default: `INFO`)
 * `DIODE_CLIENT_ID` - Client ID for OAuth2 authentication
 * `DIODE_CLIENT_SECRET` - Client Secret for OAuth2 authentication
+* `DIODE_DRY_RUN_FILE` - Path to write dry run output when using `DryRunClient`
 
 ### Example
 

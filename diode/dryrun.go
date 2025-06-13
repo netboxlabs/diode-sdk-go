@@ -10,6 +10,11 @@ import (
 	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
 
+const (
+	// DiodeDryRunFileEnvVarName is the environment variable name for the dry run file path
+	DiodeDryRunFileEnvVarName = "DIODE_DRY_RUN_FILE"
+)
+
 // DryRunClient implements Client and writes ingest payloads to stdout or a file.
 type DryRunClient struct {
 	writer io.WriteCloser
@@ -20,9 +25,13 @@ type nopWriteCloser struct{ io.Writer }
 
 func (nopWriteCloser) Close() error { return nil }
 
-// NewDryRunClient creates a new DryRunClient. If dryRunFile is empty the
-// output is written to STDOUT otherwise to the specified file.
+// NewDryRunClient creates a new DryRunClient. If dryRunFile is empty it falls
+// back to the DIODE_DRY_RUN_FILE environment variable. When no file is
+// specified the output is written to STDOUT.
 func NewDryRunClient(dryRunFile string) (Client, error) {
+	if dryRunFile == "" {
+		dryRunFile = os.Getenv(DiodeDryRunFileEnvVarName)
+	}
 	if dryRunFile == "" {
 		return &DryRunClient{writer: nopWriteCloser{os.Stdout}}, nil
 	}
