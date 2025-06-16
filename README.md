@@ -133,7 +133,7 @@ _ = client.Close()
 Loaded entities can later be ingested using a real client:
 
 ```go
-protoEntities, err := diode.LoadDryRunEntities("/tmp/example-app_92722156890707.json")
+protoEntities, err := diode.LoadDryRunEntities("/tmp/example-app_1750106879725947344.json")
 if err != nil {
         log.Fatal(err)
 }
