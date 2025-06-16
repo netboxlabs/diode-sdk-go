@@ -2,6 +2,7 @@ package diode
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -11,16 +12,15 @@ import (
 )
 
 func TestNewDryRunClient(t *testing.T) {
-	client, err := NewDryRunClient("")
+	client, err := NewDryRunClient("", "")
 	require.NoError(t, err)
 	require.NotNil(t, client)
 }
 
 func TestDryRunClientIngestAndLoad(t *testing.T) {
 	dir := t.TempDir()
-	file := filepath.Join(dir, "out.json")
 
-	c, err := NewDryRunClient(file)
+	c, err := NewDryRunClient("app", dir)
 	require.NoError(t, err)
 	drc := c.(*DryRunClient)
 
@@ -33,33 +33,35 @@ func TestDryRunClientIngestAndLoad(t *testing.T) {
 
 	require.NoError(t, drc.Close())
 
-	data, err := os.ReadFile(file)
+	entries, err := os.ReadDir(dir)
 	require.NoError(t, err)
-	require.NotEmpty(t, data)
+	require.Len(t, entries, 2)
 
-	loaded, err := LoadDryRunEntities(file)
-	require.NoError(t, err)
-	require.Len(t, loaded, 2)
-	first := loaded[0].ConvertToProtoEntity()
-	require.Equal(t, "dev1", first.GetDevice().GetName())
-	require.Equal(t, "Test device", first.GetDevice().GetDescription())
+	for i, entry := range entries {
+		data, err := os.ReadFile(filepath.Join(dir, entry.Name()))
+		require.NoError(t, err)
+		require.NotEmpty(t, data)
 
-	second := loaded[1].ConvertToProtoEntity()
-	require.Equal(t, "dev2", second.GetDevice().GetName())
+		loaded, err := LoadDryRunEntities(filepath.Join(dir, entry.Name()))
+		require.NoError(t, err)
+		require.Len(t, loaded, 1)
+		entity := loaded[0].ConvertToProtoEntity()
+		expected := fmt.Sprintf("dev%d", i+1)
+		require.Equal(t, expected, entity.GetDevice().GetName())
+	}
 }
 
 func TestNewDryRunClientEnvVar(t *testing.T) {
 	dir := t.TempDir()
-	file := filepath.Join(dir, "out.json")
 
-	err := os.Setenv(DiodeDryRunFileEnvVarName, file)
+	err := os.Setenv(DiodeDryRunOutpurDirEnvVarName, dir)
 	require.NoError(t, err)
 	defer func() {
-		err := os.Unsetenv(DiodeDryRunFileEnvVarName)
+		err := os.Unsetenv(DiodeDryRunOutpurDirEnvVarName)
 		require.NoError(t, err)
 	}()
 
-	c, err := NewDryRunClient("")
+	c, err := NewDryRunClient("envapp", "")
 	require.NoError(t, err)
 	drc := c.(*DryRunClient)
 
@@ -67,8 +69,9 @@ func TestNewDryRunClientEnvVar(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, drc.Close())
 
-	_, err = os.Stat(file)
+	entries, err := os.ReadDir(dir)
 	require.NoError(t, err)
+	require.Len(t, entries, 1)
 }
 
 func TestLoadDryRunEntitiesFixture(t *testing.T) {
@@ -93,9 +96,8 @@ func TestLoadDryRunEntitiesFixture(t *testing.T) {
 
 	// Test dry run client with output file
 	tmpDir := t.TempDir()
-	outputFile := filepath.Join(tmpDir, "out.json")
 
-	c, err := NewDryRunClient(outputFile)
+	c, err := NewDryRunClient("app", tmpDir)
 	require.NoError(t, err)
 	drc := c.(*DryRunClient)
 
@@ -103,12 +105,15 @@ func TestLoadDryRunEntitiesFixture(t *testing.T) {
 	require.NoError(t, err)
 
 	// Verify output file exists and starts with "["
-	content, err := os.ReadFile(outputFile)
+	filenames, err := os.ReadDir(tmpDir)
 	require.NoError(t, err)
-	require.True(t, strings.HasPrefix(string(content), "["))
+	fullPath := filepath.Join(tmpDir, filenames[0].Name())
+	content, err := os.ReadFile(fullPath)
+	require.NoError(t, err)
+	require.True(t, strings.HasPrefix(string(content), "{"))
 
 	// Load entities from output file and verify
-	reloadedEntities, err := LoadDryRunEntities(outputFile)
+	reloadedEntities, err := LoadDryRunEntities(fullPath)
 	require.NoError(t, err)
 	require.Len(t, reloadedEntities, 94)
 
