@@ -26,9 +26,7 @@ type DryRunClient struct {
 	dryRunDir string
 }
 
-// NewDryRunClient creates a new DryRunClient. If dryRunFile is empty it falls
-// back to the DIODE_DRY_RUN_FILE environment variable. When no file is
-// specified the output is written to STDOUT.
+// NewDryRunClient creates a new DryRunClient.
 func NewDryRunClient(appName string, dryRunDir string) (Client, error) {
 	if appName == "" {
 		appName = "dryrun"
@@ -71,7 +69,6 @@ func (d *DryRunClient) IngestProto(_ context.Context, entities []*diodepb.Entity
 		return nil, err
 	}
 
-	// If writer is a file, handle JSON array appending
 	if d.dryRunDir != "" {
 		fileName := fmt.Sprintf("%s_%d.json", sanitizeAppName(d.appName), time.Now().UnixNano())
 		path := filepath.Join(d.dryRunDir, fileName)
