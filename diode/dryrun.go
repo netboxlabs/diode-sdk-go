@@ -55,7 +55,7 @@ func (d *DryRunClient) Ingest(ctx context.Context, entities []Entity) (*diodepb.
 	return d.IngestProto(ctx, convertEntitiesToProto(entities))
 }
 
-// Ingest writes the given entities as JSON to the configured writer.
+// IngestProto writes the given entities as JSON to the configured writer.
 // If writing to a file, it appends to an existing JSON array or creates a new one.
 func (d *DryRunClient) IngestProto(_ context.Context, entities []*diodepb.Entity) (*diodepb.IngestResponse, error) {
 	wrapper := &diodepb.IngestRequest{
