@@ -593,6 +593,48 @@ func TestIngest(t *testing.T) {
 	}
 }
 
+func TestIngestProto(t *testing.T) {
+	defer func() {
+		_ = os.Unsetenv(DiodeClientIDEnvVarName)
+		_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+	}()
+
+	_ = os.Setenv(DiodeClientIDEnvVarName, "client-id")
+	_ = os.Setenv(DiodeClientSecretEnvVarName, "client-secret")
+
+	port, err := getFreePort()
+	require.NoError(t, err)
+
+	authServer, err := startMockAuthServer(port, "", false)
+	require.NoError(t, err)
+	defer authServer.Close()
+
+	client, err := NewClient(fmt.Sprintf("grpc://localhost:%s", port), "my-producer", "0.1.0")
+	require.NoError(t, err)
+	defer func() {
+		err := client.Close()
+		require.NoError(t, err)
+	}()
+
+	grpcClient := client.(*GRPCClient)
+
+	entities := []*diodepb.Entity{
+		{
+			Entity: &diodepb.Entity_Device{
+				Device: &diodepb.Device{
+					Name:        String("device-1"),
+					Description: String("Test device"),
+				},
+			},
+		},
+	}
+
+	resp, err := grpcClient.IngestProto(context.Background(), entities)
+	require.NoError(t, err)
+	assert.NotNil(t, resp)
+	require.Empty(t, resp.Errors)
+}
+
 func TestHTTPAuthError(t *testing.T) {
 	port, err := getFreePort()
 	require.NoError(t, err)
