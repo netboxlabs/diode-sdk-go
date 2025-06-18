@@ -138,11 +138,6 @@ if err != nil {
         log.Fatal(err)
 }
 
-diodeEntities := make([]diode.Entity, len(protoEntities))
-for i, e := range protoEntities {
-        diodeEntities[i] = diode.ProtoEntity{PB: e}
-}
-
 realClient, err := diode.NewClient(
         "grpc://localhost:8080/diode",
         "example-app",
@@ -154,7 +149,7 @@ if err != nil {
         log.Fatal(err)
 }
 
-_, err = realClient.Ingest(context.Background(), diodeEntities)
+_, err = realClient.IngestProto(context.Background(), protoEntities)
 if err != nil {
         log.Fatal(err)
 }
