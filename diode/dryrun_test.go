@@ -118,15 +118,15 @@ func TestLoadDryRunEntitiesFixture(t *testing.T) {
 	require.Len(t, reloadedEntities, 94)
 
 	// Verify first entity (ASN)
-	first = entities[0]
+	first = reloadedEntities[0]
 	require.Equal(t, int64(555), first.GetAsn().GetAsn())
 	// Verify entity at index 33 (IP Address)
-	ipAddr = entities[33]
+	ipAddr = reloadedEntities[33]
 	require.Equal(t, "192.168.100.1/24", ipAddr.GetIpAddress().GetAddress())
 	require.NotNil(t, ipAddr.GetIpAddress().GetAssignedObjectInterface())
 	require.Equal(t, "GigabitEthernet1/0/1", ipAddr.GetIpAddress().GetAssignedObjectInterface().GetName())
 	// Verify last entity (Wireless Link)
-	last = entities[93]
+	last = reloadedEntities[93]
 	require.Equal(t, "P2P-Link-1", last.GetWirelessLink().GetSsid())
 }
 
