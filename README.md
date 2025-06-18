@@ -120,7 +120,7 @@ Use a `DryRunClient` to inspect what would be sent to Diode without actually sen
 
 ```go
 // Write ingest payload to a timestamped file in /tmp
-client, err := diode.NewDryRunClient("/tmp", "example-app")
+client, err := diode.NewDryRunClient("example-app", "/tmp")
 if err != nil {
         log.Fatal(err)
 }

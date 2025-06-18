@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	// DiodeDryRunOutpurDirEnvVarName is the environment variable name for the dry run directory
-	DiodeDryRunOutpurDirEnvVarName = "DIODE_DRY_RUN_OUTPUT_DIR"
+	// DiodeDryRunOutputDirEnvVarName is the environment variable name for the dry run directory
+	DiodeDryRunOutputDirEnvVarName = "DIODE_DRY_RUN_OUTPUT_DIR"
 )
 
 // DryRunClient implements Client and writes ingest payloads to stdout or a file.
@@ -34,7 +34,7 @@ func NewDryRunClient(appName string, dryRunDir string) (Client, error) {
 		appName = "dryrun"
 	}
 	if dryRunDir == "" {
-		dryRunDir = os.Getenv(DiodeDryRunOutpurDirEnvVarName)
+		dryRunDir = os.Getenv(DiodeDryRunOutputDirEnvVarName)
 	}
 	if dryRunDir != "" {
 		if err := os.MkdirAll(dryRunDir, 0o755); err != nil {

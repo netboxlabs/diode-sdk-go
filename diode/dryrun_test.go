@@ -54,10 +54,10 @@ func TestDryRunClientIngestAndLoad(t *testing.T) {
 func TestNewDryRunClientEnvVar(t *testing.T) {
 	dir := t.TempDir()
 
-	err := os.Setenv(DiodeDryRunOutpurDirEnvVarName, dir)
+	err := os.Setenv(DiodeDryRunOutputDirEnvVarName, dir)
 	require.NoError(t, err)
 	defer func() {
-		err := os.Unsetenv(DiodeDryRunOutpurDirEnvVarName)
+		err := os.Unsetenv(DiodeDryRunOutputDirEnvVarName)
 		require.NoError(t, err)
 	}()
 
@@ -104,7 +104,7 @@ func TestLoadDryRunEntitiesFixture(t *testing.T) {
 	_, err = drc.IngestProto(context.Background(), entities)
 	require.NoError(t, err)
 
-	// Verify output file exists and starts with "["
+	// Verify output file exists and starts with "{"
 	filenames, err := os.ReadDir(tmpDir)
 	require.NoError(t, err)
 	fullPath := filepath.Join(tmpDir, filenames[0].Name())
