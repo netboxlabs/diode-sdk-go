@@ -51,15 +51,18 @@ func (d *DryRunClient) Close() error {
 
 // Ingest writes the given entities as JSON to the configured writer.
 // If writing to a file, it appends to an existing JSON array or creates a new one.
-func (d *DryRunClient) Ingest(_ context.Context, entities []Entity) (*diodepb.IngestResponse, error) {
-	protoEntities := convertEntitiesToProto(entities)
+func (d *DryRunClient) Ingest(ctx context.Context, entities []Entity) (*diodepb.IngestResponse, error) {
+	return d.IngestProto(ctx, convertEntitiesToProto(entities))
+}
+
+// Ingest writes the given entities as JSON to the configured writer.
+// If writing to a file, it appends to an existing JSON array or creates a new one.
+func (d *DryRunClient) IngestProto(_ context.Context, entities []*diodepb.Entity) (*diodepb.IngestResponse, error) {
 	wrapper := &diodepb.IngestRequest{
 		Id:         uuid.New().String(),
-		Entities:   protoEntities,
+		Entities:   entities,
 		SdkName:    SDKName,
 		SdkVersion: SDKVersion,
-		// Add Stream field if it exists in your proto definition
-		// Stream: d.stream,
 	}
 
 	data, err := protojson.MarshalOptions{UseProtoNames: true, Indent: "  "}.Marshal(wrapper)
@@ -86,7 +89,7 @@ func (d *DryRunClient) Ingest(_ context.Context, entities []Entity) (*diodepb.In
 
 // LoadDryRunEntities loads entities written by DryRunClient from a single file
 // produced by Ingest.
-func LoadDryRunEntities(path string) ([]Entity, error) {
+func LoadDryRunEntities(path string) ([]*diodepb.Entity, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -97,16 +100,7 @@ func LoadDryRunEntities(path string) ([]Entity, error) {
 		return nil, fmt.Errorf("failed to unmarshal request: %w", err)
 	}
 
-	return convertProtoEntitiesToEntity(wrapper.Entities), nil
-}
-
-// convertProtoEntitiesToEntity converts protobuf entities to Entity implementations
-func convertProtoEntitiesToEntity(protoEntities []*diodepb.Entity) []Entity {
-	entities := make([]Entity, 0, len(protoEntities))
-	for _, protoEntity := range protoEntities {
-		entities = append(entities, ProtoEntity{PB: protoEntity})
-	}
-	return entities
+	return wrapper.Entities, nil
 }
 
 // sanitizeAppName sanitizes the application name by replacing

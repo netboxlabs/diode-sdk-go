@@ -45,7 +45,7 @@ func TestDryRunClientIngestAndLoad(t *testing.T) {
 		loaded, err := LoadDryRunEntities(filepath.Join(dir, entry.Name()))
 		require.NoError(t, err)
 		require.Len(t, loaded, 1)
-		entity := loaded[0].ConvertToProtoEntity()
+		entity := loaded[0]
 		expected := fmt.Sprintf("dev%d", i+1)
 		require.Equal(t, expected, entity.GetDevice().GetName())
 	}
@@ -83,15 +83,15 @@ func TestLoadDryRunEntitiesFixture(t *testing.T) {
 	require.Len(t, entities, 94)
 
 	// Verify first entity (ASN)
-	first := entities[0].ConvertToProtoEntity()
+	first := entities[0]
 	require.Equal(t, int64(555), first.GetAsn().GetAsn())
 	// Verify entity at index 33 (IP Address)
-	ipAddr := entities[33].ConvertToProtoEntity()
+	ipAddr := entities[33]
 	require.Equal(t, "192.168.100.1/24", ipAddr.GetIpAddress().GetAddress())
 	require.NotNil(t, ipAddr.GetIpAddress().GetAssignedObjectInterface())
 	require.Equal(t, "GigabitEthernet1/0/1", ipAddr.GetIpAddress().GetAssignedObjectInterface().GetName())
 	// Verify last entity (Wireless Link)
-	last := entities[93].ConvertToProtoEntity()
+	last := entities[93]
 	require.Equal(t, "P2P-Link-1", last.GetWirelessLink().GetSsid())
 
 	// Test dry run client with output file
@@ -101,7 +101,7 @@ func TestLoadDryRunEntitiesFixture(t *testing.T) {
 	require.NoError(t, err)
 	drc := c.(*DryRunClient)
 
-	_, err = drc.Ingest(context.Background(), entities)
+	_, err = drc.IngestProto(context.Background(), entities)
 	require.NoError(t, err)
 
 	// Verify output file exists and starts with "["
@@ -118,15 +118,15 @@ func TestLoadDryRunEntitiesFixture(t *testing.T) {
 	require.Len(t, reloadedEntities, 94)
 
 	// Verify first entity (ASN)
-	first = entities[0].ConvertToProtoEntity()
+	first = entities[0]
 	require.Equal(t, int64(555), first.GetAsn().GetAsn())
 	// Verify entity at index 33 (IP Address)
-	ipAddr = entities[33].ConvertToProtoEntity()
+	ipAddr = entities[33]
 	require.Equal(t, "192.168.100.1/24", ipAddr.GetIpAddress().GetAddress())
 	require.NotNil(t, ipAddr.GetIpAddress().GetAssignedObjectInterface())
 	require.Equal(t, "GigabitEthernet1/0/1", ipAddr.GetIpAddress().GetAssignedObjectInterface().GetName())
 	// Verify last entity (Wireless Link)
-	last = entities[93].ConvertToProtoEntity()
+	last = entities[93]
 	require.Equal(t, "P2P-Link-1", last.GetWirelessLink().GetSsid())
 }
 
