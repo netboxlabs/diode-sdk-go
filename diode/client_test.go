@@ -632,7 +632,7 @@ func TestIngestProto(t *testing.T) {
 	resp, err := grpcClient.IngestProto(context.Background(), entities)
 	require.NoError(t, err)
 	assert.NotNil(t, resp)
-	assert.Empty(t, resp.Errors)
+	require.Empty(t, resp.Errors)
 }
 
 func TestHTTPAuthError(t *testing.T) {
