@@ -49,14 +49,15 @@ func (d *DryRunClient) Close() error {
 	return nil
 }
 
-// Ingest writes the given entities as JSON to the configured writer.
-// If writing to a file, it appends to an existing JSON array or creates a new one.
+// Ingest writes the given entities to stdout or a file depending on the configuration.
+// This is a wrapper around IngestProto that converts the entities to protobuf first.
 func (d *DryRunClient) Ingest(ctx context.Context, entities []Entity) (*diodepb.IngestResponse, error) {
 	return d.IngestProto(ctx, convertEntitiesToProto(entities))
 }
 
-// IngestProto writes the given entities as JSON to the configured writer.
-// If writing to a file, it appends to an existing JSON array or creates a new one.
+// IngestProto serializes entities as JSON and writes them to stdout or a file.
+// If a directory is configured, it creates a new timestamped file in that directory.
+// Otherwise, it writes to stdout.
 func (d *DryRunClient) IngestProto(_ context.Context, entities []*diodepb.Entity) (*diodepb.IngestResponse, error) {
 	wrapper := &diodepb.IngestRequest{
 		Id:         uuid.New().String(),
