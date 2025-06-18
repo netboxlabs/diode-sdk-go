@@ -23,6 +23,7 @@ go get github.com/netboxlabs/diode-sdk-go
 * `DIODE_SDK_LOG_LEVEL` - Log level for the SDK (default: `INFO`)
 * `DIODE_CLIENT_ID` - Client ID for OAuth2 authentication
 * `DIODE_CLIENT_SECRET` - Client Secret for OAuth2 authentication
+* `DIODE_DRY_RUN_OUTPUT_DIR` - Directory to write dry run output files when using `DryRunClient`
 
 ### Example
 
@@ -112,6 +113,47 @@ func main() {
 ```
 
 See all [examples](./examples/main.go) for reference.
+
+### Dry run client
+
+Use a `DryRunClient` to inspect what would be sent to Diode without actually sending any data. When a directory is provided a new JSON file is created for each ingest call.
+
+```go
+// Write ingest payload to a timestamped file in /tmp
+client, err := diode.NewDryRunClient("example-app", "/tmp")
+if err != nil {
+        log.Fatal(err)
+}
+_, _ = client.Ingest(context.Background(), []diode.Entity{
+        &diode.Device{Name: diode.String("Device A")},
+})
+_ = client.Close()
+```
+
+Loaded entities can later be ingested using a real client:
+
+```go
+protoEntities, err := diode.LoadDryRunEntities("/tmp/example-app_1750106879725947344.json")
+if err != nil {
+        log.Fatal(err)
+}
+
+realClient, err := diode.NewClient(
+        "grpc://localhost:8080/diode",
+        "example-app",
+        "0.1.0",
+        diode.WithClientID("YOUR_CLIENT_ID"),
+        diode.WithClientSecret("YOUR_CLIENT_SECRET"),
+)
+if err != nil {
+        log.Fatal(err)
+}
+
+_, err = realClient.IngestProto(context.Background(), protoEntities)
+if err != nil {
+        log.Fatal(err)
+}
+```
 
 ## Supported entities (object types)
 
