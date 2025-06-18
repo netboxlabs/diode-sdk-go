@@ -103,7 +103,8 @@ func LoadDryRunEntities(path string) ([]*diodepb.Entity, error) {
 	return wrapper.Entities, nil
 }
 
-// sanitizeAppName sanitizes the application name by replacing
+// sanitizeAppName sanitizes the application name by replacing invalid characters
+// with underscores. Valid characters are letters, digits, underscores, and hyphens.
 func sanitizeAppName(appName string) string {
 	var b strings.Builder
 	for _, c := range appName {
