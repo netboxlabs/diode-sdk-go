@@ -21,12 +21,12 @@ func (f *fileList) Set(s string) error {
 
 func main() {
 	var files fileList
-	flag.Var(&files, "file", "Path to dry run JSON file (may be repeated)")
-	target := flag.String("target", "", "Diode gRPC target")
-	app := flag.String("app-name", "", "Producer application name")
-	version := flag.String("app-version", "", "Producer application version")
-	clientID := flag.String("client-id", "", "OAuth2 client ID")
-	clientSecret := flag.String("client-secret", "", "OAuth2 client secret")
+	flag.Var(&files, "file", "Dry-run JSON file to ingest (may be repeated)")
+	target := flag.String("target", "", "gRPC target of the Diode server, e.g. grpc://localhost:8080/diodet")
+	app := flag.String("app-name", "", "Application name used when ingesting the dry-run messages")
+	version := flag.String("app-version", "", "Application version used when ingesting the dry-run messages")
+	clientID := flag.String("client-id", "", "OAuth2 client ID. Defaults to the DIODE_CLIENT_ID environment variable if not provided")
+	clientSecret := flag.String("client-secret", "", "OAuth2 client secret. Defaults to the DIODE_CLIENT_SECRET environment variable if not provided")
 	flag.Parse()
 
 	// Fall back to environment variables if flags are not provided
