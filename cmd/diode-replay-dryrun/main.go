@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/netboxlabs/diode-sdk-go/diode"
-	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
 
 type fileList []string
@@ -43,15 +42,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	var allEntities []*diodepb.Entity
-	for _, f := range files {
-		ents, err := diode.LoadDryRunEntities(f)
-		if err != nil {
-			log.Fatal(err)
-		}
-		allEntities = append(allEntities, ents...)
-	}
-
 	client, err := diode.NewClient(
 		*target,
 		*app,
@@ -64,19 +54,29 @@ func main() {
 	}
 	defer func() {
 		if err := client.Close(); err != nil {
-			log.Printf("failed to close client: %v", err)
+			log.Printf("Failed to close client: %v", err)
 		}
 	}()
 
-	response, err := client.IngestProto(context.Background(), allEntities)
-	if err != nil {
-		log.Fatal(err)
+	ctx := context.Background()
+	for _, f := range files {
+		entities, err := diode.LoadDryRunEntities(f)
+		if err != nil {
+			log.Printf("Failed to load %s: %v", f, err)
+			continue
+		}
+
+		resp, err := client.IngestProto(ctx, entities)
+		if err != nil {
+			log.Printf("Failed to ingest %s: %v", f, err)
+			continue
+		}
+
+		if resp.GetErrors() != nil {
+			log.Printf("Errors while ingesting %s: %v", f, resp.GetErrors())
+			continue
+		}
+
+		log.Printf("Ingested %d entities from %s successfully", len(entities), f)
 	}
-
-	if response.GetErrors() != nil {
-		log.Fatalf("Ingestion errors: %v", response.GetErrors())
-	}
-
-	log.Printf("Ingested %d entities successfully", len(allEntities))
-
 }
