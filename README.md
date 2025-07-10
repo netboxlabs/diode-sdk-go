@@ -174,16 +174,16 @@ multiple times to ingest several dry-run files in a single request:
 
 ```bash
 diode-replay-dryrun \
-  -file /tmp/example-app_1750106879725947344.json \
-  -file /tmp/other.json \
-  -target grpc://localhost:8080/diode \
-  -app example-app \
-  -version 0.1.0 \
+  --file /tmp/example-app_1750106879725947344.json \
+  --file /tmp/other.json \
+  --target grpc://localhost:8080/diode \
+  --app-name example-app \
+  --app-version 0.1.0 \
   -client-id YOUR_CLIENT_ID \
   -client-secret YOUR_CLIENT_SECRET
 ```
 
-The flags `-file`, `-target`, `-app`, and `-version` are required. You may
+The flags `-file`, `-target`, `-app-name`, and `-app-version` are required. You may
 repeat `-file` to specify multiple files. OAuth2
 credentials can be supplied using `-client-id` and `-client-secret` or the
 `DIODE_CLIENT_ID` and `DIODE_CLIENT_SECRET` environment variables.
