@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"flag"
-	"log"
+	"fmt"
 	"os"
 	"strings"
 
@@ -22,7 +22,7 @@ func (f *fileList) Set(s string) error {
 func main() {
 	var files fileList
 	flag.Var(&files, "file", "Dry-run JSON file to ingest (may be repeated)")
-	target := flag.String("target", "", "gRPC target of the Diode server, e.g. grpc://localhost:8080/diodet")
+	target := flag.String("target", "", "gRPC target of the Diode server, e.g. grpc://localhost:8080/diode")
 	app := flag.String("app-name", "", "Application name used when ingesting the dry-run messages")
 	version := flag.String("app-version", "", "Application version used when ingesting the dry-run messages")
 	clientID := flag.String("client-id", "", "OAuth2 client ID. Defaults to the DIODE_CLIENT_ID environment variable if not provided")
@@ -39,6 +39,7 @@ func main() {
 
 	if len(files) == 0 || *target == "" || *app == "" || *version == "" {
 		flag.Usage()
+		fmt.Fprintf(os.Stderr, "Error: the following arguments are required: -target, -app-name, -app-version, -file\n")
 		os.Exit(1)
 	}
 
@@ -50,11 +51,13 @@ func main() {
 		diode.WithClientSecret(*clientSecret),
 	)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintf(os.Stderr, "Failed to create Diode client: %v\n", err)
+		os.Exit(1)
 	}
 	defer func() {
 		if err := client.Close(); err != nil {
-			log.Printf("Failed to close client: %v", err)
+			fmt.Fprintf(os.Stderr, "Failed to close Diode client: %v\n", err)
+			os.Exit(1)
 		}
 	}()
 
@@ -62,21 +65,21 @@ func main() {
 	for _, f := range files {
 		entities, err := diode.LoadDryRunEntities(f)
 		if err != nil {
-			log.Printf("Failed to load %s: %v", f, err)
+			fmt.Fprintf(os.Stderr, "Failed to load entities from %s: %v\n", f, err)
 			continue
 		}
 
 		resp, err := client.IngestProto(ctx, entities)
 		if err != nil {
-			log.Printf("Failed to ingest %s: %v", f, err)
+			fmt.Fprintf(os.Stderr, "Failed to ingest %s: %v\n", f, err)
 			continue
 		}
 
 		if resp.GetErrors() != nil {
-			log.Printf("Errors while ingesting %s: %v", f, resp.GetErrors())
+			fmt.Fprintf(os.Stderr, "Errors while ingesting %s: %v\n", f, resp.GetErrors())
 			continue
 		}
 
-		log.Printf("Ingested %d entities from %s successfully", len(entities), f)
+		fmt.Fprintf(os.Stdout, "Successfully ingested %d entities from %s\n", len(entities), f)
 	}
 }
