@@ -10,6 +10,9 @@ pipelines.
 More information about Diode can be found
 at [https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in-netbox/](https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in-netbox/).
 
+## Prerequisites
+- Go 1.24 or later installed
+
 ## Installation
 
 ```bash
@@ -154,6 +157,39 @@ if err != nil {
         log.Fatal(err)
 }
 ```
+
+### CLI to replay dry-run files
+
+A small helper binary is included to ingest JSON files created by the
+`DryRunClient` and send them to a running Diode service.
+
+Install the helper using `go install`:
+
+```bash
+go install github.com/netboxlabs/diode-sdk-go/cmd/diode-replay-dryrun@latest
+```
+
+This installs the command separately from the SDK library obtained with
+`go get`.
+
+Run it by providing one or more JSON files and connection details. Use `-file`
+multiple times to ingest several dry-run files in a single request:
+
+```bash
+diode-replay-dryrun \
+  -file /tmp/example-app_1750106879725947344.json \
+  -file /tmp/other.json \
+  -target grpc://localhost:8080/diode \
+  -app-name example-app \
+  -app-version 0.1.0 \
+  -client-id YOUR_CLIENT_ID \
+  -client-secret YOUR_CLIENT_SECRET
+```
+
+The flags `-file`, `-target`, `-app-name`, and `-app-version` are required. You may
+repeat `-file` to specify multiple files. OAuth2
+credentials can be supplied using `-client-id` and `-client-secret` or the
+`DIODE_CLIENT_ID` and `DIODE_CLIENT_SECRET` environment variables.
 
 ## Supported entities (object types)
 
