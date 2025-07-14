@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -37,9 +37,11 @@ func main() {
 		*clientSecret = os.Getenv("DIODE_CLIENT_SECRET")
 	}
 
+	log.SetFlags(0)
+
 	if len(files) == 0 || *target == "" || *app == "" || *version == "" {
 		flag.Usage()
-		fmt.Fprintf(os.Stderr, "Error: the following arguments are required: -target, -app-name, -app-version, -file\n")
+		log.Println("Error: the following arguments are required: -target, -app-name, -app-version, -file")
 		os.Exit(1)
 	}
 
@@ -51,13 +53,11 @@ func main() {
 		diode.WithClientSecret(*clientSecret),
 	)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to create Diode client: %v\n", err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 	defer func() {
 		if err := client.Close(); err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to close Diode client: %v\n", err)
-			os.Exit(1)
+			log.Printf("Failed to close client: %v", err)
 		}
 	}()
 
@@ -65,21 +65,21 @@ func main() {
 	for _, f := range files {
 		entities, err := diode.LoadDryRunEntities(f)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to load entities from %s: %v\n", f, err)
+			log.Printf("Failed to load %s: %v", f, err)
 			continue
 		}
 
 		resp, err := client.IngestProto(ctx, entities)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to ingest %s: %v\n", f, err)
+			log.Printf("Failed to ingest %s: %v", f, err)
 			continue
 		}
 
 		if resp.GetErrors() != nil {
-			fmt.Fprintf(os.Stderr, "Errors while ingesting %s: %v\n", f, resp.GetErrors())
+			log.Printf("Errors while ingesting %s: %v", f, resp.GetErrors())
 			continue
 		}
 
-		fmt.Fprintf(os.Stdout, "Successfully ingested %d entities from %s\n", len(entities), f)
+		log.Printf("Ingested %d entities from %s successfully", len(entities), f)
 	}
 }
