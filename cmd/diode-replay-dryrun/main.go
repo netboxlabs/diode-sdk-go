@@ -22,7 +22,7 @@ func (f *fileList) Set(s string) error {
 func main() {
 	var files fileList
 	flag.Var(&files, "file", "Dry-run JSON file to ingest (may be repeated)")
-	target := flag.String("target", "", "gRPC target of the Diode server, e.g. grpc://localhost:8080/diodet")
+	target := flag.String("target", "", "gRPC target of the Diode server, e.g. grpc://localhost:8080/diode")
 	app := flag.String("app-name", "", "Application name used when ingesting the dry-run messages")
 	version := flag.String("app-version", "", "Application version used when ingesting the dry-run messages")
 	clientID := flag.String("client-id", "", "OAuth2 client ID. Defaults to the DIODE_CLIENT_ID environment variable if not provided")
@@ -37,8 +37,11 @@ func main() {
 		*clientSecret = os.Getenv("DIODE_CLIENT_SECRET")
 	}
 
+	log.SetFlags(0)
+
 	if len(files) == 0 || *target == "" || *app == "" || *version == "" {
 		flag.Usage()
+		log.Println("Error: the following arguments are required: -target, -app-name, -app-version, -file")
 		os.Exit(1)
 	}
 
