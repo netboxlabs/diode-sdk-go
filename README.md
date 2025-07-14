@@ -10,6 +10,9 @@ pipelines.
 More information about Diode can be found
 at [https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in-netbox/](https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in-netbox/).
 
+## Prerequisites
+- Go 1.24 or later installed
+
 ## Installation
 
 ```bash
