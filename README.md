@@ -174,11 +174,11 @@ multiple times to ingest several dry-run files in a single request:
 
 ```bash
 diode-replay-dryrun \
-  --file /tmp/example-app_1750106879725947344.json \
-  --file /tmp/other.json \
-  --target grpc://localhost:8080/diode \
-  --app-name example-app \
-  --app-version 0.1.0 \
+  -file /tmp/example-app_1750106879725947344.json \
+  -file /tmp/other.json \
+  -target grpc://localhost:8080/diode \
+  -app-name example-app \
+  -app-version 0.1.0 \
   -client-id YOUR_CLIENT_ID \
   -client-secret YOUR_CLIENT_SECRET
 ```
