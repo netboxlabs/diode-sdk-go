@@ -70,7 +70,7 @@ func parseTarget(target string) (string, string, bool, error) {
 	}
 
 	if !allowedSchemesRe.MatchString(u.Scheme) {
-		return "", "", false, errors.New("target should start with grpc:// or grpcs://")
+		return "", "", false, errors.New("target should start with grpc:// or grpcs:// or http:// or https://")
 	}
 
 	authority := u.Host
@@ -80,6 +80,8 @@ func parseTarget(target string) (string, string, bool, error) {
 			authority += ":80"
 		case "grpcs", "https":
 			authority += ":443"
+		default:
+			return "", "", false, fmt.Errorf("missing port with unsupported scheme: %s", u.Scheme)
 		}
 	}
 
