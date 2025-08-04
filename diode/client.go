@@ -54,7 +54,7 @@ const (
 	defaultStreamName = "latest"
 )
 
-var allowedSchemesRe = regexp.MustCompile(`grpc|grpcs`)
+var allowedSchemesRe = regexp.MustCompile(`grpc|grpcs|http|https`)
 
 // loadCerts loads the system x509 cert pool
 func loadCerts() *x509.CertPool {
@@ -74,6 +74,14 @@ func parseTarget(target string) (string, string, bool, error) {
 	}
 
 	authority := u.Host
+	if u.Port() == "" {
+		switch u.Scheme {
+		case "grpc", "http":
+			authority += ":80"
+		case "grpcs", "https":
+			authority += ":443"
+		}
+	}
 
 	path := u.Path
 	if path == "/" {
