@@ -74,9 +74,6 @@ func parseTarget(target string) (string, string, bool, error) {
 	}
 
 	authority := u.Host
-	if u.Port() == "" {
-		authority += ":443"
-	}
 
 	path := u.Path
 	if path == "/" {
