@@ -73,7 +73,7 @@ func main() {
 		Site: &diode.Site{
 			Name: diode.String("Site ABC"),
 		},
-		Role: &diode.Role{
+		Role: &diode.DeviceRole{
 			Name: diode.String("Role ABC"),
 			Tags: []*diode.Tag{
 				{
@@ -111,7 +111,6 @@ func main() {
 	} else {
 		log.Printf("Success\n")
 	}
-
 }
 ```
 
