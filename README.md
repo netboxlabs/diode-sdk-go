@@ -11,6 +11,7 @@ More information about Diode can be found
 at [https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in-netbox/](https://netboxlabs.com/blog/introducing-diode-streamlining-data-ingestion-in-netbox/).
 
 ## Prerequisites
+
 - Go 1.24 or later installed
 
 ## Installation
@@ -30,8 +31,9 @@ go get github.com/netboxlabs/diode-sdk-go
 
 ### Example
 
-* `target` should be the address of the Diode service, e.g. `grpc://localhost:8080/diode` for insecure connection
-  or `grpcs://example.com` for secure connection.
+* `target` should be the address of the Diode service.
+  * Insecure connections: `grpc://localhost:8080/diode` or `http://localhost:8080/diode`
+  * Secure connections: `grpcs://example.com` or `https://example.com`
 
 ```go
 package main
@@ -119,16 +121,17 @@ See all [examples](./examples/main.go) for reference.
 
 ### Dry run client
 
-Use a `DryRunClient` to inspect what would be sent to Diode without actually sending any data. When a directory is provided a new JSON file is created for each ingest call.
+Use a `DryRunClient` to inspect what would be sent to Diode without actually sending any data. When a directory is
+provided a new JSON file is created for each ingest call.
 
 ```go
 // Write ingest payload to a timestamped file in /tmp
 client, err := diode.NewDryRunClient("example-app", "/tmp")
 if err != nil {
-        log.Fatal(err)
+log.Fatal(err)
 }
 _, _ = client.Ingest(context.Background(), []diode.Entity{
-        &diode.Device{Name: diode.String("Device A")},
+&diode.Device{Name: diode.String("Device A")},
 })
 _ = client.Close()
 ```
@@ -138,23 +141,23 @@ Loaded entities can later be ingested using a real client:
 ```go
 protoEntities, err := diode.LoadDryRunEntities("/tmp/example-app_1750106879725947344.json")
 if err != nil {
-        log.Fatal(err)
+log.Fatal(err)
 }
 
 realClient, err := diode.NewClient(
-        "grpc://localhost:8080/diode",
-        "example-app",
-        "0.1.0",
-        diode.WithClientID("YOUR_CLIENT_ID"),
-        diode.WithClientSecret("YOUR_CLIENT_SECRET"),
+"grpc://localhost:8080/diode",
+"example-app",
+"0.1.0",
+diode.WithClientID("YOUR_CLIENT_ID"),
+diode.WithClientSecret("YOUR_CLIENT_SECRET"),
 )
 if err != nil {
-        log.Fatal(err)
+log.Fatal(err)
 }
 
 _, err = realClient.IngestProto(context.Background(), protoEntities)
 if err != nil {
-        log.Fatal(err)
+log.Fatal(err)
 }
 ```
 
