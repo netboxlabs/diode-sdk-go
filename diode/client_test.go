@@ -331,14 +331,14 @@ func TestNewClient(t *testing.T) {
 		},
 		{
 			desc:                    "invalid target",
-			target:                  "http://localhost:8081",
+			target:                  "ftp://localhost:8081",
 			appName:                 "my-producer",
 			appVersion:              "0.1.0",
 			clientID:                "client-id-123",
 			clientSecret:            "client-secret-456",
 			clientIDEnvVarValue:     "",
 			clientSecretEnvVarValue: "",
-			wantErr:                 errors.New("target should start with grpc:// or grpcs://"),
+			wantErr:                 ErrInvalidTargetScheme,
 		},
 		{
 			desc:                    "missing clientID and clientSecret",
