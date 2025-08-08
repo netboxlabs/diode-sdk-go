@@ -54,7 +54,12 @@ const (
 	defaultStreamName = "latest"
 )
 
-var allowedSchemesRe = regexp.MustCompile(`grpc|grpcs|http|https`)
+var (
+	// ErrInvalidTargetScheme is returned when the target URL does not start with a valid scheme.
+	ErrInvalidTargetScheme = errors.New("target should start with grpc:// or grpcs:// or http:// or https://")
+
+	allowedSchemesRe = regexp.MustCompile(`grpc|grpcs|http|https`)
+)
 
 // loadCerts loads the system x509 cert pool
 func loadCerts() *x509.CertPool {
@@ -70,7 +75,7 @@ func parseTarget(target string) (string, string, bool, error) {
 	}
 
 	if !allowedSchemesRe.MatchString(u.Scheme) {
-		return "", "", false, errors.New("target should start with grpc:// or grpcs:// or http:// or https://")
+		return "", "", false, ErrInvalidTargetScheme
 	}
 
 	authority := u.Host
@@ -81,7 +86,7 @@ func parseTarget(target string) (string, string, bool, error) {
 		case "grpcs", "https":
 			authority += ":443"
 		default:
-			return "", "", false, fmt.Errorf("missing port with unsupported scheme: %s", u.Scheme)
+			return "", "", false, fmt.Errorf("missing port with unsupported scheme: %s: %w", u.Scheme, ErrInvalidTargetScheme)
 		}
 	}
 
@@ -90,7 +95,11 @@ func parseTarget(target string) (string, string, bool, error) {
 		path = ""
 	}
 
-	tlsVerify := u.Scheme == "grpcs"
+	tlsVerify := false
+	switch u.Scheme {
+	case "grpcs", "https":
+		tlsVerify = true
+	}
 
 	return authority, path, tlsVerify, nil
 }

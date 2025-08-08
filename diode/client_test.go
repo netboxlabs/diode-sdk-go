@@ -64,6 +64,20 @@ func TestParseTarget(t *testing.T) {
 			wantErr:   nil,
 		},
 		{
+			desc:      "valid HTTP target",
+			target:    "http://localhost:8081",
+			authority: "localhost:8081",
+			tlsVerify: false,
+			wantErr:   nil,
+		},
+		{
+			desc:      "valid HTTP target with tls",
+			target:    "https://localhost:8081",
+			authority: "localhost:8081",
+			tlsVerify: true,
+			wantErr:   nil,
+		},
+		{
 			desc:      "valid target empty path on grpc://localhost:8081/",
 			target:    "grpc://localhost:8081/",
 			authority: "localhost:8081",
@@ -81,11 +95,11 @@ func TestParseTarget(t *testing.T) {
 		},
 		{
 			desc:      "invalid scheme in target",
-			target:    "http://localhost:8081",
+			target:    "ftp://localhost:8081",
 			authority: "",
 			path:      "",
 			tlsVerify: false,
-			wantErr:   errors.New("target should start with grpc:// or grpcs://"),
+			wantErr:   ErrInvalidTargetScheme,
 		},
 		{
 			desc:      "invalid target",
