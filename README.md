@@ -30,8 +30,9 @@ go get github.com/netboxlabs/diode-sdk-go
 
 ### Example
 
-* `target` should be the address of the Diode service, e.g. `grpc://localhost:8080/diode` for insecure connection
-  or `grpcs://example.com` for secure connection.
+* `target` should be the address of the Diode service.
+  * Insecure connections: `grpc://localhost:8080/diode` or `http://localhost:8080/diode`
+  * Secure connections: `grpcs://example.com` or `https://example.com`
 
 ```go
 package main
