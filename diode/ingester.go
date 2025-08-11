@@ -1,5 +1,5 @@
 // Generated code. DO NOT EDIT.
-// Timestamp: 2025-04-10 15:41:02Z
+// Timestamp: 2025-07-23 01:46:43Z
 //
 
 package diode
@@ -1768,6 +1768,7 @@ type Contact struct {
     Comments *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Groups []*ContactGroup
 }
 
 func (e *Contact) ConvertToProtoMessage() proto.Message {
@@ -1783,6 +1784,7 @@ func (e *Contact) ConvertToProtoMessage() proto.Message {
         Comments: e.GetComments(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Groups: e.GetGroups(),
     }
     return r
 }
@@ -1895,6 +1897,16 @@ func (e *Contact) GetCustomFields() map[string]*pb.CustomFieldValue {
     return r
 }
 
+func (e *Contact) GetGroups() []*pb.ContactGroup {
+    var r []*pb.ContactGroup
+    if e != nil && e.Groups != nil {
+        for _, v := range e.Groups {
+            r = append(r, v.ConvertToProtoMessage().(*pb.ContactGroup))
+        }
+    }
+    return r
+}
+
 type ContactAssignment struct {
     // Object can be any Entity type
     Object anyContactAssignmentObjectValue
@@ -1996,6 +2008,7 @@ type ContactGroup struct {
     Description *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Comments *string
 }
 
 func (e *ContactGroup) ConvertToProtoMessage() proto.Message {
@@ -2006,6 +2019,7 @@ func (e *ContactGroup) ConvertToProtoMessage() proto.Message {
         Description: e.GetDescription(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Comments: e.GetComments(),
     }
     return r
 }
@@ -2074,6 +2088,14 @@ func (e *ContactGroup) GetCustomFields() map[string]*pb.CustomFieldValue {
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
         }
+    }
+    return r
+}
+
+func (e *ContactGroup) GetComments() *string {
+    var r *string
+    if e != nil && e.Comments != nil {
+        r = e.Comments
     }
     return r
 }
@@ -2646,6 +2668,8 @@ type DeviceRole struct {
     Description *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Parent *DeviceRole
+    Comments *string
 }
 
 func (e *DeviceRole) ConvertToProtoMessage() proto.Message {
@@ -2657,6 +2681,8 @@ func (e *DeviceRole) ConvertToProtoMessage() proto.Message {
         Description: e.GetDescription(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Parent: e.GetParent(),
+        Comments: e.GetComments(),
     }
     return r
 }
@@ -2733,6 +2759,22 @@ func (e *DeviceRole) GetCustomFields() map[string]*pb.CustomFieldValue {
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
         }
+    }
+    return r
+}
+
+func (e *DeviceRole) GetParent() *pb.DeviceRole {
+    var r *pb.DeviceRole
+    if e != nil && e.Parent != nil {
+        r = e.Parent.ConvertToProtoMessage().(*pb.DeviceRole)
+    }
+    return r
+}
+
+func (e *DeviceRole) GetComments() *string {
+    var r *string
+    if e != nil && e.Comments != nil {
+        r = e.Comments
     }
     return r
 }
@@ -3689,6 +3731,7 @@ type IPRange struct {
     Tags []*Tag
     MarkUtilized *bool
     CustomFields map[string]*CustomFieldValue
+    MarkPopulated *bool
 }
 
 func (e *IPRange) ConvertToProtoMessage() proto.Message {
@@ -3704,6 +3747,7 @@ func (e *IPRange) ConvertToProtoMessage() proto.Message {
         Tags: e.GetTags(),
         MarkUtilized: e.GetMarkUtilized(),
         CustomFields: e.GetCustomFields(),
+        MarkPopulated: e.GetMarkPopulated(),
     }
     return r
 }
@@ -3812,6 +3856,14 @@ func (e *IPRange) GetCustomFields() map[string]*pb.CustomFieldValue {
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
         }
+    }
+    return r
+}
+
+func (e *IPRange) GetMarkPopulated() *bool {
+    var r *bool
+    if e != nil && e.MarkPopulated != nil {
+        r = e.MarkPopulated
     }
     return r
 }
@@ -4812,6 +4864,7 @@ type L2VPN struct {
     CustomFields map[string]*CustomFieldValue
     ImportTargets []*RouteTarget
     ExportTargets []*RouteTarget
+    Status *string
 }
 
 func (e *L2VPN) ConvertToProtoMessage() proto.Message {
@@ -4827,6 +4880,7 @@ func (e *L2VPN) ConvertToProtoMessage() proto.Message {
         CustomFields: e.GetCustomFields(),
         ImportTargets: e.GetImportTargets(),
         ExportTargets: e.GetExportTargets(),
+        Status: e.GetStatus(),
     }
     return r
 }
@@ -4943,12 +4997,17 @@ func (e *L2VPN) GetExportTargets() []*pb.RouteTarget {
     return r
 }
 
+func (e *L2VPN) GetStatus() *string {
+    var r *string
+    if e != nil && e.Status != nil {
+        r = e.Status
+    }
+    return r
+}
+
 type L2VPNTermination struct {
     L2Vpn *L2VPN
-    // AssignedObject can be:
-    //  - Interface
-    //  - VLAN
-    //  - VMInterface
+    // AssignedObject can be any Entity type
     AssignedObject anyL2VPNTerminationAssignedObjectValue
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
@@ -5031,6 +5090,7 @@ type Location struct {
     Description *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Comments *string
 }
 
 func (e *Location) ConvertToProtoMessage() proto.Message {
@@ -5045,6 +5105,7 @@ func (e *Location) ConvertToProtoMessage() proto.Message {
         Description: e.GetDescription(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Comments: e.GetComments(),
     }
     return r
 }
@@ -5145,6 +5206,14 @@ func (e *Location) GetCustomFields() map[string]*pb.CustomFieldValue {
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
         }
+    }
+    return r
+}
+
+func (e *Location) GetComments() *string {
+    var r *string
+    if e != nil && e.Comments != nil {
+        r = e.Comments
     }
     return r
 }
@@ -5583,6 +5652,8 @@ type ModuleType struct {
     Comments *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Profile *ModuleTypeProfile
+    Attributes *string
 }
 
 func (e *ModuleType) ConvertToProtoMessage() proto.Message {
@@ -5597,6 +5668,8 @@ func (e *ModuleType) ConvertToProtoMessage() proto.Message {
         Comments: e.GetComments(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Profile: e.GetProfile(),
+        Attributes: e.GetAttributes(),
     }
     return r
 }
@@ -5697,6 +5770,22 @@ func (e *ModuleType) GetCustomFields() map[string]*pb.CustomFieldValue {
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
         }
+    }
+    return r
+}
+
+func (e *ModuleType) GetProfile() *pb.ModuleTypeProfile {
+    var r *pb.ModuleTypeProfile
+    if e != nil && e.Profile != nil {
+        r = e.Profile.ConvertToProtoMessage().(*pb.ModuleTypeProfile)
+    }
+    return r
+}
+
+func (e *ModuleType) GetAttributes() *string {
+    var r *string
+    if e != nil && e.Attributes != nil {
+        r = e.Attributes
     }
     return r
 }
@@ -5992,6 +6081,7 @@ type PowerOutlet struct {
     MarkConnected *bool
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Status *string
 }
 
 func (e *PowerOutlet) ConvertToProtoMessage() proto.Message {
@@ -6008,6 +6098,7 @@ func (e *PowerOutlet) ConvertToProtoMessage() proto.Message {
         MarkConnected: e.GetMarkConnected(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Status: e.GetStatus(),
     }
     return r
 }
@@ -6124,6 +6215,14 @@ func (e *PowerOutlet) GetCustomFields() map[string]*pb.CustomFieldValue {
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
         }
+    }
+    return r
+}
+
+func (e *PowerOutlet) GetStatus() *string {
+    var r *string
+    if e != nil && e.Status != nil {
+        r = e.Status
     }
     return r
 }
@@ -6962,6 +7061,7 @@ type Rack struct {
     Comments *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    OuterHeight *int64
 }
 
 func (e *Rack) ConvertToProtoMessage() proto.Message {
@@ -6993,6 +7093,7 @@ func (e *Rack) ConvertToProtoMessage() proto.Message {
         Comments: e.GetComments(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        OuterHeight: e.GetOuterHeight(),
     }
     return r
 }
@@ -7233,6 +7334,14 @@ func (e *Rack) GetCustomFields() map[string]*pb.CustomFieldValue {
     return r
 }
 
+func (e *Rack) GetOuterHeight() *int64 {
+    var r *int64
+    if e != nil && e.OuterHeight != nil {
+        r = e.OuterHeight
+    }
+    return r
+}
+
 type RackReservation struct {
     Rack *Rack
     Units []int64
@@ -7443,6 +7552,7 @@ type RackType struct {
     Comments *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    OuterHeight *int64
 }
 
 func (e *RackType) ConvertToProtoMessage() proto.Message {
@@ -7466,6 +7576,7 @@ func (e *RackType) ConvertToProtoMessage() proto.Message {
         Comments: e.GetComments(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        OuterHeight: e.GetOuterHeight(),
     }
     return r
 }
@@ -7642,6 +7753,14 @@ func (e *RackType) GetCustomFields() map[string]*pb.CustomFieldValue {
     return r
 }
 
+func (e *RackType) GetOuterHeight() *int64 {
+    var r *int64
+    if e != nil && e.OuterHeight != nil {
+        r = e.OuterHeight
+    }
+    return r
+}
+
 type RearPort struct {
     Device *Device
     Module *Module
@@ -7788,6 +7907,7 @@ type Region struct {
     Description *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Comments *string
 }
 
 func (e *Region) ConvertToProtoMessage() proto.Message {
@@ -7798,6 +7918,7 @@ func (e *Region) ConvertToProtoMessage() proto.Message {
         Description: e.GetDescription(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Comments: e.GetComments(),
     }
     return r
 }
@@ -7866,6 +7987,14 @@ func (e *Region) GetCustomFields() map[string]*pb.CustomFieldValue {
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
         }
+    }
+    return r
+}
+
+func (e *Region) GetComments() *string {
+    var r *string
+    if e != nil && e.Comments != nil {
+        r = e.Comments
     }
     return r
 }
@@ -8059,6 +8188,11 @@ type Service struct {
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
     Ipaddresses []*IPAddress
+    // ParentObject can be:
+    //  - Device
+    //  - FHRPGroup
+    //  - VirtualMachine
+    ParentObject anyServiceParentObjectValue
 }
 
 func (e *Service) ConvertToProtoMessage() proto.Message {
@@ -8073,6 +8207,9 @@ func (e *Service) ConvertToProtoMessage() proto.Message {
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
         Ipaddresses: e.GetIpaddresses(),
+    }
+    if e.ParentObject != nil {
+        e.ParentObject.anyServiceParentObjectValueApplyTo(r)
     }
     return r
 }
@@ -8177,6 +8314,16 @@ func (e *Service) GetIpaddresses() []*pb.IPAddress {
         for _, v := range e.Ipaddresses {
             r = append(r, v.ConvertToProtoMessage().(*pb.IPAddress))
         }
+    }
+    return r
+}
+
+func (e *Service) GetParentObject() any {
+    var r any
+    if e != nil && e.ParentObject != nil {
+        var tmp pb.Service
+        e.ParentObject.anyServiceParentObjectValueApplyTo(&tmp)
+        r = tmp.ParentObject
     }
     return r
 }
@@ -8389,6 +8536,7 @@ type SiteGroup struct {
     Description *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Comments *string
 }
 
 func (e *SiteGroup) ConvertToProtoMessage() proto.Message {
@@ -8399,6 +8547,7 @@ func (e *SiteGroup) ConvertToProtoMessage() proto.Message {
         Description: e.GetDescription(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Comments: e.GetComments(),
     }
     return r
 }
@@ -8471,10 +8620,21 @@ func (e *SiteGroup) GetCustomFields() map[string]*pb.CustomFieldValue {
     return r
 }
 
+func (e *SiteGroup) GetComments() *string {
+    var r *string
+    if e != nil && e.Comments != nil {
+        r = e.Comments
+    }
+    return r
+}
+
 type Tag struct {
     Name *string
     Slug *string
     Color *string
+    Description *string
+    Weight *int64
+    ObjectTypes []string
 }
 
 func (e *Tag) ConvertToProtoMessage() proto.Message {
@@ -8482,6 +8642,9 @@ func (e *Tag) ConvertToProtoMessage() proto.Message {
         Name: e.GetName(),
         Slug: e.GetSlug(),
         Color: e.GetColor(),
+        Description: e.GetDescription(),
+        Weight: e.GetWeight(),
+        ObjectTypes: e.GetObjectTypes(),
     }
     return r
 }
@@ -8514,6 +8677,32 @@ func (e *Tag) GetColor() *string {
     var r *string
     if e != nil && e.Color != nil {
         r = e.Color
+    }
+    return r
+}
+
+func (e *Tag) GetDescription() *string {
+    var r *string
+    if e != nil && e.Description != nil {
+        r = e.Description
+    }
+    return r
+}
+
+func (e *Tag) GetWeight() *int64 {
+    var r *int64
+    if e != nil && e.Weight != nil {
+        r = e.Weight
+    }
+    return r
+}
+
+func (e *Tag) GetObjectTypes() []string {
+    var r []string
+    if e != nil && e.ObjectTypes != nil {
+        for _, v := range e.ObjectTypes {
+            r = append(r, v)
+        }
     }
     return r
 }
@@ -8624,6 +8813,7 @@ type TenantGroup struct {
     Description *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Comments *string
 }
 
 func (e *TenantGroup) ConvertToProtoMessage() proto.Message {
@@ -8634,6 +8824,7 @@ func (e *TenantGroup) ConvertToProtoMessage() proto.Message {
         Description: e.GetDescription(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Comments: e.GetComments(),
     }
     return r
 }
@@ -8702,6 +8893,14 @@ func (e *TenantGroup) GetCustomFields() map[string]*pb.CustomFieldValue {
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
         }
+    }
+    return r
+}
+
+func (e *TenantGroup) GetComments() *string {
+    var r *string
+    if e != nil && e.Comments != nil {
+        r = e.Comments
     }
     return r
 }
@@ -9193,6 +9392,7 @@ type VLANGroup struct {
     Description *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Tenant *Tenant
 }
 
 func (e *VLANGroup) ConvertToProtoMessage() proto.Message {
@@ -9203,6 +9403,7 @@ func (e *VLANGroup) ConvertToProtoMessage() proto.Message {
         Description: e.GetDescription(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Tenant: e.GetTenant(),
     }
     if e.Scope != nil {
         e.Scope.anyVLANGroupScopeValueApplyTo(r)
@@ -9286,6 +9487,14 @@ func (e *VLANGroup) GetCustomFields() map[string]*pb.CustomFieldValue {
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
         }
+    }
+    return r
+}
+
+func (e *VLANGroup) GetTenant() *pb.Tenant {
+    var r *pb.Tenant
+    if e != nil && e.Tenant != nil {
+        r = e.Tenant.ConvertToProtoMessage().(*pb.Tenant)
     }
     return r
 }
@@ -10726,6 +10935,7 @@ type WirelessLANGroup struct {
     Description *string
     Tags []*Tag
     CustomFields map[string]*CustomFieldValue
+    Comments *string
 }
 
 func (e *WirelessLANGroup) ConvertToProtoMessage() proto.Message {
@@ -10736,6 +10946,7 @@ func (e *WirelessLANGroup) ConvertToProtoMessage() proto.Message {
         Description: e.GetDescription(),
         Tags: e.GetTags(),
         CustomFields: e.GetCustomFields(),
+        Comments: e.GetComments(),
     }
     return r
 }
@@ -10804,6 +11015,14 @@ func (e *WirelessLANGroup) GetCustomFields() map[string]*pb.CustomFieldValue {
         for k, v := range e.CustomFields {
             r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
         }
+    }
+    return r
+}
+
+func (e *WirelessLANGroup) GetComments() *string {
+    var r *string
+    if e != nil && e.Comments != nil {
+        r = e.Comments
     }
     return r
 }
@@ -10977,6 +11196,596 @@ func (e *WirelessLink) GetCustomFields() map[string]*pb.CustomFieldValue {
     return r
 }
 
+type CustomField struct {
+    Type *string
+    RelatedObjectType *string
+    Name *string
+    Label *string
+    GroupName *string
+    Description *string
+    Required *bool
+    Unique *bool
+    SearchWeight *int64
+    FilterLogic *string
+    UiVisible *string
+    UiEditable *string
+    IsCloneable *bool
+    Default *string
+    RelatedObjectFilter *string
+    Weight *int64
+    ValidationMinimum *int64
+    ValidationMaximum *int64
+    ValidationRegex *string
+    ChoiceSet *CustomFieldChoiceSet
+    Comments *string
+    ObjectTypes []string
+}
+
+func (e *CustomField) ConvertToProtoMessage() proto.Message {
+    r := &pb.CustomField {
+        Type: e.GetType(),
+        RelatedObjectType: e.GetRelatedObjectType(),
+        Name: e.GetName(),
+        Label: e.GetLabel(),
+        GroupName: e.GetGroupName(),
+        Description: e.GetDescription(),
+        Required: e.GetRequired(),
+        Unique: e.GetUnique(),
+        SearchWeight: e.GetSearchWeight(),
+        FilterLogic: e.GetFilterLogic(),
+        UiVisible: e.GetUiVisible(),
+        UiEditable: e.GetUiEditable(),
+        IsCloneable: e.GetIsCloneable(),
+        Default: e.GetDefault(),
+        RelatedObjectFilter: e.GetRelatedObjectFilter(),
+        Weight: e.GetWeight(),
+        ValidationMinimum: e.GetValidationMinimum(),
+        ValidationMaximum: e.GetValidationMaximum(),
+        ValidationRegex: e.GetValidationRegex(),
+        ChoiceSet: e.GetChoiceSet(),
+        Comments: e.GetComments(),
+        ObjectTypes: e.GetObjectTypes(),
+    }
+    return r
+}
+
+func (e *CustomField) ConvertToProtoEntity() *pb.Entity {
+    return &pb.Entity{
+        Entity: &pb.Entity_CustomField {
+            CustomField: e.ConvertToProtoMessage().(*pb.CustomField),
+        },
+    }
+}
+
+func (e *CustomField) GetType() string {
+    var r string
+    if e != nil && e.Type != nil {
+        r = *e.Type
+    }
+    return r
+}
+
+func (e *CustomField) GetRelatedObjectType() *string {
+    var r *string
+    if e != nil && e.RelatedObjectType != nil {
+        r = e.RelatedObjectType
+    }
+    return r
+}
+
+func (e *CustomField) GetName() string {
+    var r string
+    if e != nil && e.Name != nil {
+        r = *e.Name
+    }
+    return r
+}
+
+func (e *CustomField) GetLabel() *string {
+    var r *string
+    if e != nil && e.Label != nil {
+        r = e.Label
+    }
+    return r
+}
+
+func (e *CustomField) GetGroupName() *string {
+    var r *string
+    if e != nil && e.GroupName != nil {
+        r = e.GroupName
+    }
+    return r
+}
+
+func (e *CustomField) GetDescription() *string {
+    var r *string
+    if e != nil && e.Description != nil {
+        r = e.Description
+    }
+    return r
+}
+
+func (e *CustomField) GetRequired() *bool {
+    var r *bool
+    if e != nil && e.Required != nil {
+        r = e.Required
+    }
+    return r
+}
+
+func (e *CustomField) GetUnique() *bool {
+    var r *bool
+    if e != nil && e.Unique != nil {
+        r = e.Unique
+    }
+    return r
+}
+
+func (e *CustomField) GetSearchWeight() *int64 {
+    var r *int64
+    if e != nil && e.SearchWeight != nil {
+        r = e.SearchWeight
+    }
+    return r
+}
+
+func (e *CustomField) GetFilterLogic() *string {
+    var r *string
+    if e != nil && e.FilterLogic != nil {
+        r = e.FilterLogic
+    }
+    return r
+}
+
+func (e *CustomField) GetUiVisible() *string {
+    var r *string
+    if e != nil && e.UiVisible != nil {
+        r = e.UiVisible
+    }
+    return r
+}
+
+func (e *CustomField) GetUiEditable() *string {
+    var r *string
+    if e != nil && e.UiEditable != nil {
+        r = e.UiEditable
+    }
+    return r
+}
+
+func (e *CustomField) GetIsCloneable() *bool {
+    var r *bool
+    if e != nil && e.IsCloneable != nil {
+        r = e.IsCloneable
+    }
+    return r
+}
+
+func (e *CustomField) GetDefault() *string {
+    var r *string
+    if e != nil && e.Default != nil {
+        r = e.Default
+    }
+    return r
+}
+
+func (e *CustomField) GetRelatedObjectFilter() *string {
+    var r *string
+    if e != nil && e.RelatedObjectFilter != nil {
+        r = e.RelatedObjectFilter
+    }
+    return r
+}
+
+func (e *CustomField) GetWeight() *int64 {
+    var r *int64
+    if e != nil && e.Weight != nil {
+        r = e.Weight
+    }
+    return r
+}
+
+func (e *CustomField) GetValidationMinimum() *int64 {
+    var r *int64
+    if e != nil && e.ValidationMinimum != nil {
+        r = e.ValidationMinimum
+    }
+    return r
+}
+
+func (e *CustomField) GetValidationMaximum() *int64 {
+    var r *int64
+    if e != nil && e.ValidationMaximum != nil {
+        r = e.ValidationMaximum
+    }
+    return r
+}
+
+func (e *CustomField) GetValidationRegex() *string {
+    var r *string
+    if e != nil && e.ValidationRegex != nil {
+        r = e.ValidationRegex
+    }
+    return r
+}
+
+func (e *CustomField) GetChoiceSet() *pb.CustomFieldChoiceSet {
+    var r *pb.CustomFieldChoiceSet
+    if e != nil && e.ChoiceSet != nil {
+        r = e.ChoiceSet.ConvertToProtoMessage().(*pb.CustomFieldChoiceSet)
+    }
+    return r
+}
+
+func (e *CustomField) GetComments() *string {
+    var r *string
+    if e != nil && e.Comments != nil {
+        r = e.Comments
+    }
+    return r
+}
+
+func (e *CustomField) GetObjectTypes() []string {
+    var r []string
+    if e != nil && e.ObjectTypes != nil {
+        for _, v := range e.ObjectTypes {
+            r = append(r, v)
+        }
+    }
+    return r
+}
+
+type CustomFieldChoiceSet struct {
+    Name *string
+    Description *string
+    BaseChoices *string
+    OrderAlphabetically *bool
+    ExtraChoices []string
+}
+
+func (e *CustomFieldChoiceSet) ConvertToProtoMessage() proto.Message {
+    r := &pb.CustomFieldChoiceSet {
+        Name: e.GetName(),
+        Description: e.GetDescription(),
+        BaseChoices: e.GetBaseChoices(),
+        OrderAlphabetically: e.GetOrderAlphabetically(),
+        ExtraChoices: e.GetExtraChoices(),
+    }
+    return r
+}
+
+func (e *CustomFieldChoiceSet) ConvertToProtoEntity() *pb.Entity {
+    return &pb.Entity{
+        Entity: &pb.Entity_CustomFieldChoiceSet {
+            CustomFieldChoiceSet: e.ConvertToProtoMessage().(*pb.CustomFieldChoiceSet),
+        },
+    }
+}
+
+func (e *CustomFieldChoiceSet) GetName() string {
+    var r string
+    if e != nil && e.Name != nil {
+        r = *e.Name
+    }
+    return r
+}
+
+func (e *CustomFieldChoiceSet) GetDescription() *string {
+    var r *string
+    if e != nil && e.Description != nil {
+        r = e.Description
+    }
+    return r
+}
+
+func (e *CustomFieldChoiceSet) GetBaseChoices() *string {
+    var r *string
+    if e != nil && e.BaseChoices != nil {
+        r = e.BaseChoices
+    }
+    return r
+}
+
+func (e *CustomFieldChoiceSet) GetOrderAlphabetically() *bool {
+    var r *bool
+    if e != nil && e.OrderAlphabetically != nil {
+        r = e.OrderAlphabetically
+    }
+    return r
+}
+
+func (e *CustomFieldChoiceSet) GetExtraChoices() []string {
+    var r []string
+    if e != nil && e.ExtraChoices != nil {
+        for _, v := range e.ExtraChoices {
+            r = append(r, v)
+        }
+    }
+    return r
+}
+
+type JournalEntry struct {
+    // AssignedObject can be any Entity type
+    AssignedObject anyJournalEntryAssignedObjectValue
+    Kind *string
+    Comments *string
+    Tags []*Tag
+    CustomFields map[string]*CustomFieldValue
+}
+
+func (e *JournalEntry) ConvertToProtoMessage() proto.Message {
+    r := &pb.JournalEntry {
+        Kind: e.GetKind(),
+        Comments: e.GetComments(),
+        Tags: e.GetTags(),
+        CustomFields: e.GetCustomFields(),
+    }
+    if e.AssignedObject != nil {
+        e.AssignedObject.anyJournalEntryAssignedObjectValueApplyTo(r)
+    }
+    return r
+}
+
+func (e *JournalEntry) ConvertToProtoEntity() *pb.Entity {
+    return &pb.Entity{
+        Entity: &pb.Entity_JournalEntry {
+            JournalEntry: e.ConvertToProtoMessage().(*pb.JournalEntry),
+        },
+    }
+}
+
+func (e *JournalEntry) SetCustomField(key string, value any) error {
+    if e.CustomFields == nil {
+        e.CustomFields = make(map[string]*CustomFieldValue)
+    }
+    return setCustomField(e.CustomFields, key, value)
+}
+
+func (e *JournalEntry) GetAssignedObject() any {
+    var r any
+    if e != nil && e.AssignedObject != nil {
+        var tmp pb.JournalEntry
+        e.AssignedObject.anyJournalEntryAssignedObjectValueApplyTo(&tmp)
+        r = tmp.AssignedObject
+    }
+    return r
+}
+
+func (e *JournalEntry) GetKind() *string {
+    var r *string
+    if e != nil && e.Kind != nil {
+        r = e.Kind
+    }
+    return r
+}
+
+func (e *JournalEntry) GetComments() string {
+    var r string
+    if e != nil && e.Comments != nil {
+        r = *e.Comments
+    }
+    return r
+}
+
+func (e *JournalEntry) GetTags() []*pb.Tag {
+    var r []*pb.Tag
+    if e != nil && e.Tags != nil {
+        for _, v := range e.Tags {
+            r = append(r, v.ConvertToProtoMessage().(*pb.Tag))
+        }
+    }
+    return r
+}
+
+func (e *JournalEntry) GetCustomFields() map[string]*pb.CustomFieldValue {
+    var r map[string]*pb.CustomFieldValue
+    if e != nil && e.CustomFields != nil {
+        r = make(map[string]*pb.CustomFieldValue)
+        for k, v := range e.CustomFields {
+            r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+        }
+    }
+    return r
+}
+
+type ModuleTypeProfile struct {
+    Name *string
+    Description *string
+    Schema *string
+    Comments *string
+    Tags []*Tag
+    CustomFields map[string]*CustomFieldValue
+}
+
+func (e *ModuleTypeProfile) ConvertToProtoMessage() proto.Message {
+    r := &pb.ModuleTypeProfile {
+        Name: e.GetName(),
+        Description: e.GetDescription(),
+        Schema: e.GetSchema(),
+        Comments: e.GetComments(),
+        Tags: e.GetTags(),
+        CustomFields: e.GetCustomFields(),
+    }
+    return r
+}
+
+func (e *ModuleTypeProfile) ConvertToProtoEntity() *pb.Entity {
+    return &pb.Entity{
+        Entity: &pb.Entity_ModuleTypeProfile {
+            ModuleTypeProfile: e.ConvertToProtoMessage().(*pb.ModuleTypeProfile),
+        },
+    }
+}
+
+func (e *ModuleTypeProfile) SetCustomField(key string, value any) error {
+    if e.CustomFields == nil {
+        e.CustomFields = make(map[string]*CustomFieldValue)
+    }
+    return setCustomField(e.CustomFields, key, value)
+}
+
+func (e *ModuleTypeProfile) GetName() string {
+    var r string
+    if e != nil && e.Name != nil {
+        r = *e.Name
+    }
+    return r
+}
+
+func (e *ModuleTypeProfile) GetDescription() *string {
+    var r *string
+    if e != nil && e.Description != nil {
+        r = e.Description
+    }
+    return r
+}
+
+func (e *ModuleTypeProfile) GetSchema() *string {
+    var r *string
+    if e != nil && e.Schema != nil {
+        r = e.Schema
+    }
+    return r
+}
+
+func (e *ModuleTypeProfile) GetComments() *string {
+    var r *string
+    if e != nil && e.Comments != nil {
+        r = e.Comments
+    }
+    return r
+}
+
+func (e *ModuleTypeProfile) GetTags() []*pb.Tag {
+    var r []*pb.Tag
+    if e != nil && e.Tags != nil {
+        for _, v := range e.Tags {
+            r = append(r, v.ConvertToProtoMessage().(*pb.Tag))
+        }
+    }
+    return r
+}
+
+func (e *ModuleTypeProfile) GetCustomFields() map[string]*pb.CustomFieldValue {
+    var r map[string]*pb.CustomFieldValue
+    if e != nil && e.CustomFields != nil {
+        r = make(map[string]*pb.CustomFieldValue)
+        for k, v := range e.CustomFields {
+            r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+        }
+    }
+    return r
+}
+
+type CustomLink struct {
+    Name *string
+    Enabled *bool
+    LinkText *string
+    LinkUrl *string
+    Weight *int64
+    GroupName *string
+    ButtonClass *string
+    NewWindow *bool
+    ObjectTypes []string
+}
+
+func (e *CustomLink) ConvertToProtoMessage() proto.Message {
+    r := &pb.CustomLink {
+        Name: e.GetName(),
+        Enabled: e.GetEnabled(),
+        LinkText: e.GetLinkText(),
+        LinkUrl: e.GetLinkUrl(),
+        Weight: e.GetWeight(),
+        GroupName: e.GetGroupName(),
+        ButtonClass: e.GetButtonClass(),
+        NewWindow: e.GetNewWindow(),
+        ObjectTypes: e.GetObjectTypes(),
+    }
+    return r
+}
+
+func (e *CustomLink) ConvertToProtoEntity() *pb.Entity {
+    return &pb.Entity{
+        Entity: &pb.Entity_CustomLink {
+            CustomLink: e.ConvertToProtoMessage().(*pb.CustomLink),
+        },
+    }
+}
+
+func (e *CustomLink) GetName() string {
+    var r string
+    if e != nil && e.Name != nil {
+        r = *e.Name
+    }
+    return r
+}
+
+func (e *CustomLink) GetEnabled() *bool {
+    var r *bool
+    if e != nil && e.Enabled != nil {
+        r = e.Enabled
+    }
+    return r
+}
+
+func (e *CustomLink) GetLinkText() string {
+    var r string
+    if e != nil && e.LinkText != nil {
+        r = *e.LinkText
+    }
+    return r
+}
+
+func (e *CustomLink) GetLinkUrl() string {
+    var r string
+    if e != nil && e.LinkUrl != nil {
+        r = *e.LinkUrl
+    }
+    return r
+}
+
+func (e *CustomLink) GetWeight() *int64 {
+    var r *int64
+    if e != nil && e.Weight != nil {
+        r = e.Weight
+    }
+    return r
+}
+
+func (e *CustomLink) GetGroupName() *string {
+    var r *string
+    if e != nil && e.GroupName != nil {
+        r = e.GroupName
+    }
+    return r
+}
+
+func (e *CustomLink) GetButtonClass() *string {
+    var r *string
+    if e != nil && e.ButtonClass != nil {
+        r = e.ButtonClass
+    }
+    return r
+}
+
+func (e *CustomLink) GetNewWindow() *bool {
+    var r *bool
+    if e != nil && e.NewWindow != nil {
+        r = e.NewWindow
+    }
+    return r
+}
+
+func (e *CustomLink) GetObjectTypes() []string {
+    var r []string
+    if e != nil && e.ObjectTypes != nil {
+        for _, v := range e.ObjectTypes {
+            r = append(r, v)
+        }
+    }
+    return r
+}
+
 func setCustomField(cf map[string]*CustomFieldValue, key string, value any) error {
     switch v := value.(type) {
     case json.RawMessage:
@@ -11071,9 +11880,21 @@ func (e *ASN) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *ASN) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectAsn {
+        AssignedObjectAsn: e.ConvertToProtoMessage().(*pb.ASN),
+    }
+}
+
 func (e *ASN) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationAsn {
         TerminationAsn: e.ConvertToProtoMessage().(*pb.ASN),
+    }
+}
+
+func (e *ASN) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectAsn {
+        AssignedObjectAsn: e.ConvertToProtoMessage().(*pb.ASN),
     }
 }
 
@@ -11103,9 +11924,21 @@ func (e *ASNRange) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *ASNRange) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectAsnRange {
+        AssignedObjectAsnRange: e.ConvertToProtoMessage().(*pb.ASNRange),
+    }
+}
+
 func (e *ASNRange) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationAsnRange {
         TerminationAsnRange: e.ConvertToProtoMessage().(*pb.ASNRange),
+    }
+}
+
+func (e *ASNRange) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectAsnRange {
+        AssignedObjectAsnRange: e.ConvertToProtoMessage().(*pb.ASNRange),
     }
 }
 
@@ -11135,9 +11968,21 @@ func (e *Aggregate) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Aggregate) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectAggregate {
+        AssignedObjectAggregate: e.ConvertToProtoMessage().(*pb.Aggregate),
+    }
+}
+
 func (e *Aggregate) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationAggregate {
         TerminationAggregate: e.ConvertToProtoMessage().(*pb.Aggregate),
+    }
+}
+
+func (e *Aggregate) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectAggregate {
+        AssignedObjectAggregate: e.ConvertToProtoMessage().(*pb.Aggregate),
     }
 }
 
@@ -11167,9 +12012,21 @@ func (e *Cable) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Cable) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCable {
+        AssignedObjectCable: e.ConvertToProtoMessage().(*pb.Cable),
+    }
+}
+
 func (e *Cable) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationCable {
         TerminationCable: e.ConvertToProtoMessage().(*pb.Cable),
+    }
+}
+
+func (e *Cable) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectCable {
+        AssignedObjectCable: e.ConvertToProtoMessage().(*pb.Cable),
     }
 }
 
@@ -11199,9 +12056,21 @@ func (e *CablePath) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *CablePath) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCablePath {
+        AssignedObjectCablePath: e.ConvertToProtoMessage().(*pb.CablePath),
+    }
+}
+
 func (e *CablePath) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationCablePath {
         TerminationCablePath: e.ConvertToProtoMessage().(*pb.CablePath),
+    }
+}
+
+func (e *CablePath) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectCablePath {
+        AssignedObjectCablePath: e.ConvertToProtoMessage().(*pb.CablePath),
     }
 }
 
@@ -11231,9 +12100,21 @@ func (e *CableTermination) anyGenericObjectObjectValueApplyTo(p *pb.GenericObjec
     }
 }
 
+func (e *CableTermination) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCableTermination {
+        AssignedObjectCableTermination: e.ConvertToProtoMessage().(*pb.CableTermination),
+    }
+}
+
 func (e *CableTermination) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationCableTermination {
         TerminationCableTermination: e.ConvertToProtoMessage().(*pb.CableTermination),
+    }
+}
+
+func (e *CableTermination) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectCableTermination {
+        AssignedObjectCableTermination: e.ConvertToProtoMessage().(*pb.CableTermination),
     }
 }
 
@@ -11269,9 +12150,21 @@ func (e *Circuit) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Circuit) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCircuit {
+        AssignedObjectCircuit: e.ConvertToProtoMessage().(*pb.Circuit),
+    }
+}
+
 func (e *Circuit) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationCircuit {
         TerminationCircuit: e.ConvertToProtoMessage().(*pb.Circuit),
+    }
+}
+
+func (e *Circuit) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectCircuit {
+        AssignedObjectCircuit: e.ConvertToProtoMessage().(*pb.Circuit),
     }
 }
 
@@ -11301,9 +12194,21 @@ func (e *CircuitGroup) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  
     }
 }
 
+func (e *CircuitGroup) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCircuitGroup {
+        AssignedObjectCircuitGroup: e.ConvertToProtoMessage().(*pb.CircuitGroup),
+    }
+}
+
 func (e *CircuitGroup) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationCircuitGroup {
         TerminationCircuitGroup: e.ConvertToProtoMessage().(*pb.CircuitGroup),
+    }
+}
+
+func (e *CircuitGroup) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectCircuitGroup {
+        AssignedObjectCircuitGroup: e.ConvertToProtoMessage().(*pb.CircuitGroup),
     }
 }
 
@@ -11333,9 +12238,21 @@ func (e *CircuitGroupAssignment) anyGenericObjectObjectValueApplyTo(p *pb.Generi
     }
 }
 
+func (e *CircuitGroupAssignment) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCircuitGroupAssignment {
+        AssignedObjectCircuitGroupAssignment: e.ConvertToProtoMessage().(*pb.CircuitGroupAssignment),
+    }
+}
+
 func (e *CircuitGroupAssignment) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationCircuitGroupAssignment {
         TerminationCircuitGroupAssignment: e.ConvertToProtoMessage().(*pb.CircuitGroupAssignment),
+    }
+}
+
+func (e *CircuitGroupAssignment) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectCircuitGroupAssignment {
+        AssignedObjectCircuitGroupAssignment: e.ConvertToProtoMessage().(*pb.CircuitGroupAssignment),
     }
 }
 
@@ -11371,9 +12288,21 @@ func (e *CircuitTermination) anyGenericObjectObjectValueApplyTo(p *pb.GenericObj
     }
 }
 
+func (e *CircuitTermination) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCircuitTermination {
+        AssignedObjectCircuitTermination: e.ConvertToProtoMessage().(*pb.CircuitTermination),
+    }
+}
+
 func (e *CircuitTermination) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationCircuitTermination {
         TerminationCircuitTermination: e.ConvertToProtoMessage().(*pb.CircuitTermination),
+    }
+}
+
+func (e *CircuitTermination) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectCircuitTermination {
+        AssignedObjectCircuitTermination: e.ConvertToProtoMessage().(*pb.CircuitTermination),
     }
 }
 
@@ -11403,9 +12332,21 @@ func (e *CircuitType) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *CircuitType) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCircuitType {
+        AssignedObjectCircuitType: e.ConvertToProtoMessage().(*pb.CircuitType),
+    }
+}
+
 func (e *CircuitType) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationCircuitType {
         TerminationCircuitType: e.ConvertToProtoMessage().(*pb.CircuitType),
+    }
+}
+
+func (e *CircuitType) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectCircuitType {
+        AssignedObjectCircuitType: e.ConvertToProtoMessage().(*pb.CircuitType),
     }
 }
 
@@ -11435,6 +12376,12 @@ func (e *Cluster) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Cluster) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCluster {
+        AssignedObjectCluster: e.ConvertToProtoMessage().(*pb.Cluster),
+    }
+}
+
 func (e *Cluster) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationCluster {
         TerminationCluster: e.ConvertToProtoMessage().(*pb.Cluster),
@@ -11444,6 +12391,12 @@ func (e *Cluster) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermin
 func (e *Cluster) anyVLANGroupScopeValueApplyTo(p *pb.VLANGroup)  {
     p.Scope = &pb.VLANGroup_ScopeCluster {
         ScopeCluster: e.ConvertToProtoMessage().(*pb.Cluster),
+    }
+}
+
+func (e *Cluster) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectCluster {
+        AssignedObjectCluster: e.ConvertToProtoMessage().(*pb.Cluster),
     }
 }
 
@@ -11473,6 +12426,12 @@ func (e *ClusterGroup) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  
     }
 }
 
+func (e *ClusterGroup) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectClusterGroup {
+        AssignedObjectClusterGroup: e.ConvertToProtoMessage().(*pb.ClusterGroup),
+    }
+}
+
 func (e *ClusterGroup) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationClusterGroup {
         TerminationClusterGroup: e.ConvertToProtoMessage().(*pb.ClusterGroup),
@@ -11482,6 +12441,12 @@ func (e *ClusterGroup) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelT
 func (e *ClusterGroup) anyVLANGroupScopeValueApplyTo(p *pb.VLANGroup)  {
     p.Scope = &pb.VLANGroup_ScopeClusterGroup {
         ScopeClusterGroup: e.ConvertToProtoMessage().(*pb.ClusterGroup),
+    }
+}
+
+func (e *ClusterGroup) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectClusterGroup {
+        AssignedObjectClusterGroup: e.ConvertToProtoMessage().(*pb.ClusterGroup),
     }
 }
 
@@ -11511,9 +12476,21 @@ func (e *ClusterType) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *ClusterType) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectClusterType {
+        AssignedObjectClusterType: e.ConvertToProtoMessage().(*pb.ClusterType),
+    }
+}
+
 func (e *ClusterType) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationClusterType {
         TerminationClusterType: e.ConvertToProtoMessage().(*pb.ClusterType),
+    }
+}
+
+func (e *ClusterType) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectClusterType {
+        AssignedObjectClusterType: e.ConvertToProtoMessage().(*pb.ClusterType),
     }
 }
 
@@ -11555,9 +12532,21 @@ func (e *ConsolePort) anyInventoryItemComponentValueApplyTo(p *pb.InventoryItem)
     }
 }
 
+func (e *ConsolePort) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectConsolePort {
+        AssignedObjectConsolePort: e.ConvertToProtoMessage().(*pb.ConsolePort),
+    }
+}
+
 func (e *ConsolePort) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationConsolePort {
         TerminationConsolePort: e.ConvertToProtoMessage().(*pb.ConsolePort),
+    }
+}
+
+func (e *ConsolePort) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectConsolePort {
+        AssignedObjectConsolePort: e.ConvertToProtoMessage().(*pb.ConsolePort),
     }
 }
 
@@ -11599,9 +12588,21 @@ func (e *ConsoleServerPort) anyInventoryItemComponentValueApplyTo(p *pb.Inventor
     }
 }
 
+func (e *ConsoleServerPort) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectConsoleServerPort {
+        AssignedObjectConsoleServerPort: e.ConvertToProtoMessage().(*pb.ConsoleServerPort),
+    }
+}
+
 func (e *ConsoleServerPort) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationConsoleServerPort {
         TerminationConsoleServerPort: e.ConvertToProtoMessage().(*pb.ConsoleServerPort),
+    }
+}
+
+func (e *ConsoleServerPort) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectConsoleServerPort {
+        AssignedObjectConsoleServerPort: e.ConvertToProtoMessage().(*pb.ConsoleServerPort),
     }
 }
 
@@ -11631,9 +12632,21 @@ func (e *Contact) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Contact) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectContact {
+        AssignedObjectContact: e.ConvertToProtoMessage().(*pb.Contact),
+    }
+}
+
 func (e *Contact) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationContact {
         TerminationContact: e.ConvertToProtoMessage().(*pb.Contact),
+    }
+}
+
+func (e *Contact) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectContact {
+        AssignedObjectContact: e.ConvertToProtoMessage().(*pb.Contact),
     }
 }
 
@@ -11663,9 +12676,21 @@ func (e *ContactAssignment) anyGenericObjectObjectValueApplyTo(p *pb.GenericObje
     }
 }
 
+func (e *ContactAssignment) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectContactAssignment {
+        AssignedObjectContactAssignment: e.ConvertToProtoMessage().(*pb.ContactAssignment),
+    }
+}
+
 func (e *ContactAssignment) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationContactAssignment {
         TerminationContactAssignment: e.ConvertToProtoMessage().(*pb.ContactAssignment),
+    }
+}
+
+func (e *ContactAssignment) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectContactAssignment {
+        AssignedObjectContactAssignment: e.ConvertToProtoMessage().(*pb.ContactAssignment),
     }
 }
 
@@ -11695,9 +12720,21 @@ func (e *ContactGroup) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  
     }
 }
 
+func (e *ContactGroup) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectContactGroup {
+        AssignedObjectContactGroup: e.ConvertToProtoMessage().(*pb.ContactGroup),
+    }
+}
+
 func (e *ContactGroup) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationContactGroup {
         TerminationContactGroup: e.ConvertToProtoMessage().(*pb.ContactGroup),
+    }
+}
+
+func (e *ContactGroup) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectContactGroup {
+        AssignedObjectContactGroup: e.ConvertToProtoMessage().(*pb.ContactGroup),
     }
 }
 
@@ -11727,9 +12764,21 @@ func (e *ContactRole) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *ContactRole) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectContactRole {
+        AssignedObjectContactRole: e.ConvertToProtoMessage().(*pb.ContactRole),
+    }
+}
+
 func (e *ContactRole) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationContactRole {
         TerminationContactRole: e.ConvertToProtoMessage().(*pb.ContactRole),
+    }
+}
+
+func (e *ContactRole) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectContactRole {
+        AssignedObjectContactRole: e.ConvertToProtoMessage().(*pb.ContactRole),
     }
 }
 
@@ -11769,9 +12818,27 @@ func (e *Device) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Device) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectDevice {
+        AssignedObjectDevice: e.ConvertToProtoMessage().(*pb.Device),
+    }
+}
+
+func (e *Device) anyServiceParentObjectValueApplyTo(p *pb.Service)  {
+    p.ParentObject = &pb.Service_ParentObjectDevice {
+        ParentObjectDevice: e.ConvertToProtoMessage().(*pb.Device),
+    }
+}
+
 func (e *Device) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationDevice {
         TerminationDevice: e.ConvertToProtoMessage().(*pb.Device),
+    }
+}
+
+func (e *Device) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectDevice {
+        AssignedObjectDevice: e.ConvertToProtoMessage().(*pb.Device),
     }
 }
 
@@ -11801,9 +12868,21 @@ func (e *DeviceBay) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *DeviceBay) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectDeviceBay {
+        AssignedObjectDeviceBay: e.ConvertToProtoMessage().(*pb.DeviceBay),
+    }
+}
+
 func (e *DeviceBay) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationDeviceBay {
         TerminationDeviceBay: e.ConvertToProtoMessage().(*pb.DeviceBay),
+    }
+}
+
+func (e *DeviceBay) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectDeviceBay {
+        AssignedObjectDeviceBay: e.ConvertToProtoMessage().(*pb.DeviceBay),
     }
 }
 
@@ -11833,9 +12912,21 @@ func (e *DeviceRole) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *DeviceRole) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectDeviceRole {
+        AssignedObjectDeviceRole: e.ConvertToProtoMessage().(*pb.DeviceRole),
+    }
+}
+
 func (e *DeviceRole) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationDeviceRole {
         TerminationDeviceRole: e.ConvertToProtoMessage().(*pb.DeviceRole),
+    }
+}
+
+func (e *DeviceRole) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectDeviceRole {
+        AssignedObjectDeviceRole: e.ConvertToProtoMessage().(*pb.DeviceRole),
     }
 }
 
@@ -11865,9 +12956,21 @@ func (e *DeviceType) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *DeviceType) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectDeviceType {
+        AssignedObjectDeviceType: e.ConvertToProtoMessage().(*pb.DeviceType),
+    }
+}
+
 func (e *DeviceType) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationDeviceType {
         TerminationDeviceType: e.ConvertToProtoMessage().(*pb.DeviceType),
+    }
+}
+
+func (e *DeviceType) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectDeviceType {
+        AssignedObjectDeviceType: e.ConvertToProtoMessage().(*pb.DeviceType),
     }
 }
 
@@ -11903,9 +13006,27 @@ func (e *FHRPGroup) anyIPAddressAssignedObjectValueApplyTo(p *pb.IPAddress)  {
     }
 }
 
+func (e *FHRPGroup) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectFhrpGroup {
+        AssignedObjectFhrpGroup: e.ConvertToProtoMessage().(*pb.FHRPGroup),
+    }
+}
+
+func (e *FHRPGroup) anyServiceParentObjectValueApplyTo(p *pb.Service)  {
+    p.ParentObject = &pb.Service_ParentObjectFhrpGroup {
+        ParentObjectFhrpGroup: e.ConvertToProtoMessage().(*pb.FHRPGroup),
+    }
+}
+
 func (e *FHRPGroup) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationFhrpGroup {
         TerminationFhrpGroup: e.ConvertToProtoMessage().(*pb.FHRPGroup),
+    }
+}
+
+func (e *FHRPGroup) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectFhrpGroup {
+        AssignedObjectFhrpGroup: e.ConvertToProtoMessage().(*pb.FHRPGroup),
     }
 }
 
@@ -11935,9 +13056,21 @@ func (e *FHRPGroupAssignment) anyGenericObjectObjectValueApplyTo(p *pb.GenericOb
     }
 }
 
+func (e *FHRPGroupAssignment) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectFhrpGroupAssignment {
+        AssignedObjectFhrpGroupAssignment: e.ConvertToProtoMessage().(*pb.FHRPGroupAssignment),
+    }
+}
+
 func (e *FHRPGroupAssignment) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationFhrpGroupAssignment {
         TerminationFhrpGroupAssignment: e.ConvertToProtoMessage().(*pb.FHRPGroupAssignment),
+    }
+}
+
+func (e *FHRPGroupAssignment) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectFhrpGroupAssignment {
+        AssignedObjectFhrpGroupAssignment: e.ConvertToProtoMessage().(*pb.FHRPGroupAssignment),
     }
 }
 
@@ -11979,9 +13112,21 @@ func (e *FrontPort) anyInventoryItemComponentValueApplyTo(p *pb.InventoryItem)  
     }
 }
 
+func (e *FrontPort) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectFrontPort {
+        AssignedObjectFrontPort: e.ConvertToProtoMessage().(*pb.FrontPort),
+    }
+}
+
 func (e *FrontPort) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationFrontPort {
         TerminationFrontPort: e.ConvertToProtoMessage().(*pb.FrontPort),
+    }
+}
+
+func (e *FrontPort) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectFrontPort {
+        AssignedObjectFrontPort: e.ConvertToProtoMessage().(*pb.FrontPort),
     }
 }
 
@@ -12013,9 +13158,21 @@ func (e *IKEPolicy) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *IKEPolicy) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectIkePolicy {
+        AssignedObjectIkePolicy: e.ConvertToProtoMessage().(*pb.IKEPolicy),
+    }
+}
+
 func (e *IKEPolicy) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationIkePolicy {
         TerminationIkePolicy: e.ConvertToProtoMessage().(*pb.IKEPolicy),
+    }
+}
+
+func (e *IKEPolicy) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectIkePolicy {
+        AssignedObjectIkePolicy: e.ConvertToProtoMessage().(*pb.IKEPolicy),
     }
 }
 
@@ -12045,9 +13202,21 @@ func (e *IKEProposal) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *IKEProposal) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectIkeProposal {
+        AssignedObjectIkeProposal: e.ConvertToProtoMessage().(*pb.IKEProposal),
+    }
+}
+
 func (e *IKEProposal) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationIkeProposal {
         TerminationIkeProposal: e.ConvertToProtoMessage().(*pb.IKEProposal),
+    }
+}
+
+func (e *IKEProposal) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectIkeProposal {
+        AssignedObjectIkeProposal: e.ConvertToProtoMessage().(*pb.IKEProposal),
     }
 }
 
@@ -12077,9 +13246,21 @@ func (e *IPAddress) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *IPAddress) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectIpAddress {
+        AssignedObjectIpAddress: e.ConvertToProtoMessage().(*pb.IPAddress),
+    }
+}
+
 func (e *IPAddress) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationIpAddress {
         TerminationIpAddress: e.ConvertToProtoMessage().(*pb.IPAddress),
+    }
+}
+
+func (e *IPAddress) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectIpAddress {
+        AssignedObjectIpAddress: e.ConvertToProtoMessage().(*pb.IPAddress),
     }
 }
 
@@ -12109,9 +13290,21 @@ func (e *IPRange) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *IPRange) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectIpRange {
+        AssignedObjectIpRange: e.ConvertToProtoMessage().(*pb.IPRange),
+    }
+}
+
 func (e *IPRange) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationIpRange {
         TerminationIpRange: e.ConvertToProtoMessage().(*pb.IPRange),
+    }
+}
+
+func (e *IPRange) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectIpRange {
+        AssignedObjectIpRange: e.ConvertToProtoMessage().(*pb.IPRange),
     }
 }
 
@@ -12141,9 +13334,21 @@ func (e *IPSecPolicy) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *IPSecPolicy) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectIpSecPolicy {
+        AssignedObjectIpSecPolicy: e.ConvertToProtoMessage().(*pb.IPSecPolicy),
+    }
+}
+
 func (e *IPSecPolicy) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationIpSecPolicy {
         TerminationIpSecPolicy: e.ConvertToProtoMessage().(*pb.IPSecPolicy),
+    }
+}
+
+func (e *IPSecPolicy) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectIpSecPolicy {
+        AssignedObjectIpSecPolicy: e.ConvertToProtoMessage().(*pb.IPSecPolicy),
     }
 }
 
@@ -12173,9 +13378,21 @@ func (e *IPSecProfile) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  
     }
 }
 
+func (e *IPSecProfile) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectIpSecProfile {
+        AssignedObjectIpSecProfile: e.ConvertToProtoMessage().(*pb.IPSecProfile),
+    }
+}
+
 func (e *IPSecProfile) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationIpSecProfile {
         TerminationIpSecProfile: e.ConvertToProtoMessage().(*pb.IPSecProfile),
+    }
+}
+
+func (e *IPSecProfile) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectIpSecProfile {
+        AssignedObjectIpSecProfile: e.ConvertToProtoMessage().(*pb.IPSecProfile),
     }
 }
 
@@ -12205,9 +13422,21 @@ func (e *IPSecProposal) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject) 
     }
 }
 
+func (e *IPSecProposal) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectIpSecProposal {
+        AssignedObjectIpSecProposal: e.ConvertToProtoMessage().(*pb.IPSecProposal),
+    }
+}
+
 func (e *IPSecProposal) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationIpSecProposal {
         TerminationIpSecProposal: e.ConvertToProtoMessage().(*pb.IPSecProposal),
+    }
+}
+
+func (e *IPSecProposal) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectIpSecProposal {
+        AssignedObjectIpSecProposal: e.ConvertToProtoMessage().(*pb.IPSecProposal),
     }
 }
 
@@ -12273,6 +13502,12 @@ func (e *Interface) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTerm
     }
 }
 
+func (e *Interface) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectInterface {
+        AssignedObjectInterface: e.ConvertToProtoMessage().(*pb.Interface),
+    }
+}
+
 // implementation of oneof interfaces for InventoryItem.
 
 func (e *InventoryItem) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment)  {
@@ -12299,9 +13534,21 @@ func (e *InventoryItem) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject) 
     }
 }
 
+func (e *InventoryItem) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectInventoryItem {
+        AssignedObjectInventoryItem: e.ConvertToProtoMessage().(*pb.InventoryItem),
+    }
+}
+
 func (e *InventoryItem) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationInventoryItem {
         TerminationInventoryItem: e.ConvertToProtoMessage().(*pb.InventoryItem),
+    }
+}
+
+func (e *InventoryItem) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectInventoryItem {
+        AssignedObjectInventoryItem: e.ConvertToProtoMessage().(*pb.InventoryItem),
     }
 }
 
@@ -12331,9 +13578,21 @@ func (e *InventoryItemRole) anyGenericObjectObjectValueApplyTo(p *pb.GenericObje
     }
 }
 
+func (e *InventoryItemRole) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectInventoryItemRole {
+        AssignedObjectInventoryItemRole: e.ConvertToProtoMessage().(*pb.InventoryItemRole),
+    }
+}
+
 func (e *InventoryItemRole) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationInventoryItemRole {
         TerminationInventoryItemRole: e.ConvertToProtoMessage().(*pb.InventoryItemRole),
+    }
+}
+
+func (e *InventoryItemRole) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectInventoryItemRole {
+        AssignedObjectInventoryItemRole: e.ConvertToProtoMessage().(*pb.InventoryItemRole),
     }
 }
 
@@ -12363,9 +13622,21 @@ func (e *L2VPN) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *L2VPN) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectL2Vpn {
+        AssignedObjectL2Vpn: e.ConvertToProtoMessage().(*pb.L2VPN),
+    }
+}
+
 func (e *L2VPN) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationL2Vpn {
         TerminationL2Vpn: e.ConvertToProtoMessage().(*pb.L2VPN),
+    }
+}
+
+func (e *L2VPN) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectL2Vpn {
+        AssignedObjectL2Vpn: e.ConvertToProtoMessage().(*pb.L2VPN),
     }
 }
 
@@ -12395,9 +13666,21 @@ func (e *L2VPNTermination) anyGenericObjectObjectValueApplyTo(p *pb.GenericObjec
     }
 }
 
+func (e *L2VPNTermination) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectL2VpnTermination {
+        AssignedObjectL2VpnTermination: e.ConvertToProtoMessage().(*pb.L2VPNTermination),
+    }
+}
+
 func (e *L2VPNTermination) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationL2VpnTermination {
         TerminationL2VpnTermination: e.ConvertToProtoMessage().(*pb.L2VPNTermination),
+    }
+}
+
+func (e *L2VPNTermination) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectL2VpnTermination {
+        AssignedObjectL2VpnTermination: e.ConvertToProtoMessage().(*pb.L2VPNTermination),
     }
 }
 
@@ -12439,6 +13722,12 @@ func (e *Location) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Location) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectLocation {
+        AssignedObjectLocation: e.ConvertToProtoMessage().(*pb.Location),
+    }
+}
+
 func (e *Location) anyPrefixScopeValueApplyTo(p *pb.Prefix)  {
     p.Scope = &pb.Prefix_ScopeLocation {
         ScopeLocation: e.ConvertToProtoMessage().(*pb.Location),
@@ -12460,6 +13749,12 @@ func (e *Location) anyVLANGroupScopeValueApplyTo(p *pb.VLANGroup)  {
 func (e *Location) anyWirelessLANScopeValueApplyTo(p *pb.WirelessLAN)  {
     p.Scope = &pb.WirelessLAN_ScopeLocation {
         ScopeLocation: e.ConvertToProtoMessage().(*pb.Location),
+    }
+}
+
+func (e *Location) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectLocation {
+        AssignedObjectLocation: e.ConvertToProtoMessage().(*pb.Location),
     }
 }
 
@@ -12489,9 +13784,21 @@ func (e *MACAddress) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *MACAddress) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectMacAddress {
+        AssignedObjectMacAddress: e.ConvertToProtoMessage().(*pb.MACAddress),
+    }
+}
+
 func (e *MACAddress) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationMacAddress {
         TerminationMacAddress: e.ConvertToProtoMessage().(*pb.MACAddress),
+    }
+}
+
+func (e *MACAddress) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectMacAddress {
+        AssignedObjectMacAddress: e.ConvertToProtoMessage().(*pb.MACAddress),
     }
 }
 
@@ -12521,9 +13828,21 @@ func (e *Manufacturer) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  
     }
 }
 
+func (e *Manufacturer) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectManufacturer {
+        AssignedObjectManufacturer: e.ConvertToProtoMessage().(*pb.Manufacturer),
+    }
+}
+
 func (e *Manufacturer) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationManufacturer {
         TerminationManufacturer: e.ConvertToProtoMessage().(*pb.Manufacturer),
+    }
+}
+
+func (e *Manufacturer) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectManufacturer {
+        AssignedObjectManufacturer: e.ConvertToProtoMessage().(*pb.Manufacturer),
     }
 }
 
@@ -12553,9 +13872,21 @@ func (e *Module) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Module) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectModule {
+        AssignedObjectModule: e.ConvertToProtoMessage().(*pb.Module),
+    }
+}
+
 func (e *Module) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationModule {
         TerminationModule: e.ConvertToProtoMessage().(*pb.Module),
+    }
+}
+
+func (e *Module) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectModule {
+        AssignedObjectModule: e.ConvertToProtoMessage().(*pb.Module),
     }
 }
 
@@ -12585,9 +13916,21 @@ func (e *ModuleBay) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *ModuleBay) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectModuleBay {
+        AssignedObjectModuleBay: e.ConvertToProtoMessage().(*pb.ModuleBay),
+    }
+}
+
 func (e *ModuleBay) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationModuleBay {
         TerminationModuleBay: e.ConvertToProtoMessage().(*pb.ModuleBay),
+    }
+}
+
+func (e *ModuleBay) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectModuleBay {
+        AssignedObjectModuleBay: e.ConvertToProtoMessage().(*pb.ModuleBay),
     }
 }
 
@@ -12617,9 +13960,21 @@ func (e *ModuleType) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *ModuleType) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectModuleType {
+        AssignedObjectModuleType: e.ConvertToProtoMessage().(*pb.ModuleType),
+    }
+}
+
 func (e *ModuleType) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationModuleType {
         TerminationModuleType: e.ConvertToProtoMessage().(*pb.ModuleType),
+    }
+}
+
+func (e *ModuleType) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectModuleType {
+        AssignedObjectModuleType: e.ConvertToProtoMessage().(*pb.ModuleType),
     }
 }
 
@@ -12649,9 +14004,21 @@ func (e *Platform) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Platform) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectPlatform {
+        AssignedObjectPlatform: e.ConvertToProtoMessage().(*pb.Platform),
+    }
+}
+
 func (e *Platform) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationPlatform {
         TerminationPlatform: e.ConvertToProtoMessage().(*pb.Platform),
+    }
+}
+
+func (e *Platform) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectPlatform {
+        AssignedObjectPlatform: e.ConvertToProtoMessage().(*pb.Platform),
     }
 }
 
@@ -12687,9 +14054,21 @@ func (e *PowerFeed) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *PowerFeed) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectPowerFeed {
+        AssignedObjectPowerFeed: e.ConvertToProtoMessage().(*pb.PowerFeed),
+    }
+}
+
 func (e *PowerFeed) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationPowerFeed {
         TerminationPowerFeed: e.ConvertToProtoMessage().(*pb.PowerFeed),
+    }
+}
+
+func (e *PowerFeed) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectPowerFeed {
+        AssignedObjectPowerFeed: e.ConvertToProtoMessage().(*pb.PowerFeed),
     }
 }
 
@@ -12731,9 +14110,21 @@ func (e *PowerOutlet) anyInventoryItemComponentValueApplyTo(p *pb.InventoryItem)
     }
 }
 
+func (e *PowerOutlet) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectPowerOutlet {
+        AssignedObjectPowerOutlet: e.ConvertToProtoMessage().(*pb.PowerOutlet),
+    }
+}
+
 func (e *PowerOutlet) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationPowerOutlet {
         TerminationPowerOutlet: e.ConvertToProtoMessage().(*pb.PowerOutlet),
+    }
+}
+
+func (e *PowerOutlet) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectPowerOutlet {
+        AssignedObjectPowerOutlet: e.ConvertToProtoMessage().(*pb.PowerOutlet),
     }
 }
 
@@ -12763,9 +14154,21 @@ func (e *PowerPanel) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *PowerPanel) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectPowerPanel {
+        AssignedObjectPowerPanel: e.ConvertToProtoMessage().(*pb.PowerPanel),
+    }
+}
+
 func (e *PowerPanel) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationPowerPanel {
         TerminationPowerPanel: e.ConvertToProtoMessage().(*pb.PowerPanel),
+    }
+}
+
+func (e *PowerPanel) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectPowerPanel {
+        AssignedObjectPowerPanel: e.ConvertToProtoMessage().(*pb.PowerPanel),
     }
 }
 
@@ -12807,9 +14210,21 @@ func (e *PowerPort) anyInventoryItemComponentValueApplyTo(p *pb.InventoryItem)  
     }
 }
 
+func (e *PowerPort) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectPowerPort {
+        AssignedObjectPowerPort: e.ConvertToProtoMessage().(*pb.PowerPort),
+    }
+}
+
 func (e *PowerPort) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationPowerPort {
         TerminationPowerPort: e.ConvertToProtoMessage().(*pb.PowerPort),
+    }
+}
+
+func (e *PowerPort) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectPowerPort {
+        AssignedObjectPowerPort: e.ConvertToProtoMessage().(*pb.PowerPort),
     }
 }
 
@@ -12839,9 +14254,21 @@ func (e *Prefix) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Prefix) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectPrefix {
+        AssignedObjectPrefix: e.ConvertToProtoMessage().(*pb.Prefix),
+    }
+}
+
 func (e *Prefix) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationPrefix {
         TerminationPrefix: e.ConvertToProtoMessage().(*pb.Prefix),
+    }
+}
+
+func (e *Prefix) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectPrefix {
+        AssignedObjectPrefix: e.ConvertToProtoMessage().(*pb.Prefix),
     }
 }
 
@@ -12871,9 +14298,21 @@ func (e *Provider) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Provider) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectProvider {
+        AssignedObjectProvider: e.ConvertToProtoMessage().(*pb.Provider),
+    }
+}
+
 func (e *Provider) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationProvider {
         TerminationProvider: e.ConvertToProtoMessage().(*pb.Provider),
+    }
+}
+
+func (e *Provider) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectProvider {
+        AssignedObjectProvider: e.ConvertToProtoMessage().(*pb.Provider),
     }
 }
 
@@ -12903,9 +14342,21 @@ func (e *ProviderAccount) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject
     }
 }
 
+func (e *ProviderAccount) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectProviderAccount {
+        AssignedObjectProviderAccount: e.ConvertToProtoMessage().(*pb.ProviderAccount),
+    }
+}
+
 func (e *ProviderAccount) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationProviderAccount {
         TerminationProviderAccount: e.ConvertToProtoMessage().(*pb.ProviderAccount),
+    }
+}
+
+func (e *ProviderAccount) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectProviderAccount {
+        AssignedObjectProviderAccount: e.ConvertToProtoMessage().(*pb.ProviderAccount),
     }
 }
 
@@ -12941,9 +14392,21 @@ func (e *ProviderNetwork) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject
     }
 }
 
+func (e *ProviderNetwork) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectProviderNetwork {
+        AssignedObjectProviderNetwork: e.ConvertToProtoMessage().(*pb.ProviderNetwork),
+    }
+}
+
 func (e *ProviderNetwork) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationProviderNetwork {
         TerminationProviderNetwork: e.ConvertToProtoMessage().(*pb.ProviderNetwork),
+    }
+}
+
+func (e *ProviderNetwork) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectProviderNetwork {
+        AssignedObjectProviderNetwork: e.ConvertToProtoMessage().(*pb.ProviderNetwork),
     }
 }
 
@@ -12973,9 +14436,21 @@ func (e *RIR) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *RIR) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectRir {
+        AssignedObjectRir: e.ConvertToProtoMessage().(*pb.RIR),
+    }
+}
+
 func (e *RIR) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationRir {
         TerminationRir: e.ConvertToProtoMessage().(*pb.RIR),
+    }
+}
+
+func (e *RIR) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectRir {
+        AssignedObjectRir: e.ConvertToProtoMessage().(*pb.RIR),
     }
 }
 
@@ -13005,6 +14480,12 @@ func (e *Rack) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Rack) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectRack {
+        AssignedObjectRack: e.ConvertToProtoMessage().(*pb.Rack),
+    }
+}
+
 func (e *Rack) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationRack {
         TerminationRack: e.ConvertToProtoMessage().(*pb.Rack),
@@ -13014,6 +14495,12 @@ func (e *Rack) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTerminati
 func (e *Rack) anyVLANGroupScopeValueApplyTo(p *pb.VLANGroup)  {
     p.Scope = &pb.VLANGroup_ScopeRack {
         ScopeRack: e.ConvertToProtoMessage().(*pb.Rack),
+    }
+}
+
+func (e *Rack) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectRack {
+        AssignedObjectRack: e.ConvertToProtoMessage().(*pb.Rack),
     }
 }
 
@@ -13043,9 +14530,21 @@ func (e *RackReservation) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject
     }
 }
 
+func (e *RackReservation) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectRackReservation {
+        AssignedObjectRackReservation: e.ConvertToProtoMessage().(*pb.RackReservation),
+    }
+}
+
 func (e *RackReservation) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationRackReservation {
         TerminationRackReservation: e.ConvertToProtoMessage().(*pb.RackReservation),
+    }
+}
+
+func (e *RackReservation) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectRackReservation {
+        AssignedObjectRackReservation: e.ConvertToProtoMessage().(*pb.RackReservation),
     }
 }
 
@@ -13075,9 +14574,21 @@ func (e *RackRole) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *RackRole) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectRackRole {
+        AssignedObjectRackRole: e.ConvertToProtoMessage().(*pb.RackRole),
+    }
+}
+
 func (e *RackRole) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationRackRole {
         TerminationRackRole: e.ConvertToProtoMessage().(*pb.RackRole),
+    }
+}
+
+func (e *RackRole) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectRackRole {
+        AssignedObjectRackRole: e.ConvertToProtoMessage().(*pb.RackRole),
     }
 }
 
@@ -13107,9 +14618,21 @@ func (e *RackType) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *RackType) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectRackType {
+        AssignedObjectRackType: e.ConvertToProtoMessage().(*pb.RackType),
+    }
+}
+
 func (e *RackType) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationRackType {
         TerminationRackType: e.ConvertToProtoMessage().(*pb.RackType),
+    }
+}
+
+func (e *RackType) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectRackType {
+        AssignedObjectRackType: e.ConvertToProtoMessage().(*pb.RackType),
     }
 }
 
@@ -13151,9 +14674,21 @@ func (e *RearPort) anyInventoryItemComponentValueApplyTo(p *pb.InventoryItem)  {
     }
 }
 
+func (e *RearPort) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectRearPort {
+        AssignedObjectRearPort: e.ConvertToProtoMessage().(*pb.RearPort),
+    }
+}
+
 func (e *RearPort) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationRearPort {
         TerminationRearPort: e.ConvertToProtoMessage().(*pb.RearPort),
+    }
+}
+
+func (e *RearPort) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectRearPort {
+        AssignedObjectRearPort: e.ConvertToProtoMessage().(*pb.RearPort),
     }
 }
 
@@ -13195,6 +14730,12 @@ func (e *Region) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Region) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectRegion {
+        AssignedObjectRegion: e.ConvertToProtoMessage().(*pb.Region),
+    }
+}
+
 func (e *Region) anyPrefixScopeValueApplyTo(p *pb.Prefix)  {
     p.Scope = &pb.Prefix_ScopeRegion {
         ScopeRegion: e.ConvertToProtoMessage().(*pb.Region),
@@ -13216,6 +14757,12 @@ func (e *Region) anyVLANGroupScopeValueApplyTo(p *pb.VLANGroup)  {
 func (e *Region) anyWirelessLANScopeValueApplyTo(p *pb.WirelessLAN)  {
     p.Scope = &pb.WirelessLAN_ScopeRegion {
         ScopeRegion: e.ConvertToProtoMessage().(*pb.Region),
+    }
+}
+
+func (e *Region) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectRegion {
+        AssignedObjectRegion: e.ConvertToProtoMessage().(*pb.Region),
     }
 }
 
@@ -13245,9 +14792,21 @@ func (e *Role) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Role) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectRole {
+        AssignedObjectRole: e.ConvertToProtoMessage().(*pb.Role),
+    }
+}
+
 func (e *Role) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationRole {
         TerminationRole: e.ConvertToProtoMessage().(*pb.Role),
+    }
+}
+
+func (e *Role) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectRole {
+        AssignedObjectRole: e.ConvertToProtoMessage().(*pb.Role),
     }
 }
 
@@ -13277,9 +14836,21 @@ func (e *RouteTarget) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *RouteTarget) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectRouteTarget {
+        AssignedObjectRouteTarget: e.ConvertToProtoMessage().(*pb.RouteTarget),
+    }
+}
+
 func (e *RouteTarget) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationRouteTarget {
         TerminationRouteTarget: e.ConvertToProtoMessage().(*pb.RouteTarget),
+    }
+}
+
+func (e *RouteTarget) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectRouteTarget {
+        AssignedObjectRouteTarget: e.ConvertToProtoMessage().(*pb.RouteTarget),
     }
 }
 
@@ -13309,9 +14880,21 @@ func (e *Service) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Service) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectService {
+        AssignedObjectService: e.ConvertToProtoMessage().(*pb.Service),
+    }
+}
+
 func (e *Service) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationService {
         TerminationService: e.ConvertToProtoMessage().(*pb.Service),
+    }
+}
+
+func (e *Service) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectService {
+        AssignedObjectService: e.ConvertToProtoMessage().(*pb.Service),
     }
 }
 
@@ -13353,6 +14936,12 @@ func (e *Site) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Site) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectSite {
+        AssignedObjectSite: e.ConvertToProtoMessage().(*pb.Site),
+    }
+}
+
 func (e *Site) anyPrefixScopeValueApplyTo(p *pb.Prefix)  {
     p.Scope = &pb.Prefix_ScopeSite {
         ScopeSite: e.ConvertToProtoMessage().(*pb.Site),
@@ -13374,6 +14963,12 @@ func (e *Site) anyVLANGroupScopeValueApplyTo(p *pb.VLANGroup)  {
 func (e *Site) anyWirelessLANScopeValueApplyTo(p *pb.WirelessLAN)  {
     p.Scope = &pb.WirelessLAN_ScopeSite {
         ScopeSite: e.ConvertToProtoMessage().(*pb.Site),
+    }
+}
+
+func (e *Site) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectSite {
+        AssignedObjectSite: e.ConvertToProtoMessage().(*pb.Site),
     }
 }
 
@@ -13415,6 +15010,12 @@ func (e *SiteGroup) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *SiteGroup) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectSiteGroup {
+        AssignedObjectSiteGroup: e.ConvertToProtoMessage().(*pb.SiteGroup),
+    }
+}
+
 func (e *SiteGroup) anyPrefixScopeValueApplyTo(p *pb.Prefix)  {
     p.Scope = &pb.Prefix_ScopeSiteGroup {
         ScopeSiteGroup: e.ConvertToProtoMessage().(*pb.SiteGroup),
@@ -13436,6 +15037,12 @@ func (e *SiteGroup) anyVLANGroupScopeValueApplyTo(p *pb.VLANGroup)  {
 func (e *SiteGroup) anyWirelessLANScopeValueApplyTo(p *pb.WirelessLAN)  {
     p.Scope = &pb.WirelessLAN_ScopeSiteGroup {
         ScopeSiteGroup: e.ConvertToProtoMessage().(*pb.SiteGroup),
+    }
+}
+
+func (e *SiteGroup) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectSiteGroup {
+        AssignedObjectSiteGroup: e.ConvertToProtoMessage().(*pb.SiteGroup),
     }
 }
 
@@ -13465,9 +15072,21 @@ func (e *Tag) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Tag) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectTag {
+        AssignedObjectTag: e.ConvertToProtoMessage().(*pb.Tag),
+    }
+}
+
 func (e *Tag) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationTag {
         TerminationTag: e.ConvertToProtoMessage().(*pb.Tag),
+    }
+}
+
+func (e *Tag) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectTag {
+        AssignedObjectTag: e.ConvertToProtoMessage().(*pb.Tag),
     }
 }
 
@@ -13497,9 +15116,21 @@ func (e *Tenant) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Tenant) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectTenant {
+        AssignedObjectTenant: e.ConvertToProtoMessage().(*pb.Tenant),
+    }
+}
+
 func (e *Tenant) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationTenant {
         TerminationTenant: e.ConvertToProtoMessage().(*pb.Tenant),
+    }
+}
+
+func (e *Tenant) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectTenant {
+        AssignedObjectTenant: e.ConvertToProtoMessage().(*pb.Tenant),
     }
 }
 
@@ -13529,9 +15160,21 @@ func (e *TenantGroup) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *TenantGroup) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectTenantGroup {
+        AssignedObjectTenantGroup: e.ConvertToProtoMessage().(*pb.TenantGroup),
+    }
+}
+
 func (e *TenantGroup) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationTenantGroup {
         TerminationTenantGroup: e.ConvertToProtoMessage().(*pb.TenantGroup),
+    }
+}
+
+func (e *TenantGroup) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectTenantGroup {
+        AssignedObjectTenantGroup: e.ConvertToProtoMessage().(*pb.TenantGroup),
     }
 }
 
@@ -13561,9 +15204,21 @@ func (e *Tunnel) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *Tunnel) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectTunnel {
+        AssignedObjectTunnel: e.ConvertToProtoMessage().(*pb.Tunnel),
+    }
+}
+
 func (e *Tunnel) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationTunnel {
         TerminationTunnel: e.ConvertToProtoMessage().(*pb.Tunnel),
+    }
+}
+
+func (e *Tunnel) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectTunnel {
+        AssignedObjectTunnel: e.ConvertToProtoMessage().(*pb.Tunnel),
     }
 }
 
@@ -13593,9 +15248,21 @@ func (e *TunnelGroup) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *TunnelGroup) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectTunnelGroup {
+        AssignedObjectTunnelGroup: e.ConvertToProtoMessage().(*pb.TunnelGroup),
+    }
+}
+
 func (e *TunnelGroup) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationTunnelGroup {
         TerminationTunnelGroup: e.ConvertToProtoMessage().(*pb.TunnelGroup),
+    }
+}
+
+func (e *TunnelGroup) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectTunnelGroup {
+        AssignedObjectTunnelGroup: e.ConvertToProtoMessage().(*pb.TunnelGroup),
     }
 }
 
@@ -13625,9 +15292,21 @@ func (e *TunnelTermination) anyGenericObjectObjectValueApplyTo(p *pb.GenericObje
     }
 }
 
+func (e *TunnelTermination) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectTunnelTermination {
+        AssignedObjectTunnelTermination: e.ConvertToProtoMessage().(*pb.TunnelTermination),
+    }
+}
+
 func (e *TunnelTermination) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationTunnelTermination {
         TerminationTunnelTermination: e.ConvertToProtoMessage().(*pb.TunnelTermination),
+    }
+}
+
+func (e *TunnelTermination) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectTunnelTermination {
+        AssignedObjectTunnelTermination: e.ConvertToProtoMessage().(*pb.TunnelTermination),
     }
 }
 
@@ -13669,6 +15348,12 @@ func (e *VLAN) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTerminati
     }
 }
 
+func (e *VLAN) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectVlan {
+        AssignedObjectVlan: e.ConvertToProtoMessage().(*pb.VLAN),
+    }
+}
+
 // implementation of oneof interfaces for VLANGroup.
 
 func (e *VLANGroup) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment)  {
@@ -13695,9 +15380,21 @@ func (e *VLANGroup) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *VLANGroup) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectVlanGroup {
+        AssignedObjectVlanGroup: e.ConvertToProtoMessage().(*pb.VLANGroup),
+    }
+}
+
 func (e *VLANGroup) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationVlanGroup {
         TerminationVlanGroup: e.ConvertToProtoMessage().(*pb.VLANGroup),
+    }
+}
+
+func (e *VLANGroup) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectVlanGroup {
+        AssignedObjectVlanGroup: e.ConvertToProtoMessage().(*pb.VLANGroup),
     }
 }
 
@@ -13727,9 +15424,21 @@ func (e *VLANTranslationPolicy) anyGenericObjectObjectValueApplyTo(p *pb.Generic
     }
 }
 
+func (e *VLANTranslationPolicy) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectVlanTranslationPolicy {
+        AssignedObjectVlanTranslationPolicy: e.ConvertToProtoMessage().(*pb.VLANTranslationPolicy),
+    }
+}
+
 func (e *VLANTranslationPolicy) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationVlanTranslationPolicy {
         TerminationVlanTranslationPolicy: e.ConvertToProtoMessage().(*pb.VLANTranslationPolicy),
+    }
+}
+
+func (e *VLANTranslationPolicy) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectVlanTranslationPolicy {
+        AssignedObjectVlanTranslationPolicy: e.ConvertToProtoMessage().(*pb.VLANTranslationPolicy),
     }
 }
 
@@ -13759,9 +15468,21 @@ func (e *VLANTranslationRule) anyGenericObjectObjectValueApplyTo(p *pb.GenericOb
     }
 }
 
+func (e *VLANTranslationRule) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectVlanTranslationRule {
+        AssignedObjectVlanTranslationRule: e.ConvertToProtoMessage().(*pb.VLANTranslationRule),
+    }
+}
+
 func (e *VLANTranslationRule) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationVlanTranslationRule {
         TerminationVlanTranslationRule: e.ConvertToProtoMessage().(*pb.VLANTranslationRule),
+    }
+}
+
+func (e *VLANTranslationRule) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectVlanTranslationRule {
+        AssignedObjectVlanTranslationRule: e.ConvertToProtoMessage().(*pb.VLANTranslationRule),
     }
 }
 
@@ -13815,6 +15536,12 @@ func (e *VMInterface) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTe
     }
 }
 
+func (e *VMInterface) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectVmInterface {
+        AssignedObjectVmInterface: e.ConvertToProtoMessage().(*pb.VMInterface),
+    }
+}
+
 // implementation of oneof interfaces for VRF.
 
 func (e *VRF) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment)  {
@@ -13841,9 +15568,21 @@ func (e *VRF) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *VRF) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectVrf {
+        AssignedObjectVrf: e.ConvertToProtoMessage().(*pb.VRF),
+    }
+}
+
 func (e *VRF) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationVrf {
         TerminationVrf: e.ConvertToProtoMessage().(*pb.VRF),
+    }
+}
+
+func (e *VRF) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectVrf {
+        AssignedObjectVrf: e.ConvertToProtoMessage().(*pb.VRF),
     }
 }
 
@@ -13873,9 +15612,21 @@ func (e *VirtualChassis) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)
     }
 }
 
+func (e *VirtualChassis) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectVirtualChassis {
+        AssignedObjectVirtualChassis: e.ConvertToProtoMessage().(*pb.VirtualChassis),
+    }
+}
+
 func (e *VirtualChassis) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationVirtualChassis {
         TerminationVirtualChassis: e.ConvertToProtoMessage().(*pb.VirtualChassis),
+    }
+}
+
+func (e *VirtualChassis) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectVirtualChassis {
+        AssignedObjectVirtualChassis: e.ConvertToProtoMessage().(*pb.VirtualChassis),
     }
 }
 
@@ -13911,9 +15662,21 @@ func (e *VirtualCircuit) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)
     }
 }
 
+func (e *VirtualCircuit) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectVirtualCircuit {
+        AssignedObjectVirtualCircuit: e.ConvertToProtoMessage().(*pb.VirtualCircuit),
+    }
+}
+
 func (e *VirtualCircuit) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationVirtualCircuit {
         TerminationVirtualCircuit: e.ConvertToProtoMessage().(*pb.VirtualCircuit),
+    }
+}
+
+func (e *VirtualCircuit) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectVirtualCircuit {
+        AssignedObjectVirtualCircuit: e.ConvertToProtoMessage().(*pb.VirtualCircuit),
     }
 }
 
@@ -13943,9 +15706,21 @@ func (e *VirtualCircuitTermination) anyGenericObjectObjectValueApplyTo(p *pb.Gen
     }
 }
 
+func (e *VirtualCircuitTermination) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectVirtualCircuitTermination {
+        AssignedObjectVirtualCircuitTermination: e.ConvertToProtoMessage().(*pb.VirtualCircuitTermination),
+    }
+}
+
 func (e *VirtualCircuitTermination) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationVirtualCircuitTermination {
         TerminationVirtualCircuitTermination: e.ConvertToProtoMessage().(*pb.VirtualCircuitTermination),
+    }
+}
+
+func (e *VirtualCircuitTermination) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectVirtualCircuitTermination {
+        AssignedObjectVirtualCircuitTermination: e.ConvertToProtoMessage().(*pb.VirtualCircuitTermination),
     }
 }
 
@@ -13975,9 +15750,21 @@ func (e *VirtualCircuitType) anyGenericObjectObjectValueApplyTo(p *pb.GenericObj
     }
 }
 
+func (e *VirtualCircuitType) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectVirtualCircuitType {
+        AssignedObjectVirtualCircuitType: e.ConvertToProtoMessage().(*pb.VirtualCircuitType),
+    }
+}
+
 func (e *VirtualCircuitType) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationVirtualCircuitType {
         TerminationVirtualCircuitType: e.ConvertToProtoMessage().(*pb.VirtualCircuitType),
+    }
+}
+
+func (e *VirtualCircuitType) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectVirtualCircuitType {
+        AssignedObjectVirtualCircuitType: e.ConvertToProtoMessage().(*pb.VirtualCircuitType),
     }
 }
 
@@ -14007,9 +15794,21 @@ func (e *VirtualDeviceContext) anyGenericObjectObjectValueApplyTo(p *pb.GenericO
     }
 }
 
+func (e *VirtualDeviceContext) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectVirtualDeviceContext {
+        AssignedObjectVirtualDeviceContext: e.ConvertToProtoMessage().(*pb.VirtualDeviceContext),
+    }
+}
+
 func (e *VirtualDeviceContext) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationVirtualDeviceContext {
         TerminationVirtualDeviceContext: e.ConvertToProtoMessage().(*pb.VirtualDeviceContext),
+    }
+}
+
+func (e *VirtualDeviceContext) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectVirtualDeviceContext {
+        AssignedObjectVirtualDeviceContext: e.ConvertToProtoMessage().(*pb.VirtualDeviceContext),
     }
 }
 
@@ -14039,9 +15838,21 @@ func (e *VirtualDisk) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *VirtualDisk) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectVirtualDisk {
+        AssignedObjectVirtualDisk: e.ConvertToProtoMessage().(*pb.VirtualDisk),
+    }
+}
+
 func (e *VirtualDisk) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationVirtualDisk {
         TerminationVirtualDisk: e.ConvertToProtoMessage().(*pb.VirtualDisk),
+    }
+}
+
+func (e *VirtualDisk) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectVirtualDisk {
+        AssignedObjectVirtualDisk: e.ConvertToProtoMessage().(*pb.VirtualDisk),
     }
 }
 
@@ -14071,9 +15882,27 @@ func (e *VirtualMachine) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)
     }
 }
 
+func (e *VirtualMachine) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectVirtualMachine {
+        AssignedObjectVirtualMachine: e.ConvertToProtoMessage().(*pb.VirtualMachine),
+    }
+}
+
+func (e *VirtualMachine) anyServiceParentObjectValueApplyTo(p *pb.Service)  {
+    p.ParentObject = &pb.Service_ParentObjectVirtualMachine {
+        ParentObjectVirtualMachine: e.ConvertToProtoMessage().(*pb.VirtualMachine),
+    }
+}
+
 func (e *VirtualMachine) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationVirtualMachine {
         TerminationVirtualMachine: e.ConvertToProtoMessage().(*pb.VirtualMachine),
+    }
+}
+
+func (e *VirtualMachine) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectVirtualMachine {
+        AssignedObjectVirtualMachine: e.ConvertToProtoMessage().(*pb.VirtualMachine),
     }
 }
 
@@ -14103,9 +15932,21 @@ func (e *WirelessLAN) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
     }
 }
 
+func (e *WirelessLAN) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectWirelessLan {
+        AssignedObjectWirelessLan: e.ConvertToProtoMessage().(*pb.WirelessLAN),
+    }
+}
+
 func (e *WirelessLAN) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationWirelessLan {
         TerminationWirelessLan: e.ConvertToProtoMessage().(*pb.WirelessLAN),
+    }
+}
+
+func (e *WirelessLAN) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectWirelessLan {
+        AssignedObjectWirelessLan: e.ConvertToProtoMessage().(*pb.WirelessLAN),
     }
 }
 
@@ -14135,9 +15976,21 @@ func (e *WirelessLANGroup) anyGenericObjectObjectValueApplyTo(p *pb.GenericObjec
     }
 }
 
+func (e *WirelessLANGroup) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectWirelessLanGroup {
+        AssignedObjectWirelessLanGroup: e.ConvertToProtoMessage().(*pb.WirelessLANGroup),
+    }
+}
+
 func (e *WirelessLANGroup) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationWirelessLanGroup {
         TerminationWirelessLanGroup: e.ConvertToProtoMessage().(*pb.WirelessLANGroup),
+    }
+}
+
+func (e *WirelessLANGroup) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectWirelessLanGroup {
+        AssignedObjectWirelessLanGroup: e.ConvertToProtoMessage().(*pb.WirelessLANGroup),
     }
 }
 
@@ -14167,9 +16020,241 @@ func (e *WirelessLink) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  
     }
 }
 
+func (e *WirelessLink) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectWirelessLink {
+        AssignedObjectWirelessLink: e.ConvertToProtoMessage().(*pb.WirelessLink),
+    }
+}
+
 func (e *WirelessLink) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
     p.Termination = &pb.TunnelTermination_TerminationWirelessLink {
         TerminationWirelessLink: e.ConvertToProtoMessage().(*pb.WirelessLink),
+    }
+}
+
+func (e *WirelessLink) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectWirelessLink {
+        AssignedObjectWirelessLink: e.ConvertToProtoMessage().(*pb.WirelessLink),
+    }
+}
+
+// implementation of oneof interfaces for CustomField.
+
+func (e *CustomField) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment)  {
+    p.Object = &pb.ContactAssignment_ObjectCustomField {
+        ObjectCustomField: e.ConvertToProtoMessage().(*pb.CustomField),
+    }
+}
+
+func (e *CustomField) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference)  {
+    p.Object = &pb.CustomFieldObjectReference_CustomField {
+        CustomField: e.ConvertToProtoMessage().(*pb.CustomField),
+    }
+}
+
+func (e *CustomField) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment)  {
+    p.Interface = &pb.FHRPGroupAssignment_InterfaceCustomField {
+        InterfaceCustomField: e.ConvertToProtoMessage().(*pb.CustomField),
+    }
+}
+
+func (e *CustomField) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
+    p.Object = &pb.GenericObject_ObjectCustomField {
+        ObjectCustomField: e.ConvertToProtoMessage().(*pb.CustomField),
+    }
+}
+
+func (e *CustomField) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCustomField {
+        AssignedObjectCustomField: e.ConvertToProtoMessage().(*pb.CustomField),
+    }
+}
+
+func (e *CustomField) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
+    p.Termination = &pb.TunnelTermination_TerminationCustomField {
+        TerminationCustomField: e.ConvertToProtoMessage().(*pb.CustomField),
+    }
+}
+
+func (e *CustomField) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectCustomField {
+        AssignedObjectCustomField: e.ConvertToProtoMessage().(*pb.CustomField),
+    }
+}
+
+// implementation of oneof interfaces for CustomFieldChoiceSet.
+
+func (e *CustomFieldChoiceSet) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment)  {
+    p.Object = &pb.ContactAssignment_ObjectCustomFieldChoiceSet {
+        ObjectCustomFieldChoiceSet: e.ConvertToProtoMessage().(*pb.CustomFieldChoiceSet),
+    }
+}
+
+func (e *CustomFieldChoiceSet) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference)  {
+    p.Object = &pb.CustomFieldObjectReference_CustomFieldChoiceSet {
+        CustomFieldChoiceSet: e.ConvertToProtoMessage().(*pb.CustomFieldChoiceSet),
+    }
+}
+
+func (e *CustomFieldChoiceSet) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment)  {
+    p.Interface = &pb.FHRPGroupAssignment_InterfaceCustomFieldChoiceSet {
+        InterfaceCustomFieldChoiceSet: e.ConvertToProtoMessage().(*pb.CustomFieldChoiceSet),
+    }
+}
+
+func (e *CustomFieldChoiceSet) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
+    p.Object = &pb.GenericObject_ObjectCustomFieldChoiceSet {
+        ObjectCustomFieldChoiceSet: e.ConvertToProtoMessage().(*pb.CustomFieldChoiceSet),
+    }
+}
+
+func (e *CustomFieldChoiceSet) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCustomFieldChoiceSet {
+        AssignedObjectCustomFieldChoiceSet: e.ConvertToProtoMessage().(*pb.CustomFieldChoiceSet),
+    }
+}
+
+func (e *CustomFieldChoiceSet) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
+    p.Termination = &pb.TunnelTermination_TerminationCustomFieldChoiceSet {
+        TerminationCustomFieldChoiceSet: e.ConvertToProtoMessage().(*pb.CustomFieldChoiceSet),
+    }
+}
+
+func (e *CustomFieldChoiceSet) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectCustomFieldChoiceSet {
+        AssignedObjectCustomFieldChoiceSet: e.ConvertToProtoMessage().(*pb.CustomFieldChoiceSet),
+    }
+}
+
+// implementation of oneof interfaces for JournalEntry.
+
+func (e *JournalEntry) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment)  {
+    p.Object = &pb.ContactAssignment_ObjectJournalEntry {
+        ObjectJournalEntry: e.ConvertToProtoMessage().(*pb.JournalEntry),
+    }
+}
+
+func (e *JournalEntry) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference)  {
+    p.Object = &pb.CustomFieldObjectReference_JournalEntry {
+        JournalEntry: e.ConvertToProtoMessage().(*pb.JournalEntry),
+    }
+}
+
+func (e *JournalEntry) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment)  {
+    p.Interface = &pb.FHRPGroupAssignment_InterfaceJournalEntry {
+        InterfaceJournalEntry: e.ConvertToProtoMessage().(*pb.JournalEntry),
+    }
+}
+
+func (e *JournalEntry) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
+    p.Object = &pb.GenericObject_ObjectJournalEntry {
+        ObjectJournalEntry: e.ConvertToProtoMessage().(*pb.JournalEntry),
+    }
+}
+
+func (e *JournalEntry) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectJournalEntry {
+        AssignedObjectJournalEntry: e.ConvertToProtoMessage().(*pb.JournalEntry),
+    }
+}
+
+func (e *JournalEntry) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
+    p.Termination = &pb.TunnelTermination_TerminationJournalEntry {
+        TerminationJournalEntry: e.ConvertToProtoMessage().(*pb.JournalEntry),
+    }
+}
+
+func (e *JournalEntry) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectJournalEntry {
+        AssignedObjectJournalEntry: e.ConvertToProtoMessage().(*pb.JournalEntry),
+    }
+}
+
+// implementation of oneof interfaces for ModuleTypeProfile.
+
+func (e *ModuleTypeProfile) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment)  {
+    p.Object = &pb.ContactAssignment_ObjectModuleTypeProfile {
+        ObjectModuleTypeProfile: e.ConvertToProtoMessage().(*pb.ModuleTypeProfile),
+    }
+}
+
+func (e *ModuleTypeProfile) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference)  {
+    p.Object = &pb.CustomFieldObjectReference_ModuleTypeProfile {
+        ModuleTypeProfile: e.ConvertToProtoMessage().(*pb.ModuleTypeProfile),
+    }
+}
+
+func (e *ModuleTypeProfile) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment)  {
+    p.Interface = &pb.FHRPGroupAssignment_InterfaceModuleTypeProfile {
+        InterfaceModuleTypeProfile: e.ConvertToProtoMessage().(*pb.ModuleTypeProfile),
+    }
+}
+
+func (e *ModuleTypeProfile) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
+    p.Object = &pb.GenericObject_ObjectModuleTypeProfile {
+        ObjectModuleTypeProfile: e.ConvertToProtoMessage().(*pb.ModuleTypeProfile),
+    }
+}
+
+func (e *ModuleTypeProfile) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectModuleTypeProfile {
+        AssignedObjectModuleTypeProfile: e.ConvertToProtoMessage().(*pb.ModuleTypeProfile),
+    }
+}
+
+func (e *ModuleTypeProfile) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
+    p.Termination = &pb.TunnelTermination_TerminationModuleTypeProfile {
+        TerminationModuleTypeProfile: e.ConvertToProtoMessage().(*pb.ModuleTypeProfile),
+    }
+}
+
+func (e *ModuleTypeProfile) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectModuleTypeProfile {
+        AssignedObjectModuleTypeProfile: e.ConvertToProtoMessage().(*pb.ModuleTypeProfile),
+    }
+}
+
+// implementation of oneof interfaces for CustomLink.
+
+func (e *CustomLink) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment)  {
+    p.Object = &pb.ContactAssignment_ObjectCustomLink {
+        ObjectCustomLink: e.ConvertToProtoMessage().(*pb.CustomLink),
+    }
+}
+
+func (e *CustomLink) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference)  {
+    p.Object = &pb.CustomFieldObjectReference_CustomLink {
+        CustomLink: e.ConvertToProtoMessage().(*pb.CustomLink),
+    }
+}
+
+func (e *CustomLink) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment)  {
+    p.Interface = &pb.FHRPGroupAssignment_InterfaceCustomLink {
+        InterfaceCustomLink: e.ConvertToProtoMessage().(*pb.CustomLink),
+    }
+}
+
+func (e *CustomLink) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject)  {
+    p.Object = &pb.GenericObject_ObjectCustomLink {
+        ObjectCustomLink: e.ConvertToProtoMessage().(*pb.CustomLink),
+    }
+}
+
+func (e *CustomLink) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination)  {
+    p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCustomLink {
+        AssignedObjectCustomLink: e.ConvertToProtoMessage().(*pb.CustomLink),
+    }
+}
+
+func (e *CustomLink) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination)  {
+    p.Termination = &pb.TunnelTermination_TerminationCustomLink {
+        TerminationCustomLink: e.ConvertToProtoMessage().(*pb.CustomLink),
+    }
+}
+
+func (e *CustomLink) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry)  {
+    p.AssignedObject = &pb.JournalEntry_AssignedObjectCustomLink {
+        AssignedObjectCustomLink: e.ConvertToProtoMessage().(*pb.CustomLink),
     }
 }
 
@@ -14323,6 +16408,11 @@ type anyPrefixScopeValue interface {
     anyPrefixScopeValueApplyTo(e *pb.Prefix)
 }
 
+// interface for values of Service.parent_object
+type anyServiceParentObjectValue interface {
+    anyServiceParentObjectValueApplyTo(e *pb.Service)
+}
+
 // interface for values of TunnelTermination.termination
 type anyTunnelTerminationTerminationValue interface {
     anyTunnelTerminationTerminationValueApplyTo(e *pb.TunnelTermination)
@@ -14336,4 +16426,9 @@ type anyVLANGroupScopeValue interface {
 // interface for values of WirelessLAN.scope
 type anyWirelessLANScopeValue interface {
     anyWirelessLANScopeValueApplyTo(e *pb.WirelessLAN)
+}
+
+// interface for values of JournalEntry.assigned_object
+type anyJournalEntryAssignedObjectValue interface {
+    anyJournalEntryAssignedObjectValueApplyTo(e *pb.JournalEntry)
 }
