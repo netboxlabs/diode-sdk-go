@@ -56,7 +56,7 @@ const (
 
 var (
 	// ErrInvalidTargetScheme is returned when the target URL does not start with a valid scheme.
-	ErrInvalidTargetScheme = errors.New("target should start with grpc:// or grpcs:// or http:// or https://")
+	ErrInvalidTargetScheme = errors.New("target should start with grpc://, grpcs://, http:// or https://")
 
 	allowedSchemesRe = regexp.MustCompile(`grpc|grpcs|http|https`)
 )
