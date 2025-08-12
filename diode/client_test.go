@@ -64,6 +64,20 @@ func TestParseTarget(t *testing.T) {
 			wantErr:   nil,
 		},
 		{
+			desc:      "valid HTTP target",
+			target:    "http://localhost:8081",
+			authority: "localhost:8081",
+			tlsVerify: false,
+			wantErr:   nil,
+		},
+		{
+			desc:      "valid HTTP target with tls",
+			target:    "https://localhost:8081",
+			authority: "localhost:8081",
+			tlsVerify: true,
+			wantErr:   nil,
+		},
+		{
 			desc:      "valid target empty path on grpc://localhost:8081/",
 			target:    "grpc://localhost:8081/",
 			authority: "localhost:8081",
@@ -81,11 +95,11 @@ func TestParseTarget(t *testing.T) {
 		},
 		{
 			desc:      "invalid scheme in target",
-			target:    "http://localhost:8081",
+			target:    "ftp://localhost:8081",
 			authority: "",
 			path:      "",
 			tlsVerify: false,
-			wantErr:   errors.New("target should start with grpc:// or grpcs://"),
+			wantErr:   ErrInvalidTargetScheme,
 		},
 		{
 			desc:      "invalid target",
@@ -317,14 +331,14 @@ func TestNewClient(t *testing.T) {
 		},
 		{
 			desc:                    "invalid target",
-			target:                  "http://localhost:8081",
+			target:                  "ftp://localhost:8081",
 			appName:                 "my-producer",
 			appVersion:              "0.1.0",
 			clientID:                "client-id-123",
 			clientSecret:            "client-secret-456",
 			clientIDEnvVarValue:     "",
 			clientSecretEnvVarValue: "",
-			wantErr:                 errors.New("target should start with grpc:// or grpcs://"),
+			wantErr:                 ErrInvalidTargetScheme,
 		},
 		{
 			desc:                    "missing clientID and clientSecret",
