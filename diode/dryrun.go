@@ -9,9 +9,9 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/google/uuid"
 	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
 
