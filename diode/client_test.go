@@ -26,8 +26,40 @@ import (
 )
 
 func TestLoadCerts(t *testing.T) {
-	certPool := loadCerts()
-	assert.NotNil(t, certPool)
+	tests := []struct {
+		desc     string
+		certFile string
+		wantErr  bool
+	}{
+		{
+			desc:     "load system certificates",
+			certFile: "",
+			wantErr:  false,
+		},
+		{
+			desc:     "load custom certificate file",
+			certFile: "testdata/test-cert.pem",
+			wantErr:  false,
+		},
+		{
+			desc:     "load non-existent certificate file",
+			certFile: "testdata/non-existent.pem",
+			wantErr:  true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			certPool, err := loadCerts(tt.certFile)
+			if tt.wantErr {
+				require.Error(t, err)
+				require.Nil(t, certPool)
+			} else {
+				require.NoError(t, err)
+				require.NotNil(t, certPool)
+			}
+		})
+	}
 }
 
 func TestParseTarget(t *testing.T) {
@@ -113,11 +145,59 @@ func TestParseTarget(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			authority, path, tlsVerify, err := parseTarget(tt.target)
+			authority, path, _, tlsVerify, err := parseTarget(tt.target)
 			assert.Equal(t, tt.authority, authority)
 			assert.Equal(t, tt.path, path)
 			assert.Equal(t, tt.tlsVerify, tlsVerify)
 			assert.Equal(t, tt.wantErr, err)
+		})
+	}
+}
+
+func TestGetCertFile(t *testing.T) {
+	tests := []struct {
+		desc                string
+		certFile            string
+		certFileEnvVarValue string
+		wantCertFile        string
+	}{
+		{
+			desc:                "cert file provided explicitly",
+			certFile:            "path/to/cert.pem",
+			certFileEnvVarValue: "",
+			wantCertFile:        "path/to/cert.pem",
+		},
+		{
+			desc:                "cert file provided via environment variable",
+			certFile:            "",
+			certFileEnvVarValue: "env/cert.pem",
+			wantCertFile:        "env/cert.pem",
+		},
+		{
+			desc:                "no cert file provided",
+			certFile:            "",
+			certFileEnvVarValue: "",
+			wantCertFile:        "",
+		},
+		{
+			desc:                "explicit cert file takes precedence over env var",
+			certFile:            "explicit/cert.pem",
+			certFileEnvVarValue: "env/cert.pem",
+			wantCertFile:        "explicit/cert.pem",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			if tt.certFileEnvVarValue != "" {
+				_ = os.Setenv(DiodeCertFileEnvVarName, tt.certFileEnvVarValue)
+				defer func() {
+					_ = os.Unsetenv(DiodeCertFileEnvVarName)
+				}()
+			}
+
+			certFile := getCertFile(tt.certFile)
+			require.Equal(t, tt.wantCertFile, certFile)
 		})
 	}
 }
@@ -380,6 +460,107 @@ func TestNewClient(t *testing.T) {
 			require.Equal(t, tt.wantErr, err)
 			if tt.wantErr == nil {
 				require.NotNil(t, client)
+				require.NoError(t, client.Close())
+			}
+		})
+	}
+}
+
+func TestNewClientWithCertFile(t *testing.T) {
+	tests := []struct {
+		desc                string
+		target              string
+		certFile            string
+		certFileEnvVarValue string
+		wantTLSVerify       bool
+		wantErr             error
+		expectAuthError     bool
+	}{
+		{
+			desc:            "cert file provided via option with insecure target",
+			target:          "grpc://localhost:8080",
+			certFile:        "testdata/test-cert.pem",
+			wantTLSVerify:   false, // grpc:// scheme = insecure
+			wantErr:         nil,
+			expectAuthError: true, // No server running, will fail auth
+		},
+		{
+			desc:                "cert file provided via environment variable with insecure target",
+			target:              "grpc://localhost:8080",
+			certFile:            "",
+			certFileEnvVarValue: "testdata/test-cert.pem",
+			wantTLSVerify:       false, // grpc:// scheme = insecure
+			wantErr:             nil,
+			expectAuthError:     true, // No server running, will fail auth
+		},
+		{
+			desc:                "explicit cert file takes precedence over env var with insecure target",
+			target:              "grpc://localhost:8080",
+			certFile:            "testdata/test-cert.pem",
+			certFileEnvVarValue: "testdata/invalid.pem",
+			wantTLSVerify:       false, // grpc:// scheme = insecure
+			wantErr:             nil,
+			expectAuthError:     true, // No server running, will fail auth
+		},
+		{
+			desc:            "invalid cert file",
+			target:          "grpc://localhost:8080",
+			certFile:        "testdata/non-existent.pem",
+			wantTLSVerify:   false,
+			wantErr:         errors.New("failed to load certificates"),
+			expectAuthError: false, // Will fail during cert loading, before auth
+		},
+		{
+			desc:            "grpcs target with custom cert file",
+			target:          "grpcs://localhost:8080",
+			certFile:        "testdata/test-cert.pem",
+			wantTLSVerify:   true,
+			wantErr:         nil,
+			expectAuthError: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			defer func() {
+				_ = os.Unsetenv(DiodeClientIDEnvVarName)
+				_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+				_ = os.Unsetenv(DiodeCertFileEnvVarName)
+			}()
+
+			_ = os.Setenv(DiodeClientIDEnvVarName, "client-id")
+			_ = os.Setenv(DiodeClientSecretEnvVarName, "client-secret")
+			if tt.certFileEnvVarValue != "" {
+				_ = os.Setenv(DiodeCertFileEnvVarName, tt.certFileEnvVarValue)
+			}
+
+			opts := []ClientOption{}
+			if tt.certFile != "" {
+				opts = append(opts, WithCertFile(tt.certFile))
+			}
+
+			client, err := NewClient(tt.target, "my-producer", "0.1.0", opts...)
+			if tt.wantErr != nil {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr.Error())
+			} else if tt.expectAuthError {
+				// We expect the client creation to fail during authentication
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), "authentication failed")
+			} else {
+				require.NoError(t, err)
+				require.NotNil(t, client)
+
+				grpcClient := client.(*GRPCClient)
+				assert.Equal(t, tt.wantTLSVerify, grpcClient.tlsVerify)
+				if tt.certFile != "" || tt.certFileEnvVarValue != "" {
+					expectedCertFile := tt.certFile
+					if expectedCertFile == "" {
+						expectedCertFile = tt.certFileEnvVarValue
+					}
+					assert.Equal(t, expectedCertFile, grpcClient.certFile)
+				}
+
 				require.NoError(t, client.Close())
 			}
 		})
@@ -668,6 +849,225 @@ func TestHTTPAuthError(t *testing.T) {
 
 	_, err = NewClient(fmt.Sprintf("grpc://localhost:%s", port), "my-producer", "0.1.0")
 	require.Error(t, err)
+}
+
+func TestWithSkipTLSVerify(t *testing.T) {
+	tests := []struct {
+		desc          string
+		target        string
+		withSkipTLS   bool
+		wantTLSVerify bool
+		expectError   bool
+	}{
+		{
+			desc:          "grpcs target with WithSkipTLSVerify option",
+			target:        "grpcs://localhost:8080",
+			withSkipTLS:   true,
+			wantTLSVerify: false, // WithSkipTLSVerify should override default
+			expectError:   true,  // No server running, will fail auth
+		},
+		{
+			desc:          "grpcs target without WithSkipTLSVerify option",
+			target:        "grpcs://localhost:8080",
+			withSkipTLS:   false,
+			wantTLSVerify: true, // Default for secure schemes
+			expectError:   true, // No server running, will fail auth
+		},
+		{
+			desc:          "https target with WithSkipTLSVerify option",
+			target:        "https://localhost:8080",
+			withSkipTLS:   true,
+			wantTLSVerify: false, // WithSkipTLSVerify should override default
+			expectError:   true,  // No server running, will fail auth
+		},
+		{
+			desc:          "grpc target with WithSkipTLSVerify option (should have no effect)",
+			target:        "grpc://localhost:8080",
+			withSkipTLS:   true,
+			wantTLSVerify: false, // Plaintext schemes always false
+			expectError:   true,  // No server running, will fail auth
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			defer func() {
+				_ = os.Unsetenv(DiodeClientIDEnvVarName)
+				_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+			}()
+
+			_ = os.Setenv(DiodeClientIDEnvVarName, "client-id")
+			_ = os.Setenv(DiodeClientSecretEnvVarName, "client-secret")
+
+			opts := []ClientOption{}
+			if tt.withSkipTLS {
+				opts = append(opts, WithSkipTLSVerify())
+			}
+
+			client, err := NewClient(tt.target, "my-producer", "0.1.0", opts...)
+			if tt.expectError {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), "authentication failed")
+			} else {
+				require.NoError(t, err)
+				require.NotNil(t, client)
+
+				grpcClient := client.(*GRPCClient)
+				assert.Equal(t, tt.wantTLSVerify, grpcClient.tlsVerify)
+
+				require.NoError(t, client.Close())
+			}
+		})
+	}
+}
+
+func TestSkipTLSVerifyEnv(t *testing.T) {
+	tests := []struct {
+		desc            string
+		target          string
+		skipTLSEnvValue string
+		wantTLSVerify   bool
+		expectError     bool
+	}{
+		{
+			desc:            "grpcs target with DIODE_SKIP_TLS_VERIFY=true",
+			target:          "grpcs://localhost:8080",
+			skipTLSEnvValue: "true",
+			wantTLSVerify:   false, // Should skip TLS verification
+			expectError:     true,  // No server running, will fail auth
+		},
+		{
+			desc:            "grpcs target with DIODE_SKIP_TLS_VERIFY=1",
+			target:          "grpcs://localhost:8080",
+			skipTLSEnvValue: "1",
+			wantTLSVerify:   false, // Should skip TLS verification
+			expectError:     true,  // No server running, will fail auth
+		},
+		{
+			desc:            "grpcs target with DIODE_SKIP_TLS_VERIFY=yes",
+			target:          "grpcs://localhost:8080",
+			skipTLSEnvValue: "yes",
+			wantTLSVerify:   false, // Should skip TLS verification
+			expectError:     true,  // No server running, will fail auth
+		},
+		{
+			desc:            "grpcs target with DIODE_SKIP_TLS_VERIFY=false",
+			target:          "grpcs://localhost:8080",
+			skipTLSEnvValue: "false",
+			wantTLSVerify:   true, // Should verify TLS (false is not a skip value)
+			expectError:     true, // No server running, will fail auth
+		},
+		{
+			desc:            "grpcs target with no DIODE_SKIP_TLS_VERIFY env var",
+			target:          "grpcs://localhost:8080",
+			skipTLSEnvValue: "",
+			wantTLSVerify:   true, // Default to verify TLS
+			expectError:     true, // No server running, will fail auth
+		},
+		{
+			desc:            "grpc target with DIODE_SKIP_TLS_VERIFY=true (should have no effect)",
+			target:          "grpc://localhost:8080",
+			skipTLSEnvValue: "true",
+			wantTLSVerify:   false, // Plaintext schemes always false
+			expectError:     true,  // No server running, will fail auth
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			defer func() {
+				_ = os.Unsetenv(DiodeClientIDEnvVarName)
+				_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+				_ = os.Unsetenv(DiodeSkipTLSVerifyEnvVarName)
+			}()
+
+			_ = os.Setenv(DiodeClientIDEnvVarName, "client-id")
+			_ = os.Setenv(DiodeClientSecretEnvVarName, "client-secret")
+			if tt.skipTLSEnvValue != "" {
+				_ = os.Setenv(DiodeSkipTLSVerifyEnvVarName, tt.skipTLSEnvValue)
+			}
+
+			client, err := NewClient(tt.target, "my-producer", "0.1.0")
+			if tt.expectError {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), "authentication failed")
+			} else {
+				require.NoError(t, err)
+				require.NotNil(t, client)
+
+				grpcClient := client.(*GRPCClient)
+				assert.Equal(t, tt.wantTLSVerify, grpcClient.tlsVerify)
+
+				require.NoError(t, client.Close())
+			}
+		})
+	}
+}
+
+func TestIsPlaintextField(t *testing.T) {
+	tests := []struct {
+		desc            string
+		target          string
+		wantIsPlaintext bool
+		wantTLSVerify   bool
+		expectError     bool
+	}{
+		{
+			desc:            "grpc scheme should be plaintext",
+			target:          "grpc://localhost:8080",
+			wantIsPlaintext: true,
+			wantTLSVerify:   false,
+			expectError:     true, // No server running, will fail auth
+		},
+		{
+			desc:            "http scheme should be plaintext",
+			target:          "http://localhost:8080",
+			wantIsPlaintext: true,
+			wantTLSVerify:   false,
+			expectError:     true, // No server running, will fail auth
+		},
+		{
+			desc:            "grpcs scheme should not be plaintext",
+			target:          "grpcs://localhost:8080",
+			wantIsPlaintext: false,
+			wantTLSVerify:   true,
+			expectError:     true, // No server running, will fail auth
+		},
+		{
+			desc:            "https scheme should not be plaintext",
+			target:          "https://localhost:8080",
+			wantIsPlaintext: false,
+			wantTLSVerify:   true,
+			expectError:     true, // No server running, will fail auth
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			defer func() {
+				_ = os.Unsetenv(DiodeClientIDEnvVarName)
+				_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+			}()
+
+			_ = os.Setenv(DiodeClientIDEnvVarName, "client-id")
+			_ = os.Setenv(DiodeClientSecretEnvVarName, "client-secret")
+
+			client, err := NewClient(tt.target, "my-producer", "0.1.0")
+			if tt.expectError {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), "authentication failed")
+			} else {
+				require.NoError(t, err)
+				require.NotNil(t, client)
+
+				grpcClient := client.(*GRPCClient)
+				assert.Equal(t, tt.wantIsPlaintext, grpcClient.isPlaintext)
+				assert.Equal(t, tt.wantTLSVerify, grpcClient.tlsVerify)
+
+				require.NoError(t, client.Close())
+			}
+		})
+	}
 }
 
 func TestAuthRetryEnv(t *testing.T) {
