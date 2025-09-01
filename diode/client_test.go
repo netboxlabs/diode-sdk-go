@@ -42,6 +42,11 @@ func TestLoadCerts(t *testing.T) {
 			wantErr:  false,
 		},
 		{
+			desc:     "load certificate chain file",
+			certFile: "testdata/cert-chain.pem",
+			wantErr:  false,
+		},
+		{
 			desc:     "load non-existent certificate file",
 			certFile: "testdata/non-existent.pem",
 			wantErr:  true,
