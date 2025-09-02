@@ -80,8 +80,7 @@ func loadCerts(certFile string) (*x509.CertPool, error) {
 		}
 		return certPool, nil
 	}
-	certPool, _ := x509.SystemCertPool()
-	return certPool, nil
+	return x509.SystemCertPool()
 }
 
 // skipTLSVerify determines if TLS certificate verification should be skipped for secure schemes
