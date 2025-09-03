@@ -9,9 +9,9 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/google/uuid"
 	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
 
@@ -22,8 +22,10 @@ const (
 
 // DryRunClient implements Client and writes ingest payloads to stdout or a file.
 type DryRunClient struct {
-	appName   string
-	dryRunDir string
+	appName    string
+	dryRunDir  string
+	sdkName    string
+	sdkVersion string
 }
 
 // NewDryRunClient creates a new DryRunClient.
@@ -39,7 +41,12 @@ func NewDryRunClient(appName string, dryRunDir string) (Client, error) {
 			return nil, err
 		}
 	}
-	return &DryRunClient{appName: appName, dryRunDir: dryRunDir}, nil
+	return &DryRunClient{
+		appName:    appName,
+		dryRunDir:  dryRunDir,
+		sdkName:    SDKName,
+		sdkVersion: getSDKVersion(),
+	}, nil
 }
 
 // Close closes the DryRunClient writer if necessary.
@@ -60,8 +67,8 @@ func (d *DryRunClient) IngestProto(_ context.Context, entities []*diodepb.Entity
 	wrapper := &diodepb.IngestRequest{
 		Id:         uuid.New().String(),
 		Entities:   entities,
-		SdkName:    SDKName,
-		SdkVersion: SDKVersion,
+		SdkName:    d.sdkName,
+		SdkVersion: d.sdkVersion,
 	}
 
 	data, err := protojson.MarshalOptions{UseProtoNames: true, Indent: "  "}.Marshal(wrapper)

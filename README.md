@@ -26,6 +26,8 @@ go get github.com/netboxlabs/diode-sdk-go
 * `DIODE_SDK_LOG_LEVEL` - Log level for the SDK (default: `INFO`)
 * `DIODE_CLIENT_ID` - Client ID for OAuth2 authentication
 * `DIODE_CLIENT_SECRET` - Client Secret for OAuth2 authentication
+* `DIODE_CERT_FILE` - Path to custom certificate file for TLS connections
+* `DIODE_SKIP_TLS_VERIFY` - Skip TLS verification (default: `false`)
 * `DIODE_DRY_RUN_OUTPUT_DIR` - Directory to write dry run output files when using `DryRunClient`
 
 ### Example
@@ -116,6 +118,51 @@ func main() {
 ```
 
 See all [examples](./examples/main.go) for reference.
+
+### TLS verification and certificates
+
+TLS verification is controlled by the target URL scheme:
+- **Secure schemes** (`grpcs://`, `https://`): TLS verification enabled  
+- **Insecure schemes** (`grpc://`, `http://`): TLS verification disabled
+
+```go
+// TLS verification enabled (uses system certificates)
+client, err := diode.NewClient("grpcs://example.com", ...)
+
+// TLS verification disabled  
+client, err := diode.NewClient("grpc://example.com", ...)
+```
+
+#### Using custom certificates
+
+```go
+// Via constructor parameter
+client, err := diode.NewClient(
+	"grpcs://example.com", 
+	"example-app", "0.1.0",
+	diode.WithCertFile("/path/to/cert.pem"),
+)
+
+// Or via environment variable
+export DIODE_CERT_FILE=/path/to/cert.pem
+```
+
+#### Disabling TLS verification
+
+```bash
+export DIODE_SKIP_TLS_VERIFY=true
+```
+
+#### For legacy certificates (CN-only, no SANs)
+
+```go
+client, err := diode.NewClient(
+	"grpcs://example.com",
+	"example-app", "0.1.0", 
+	diode.WithCertFile("/path/to/cert.pem"),
+	diode.WithSkipTLSVerify(),
+)
+```
 
 ### Dry run client
 
