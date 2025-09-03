@@ -34,7 +34,10 @@ const (
 	SDKName = "diode-sdk-go"
 
 	// SDKVersion is the version of the Diode SDK
-	SDKVersion = "0.2.0"
+	SDKVersion = "1.4.0"
+
+	// DiodeCertFileEnvVarName is the environment variable name for the custom certificate file path
+	DiodeCertFileEnvVarName = "DIODE_CERT_FILE"
 
 	// DiodeClientIDEnvVarName is the environment variable name for the Diode Client ID
 	DiodeClientIDEnvVarName = "DIODE_CLIENT_ID"
@@ -42,14 +45,17 @@ const (
 	// DiodeClientSecretEnvVarName is the environment variable name for the Diode Client Secret
 	DiodeClientSecretEnvVarName = "DIODE_CLIENT_SECRET"
 
-	// DiodeSDKLogLevelEnvVarName is the environment variable name for the Diode SDK log level
-	DiodeSDKLogLevelEnvVarName = "DIODE_SDK_LOG_LEVEL"
-
 	// DiodeMaxAuthRetriesEnvVarName is the environment variable name for the maximum number of authentication retries
 	DiodeMaxAuthRetriesEnvVarName = "DIODE_MAX_AUTH_RETRIES"
 
 	// DiodeOAuth2IngestScope is the OAuth2 scope for the data ingestion
 	DiodeOAuth2IngestScope = "diode:ingest"
+
+	// DiodeSDKLogLevelEnvVarName is the environment variable name for the Diode SDK log level
+	DiodeSDKLogLevelEnvVarName = "DIODE_SDK_LOG_LEVEL"
+
+	// DiodeSkipTLSVerifyEnvVarName is the environment variable name to skip TLS verification
+	DiodeSkipTLSVerifyEnvVarName = "DIODE_SKIP_TLS_VERIFY"
 
 	defaultStreamName = "latest"
 )
@@ -61,21 +67,42 @@ var (
 	allowedSchemesRe = regexp.MustCompile(`grpc|grpcs|http|https`)
 )
 
-// loadCerts loads the system x509 cert pool
-func loadCerts() *x509.CertPool {
-	certPool, _ := x509.SystemCertPool()
-	return certPool
+// loadCerts loads the x509 cert pool from custom cert file or system certs
+func loadCerts(certFile string) (*x509.CertPool, error) {
+	if certFile != "" {
+		certData, err := os.ReadFile(certFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read certificate file: %w", err)
+		}
+		certPool := x509.NewCertPool()
+		if !certPool.AppendCertsFromPEM(certData) {
+			return nil, fmt.Errorf("failed to parse certificate file")
+		}
+		return certPool, nil
+	}
+	return x509.SystemCertPool()
 }
 
-// parseTarget parses the target string into authority, path, and tlsVerify
-func parseTarget(target string) (string, string, bool, error) {
+// skipTLSVerify determines if TLS certificate verification should be skipped for secure schemes
+// This function should only be called for secure schemes (grpcs://, https://)
+func skipTLSVerify() bool {
+	// Check environment variable to skip TLS verification
+	skipTLSEnv := strings.ToLower(os.Getenv(DiodeSkipTLSVerifyEnvVarName))
+	skipTLSFromEnv := skipTLSEnv == "true" || skipTLSEnv == "1" || skipTLSEnv == "yes" || skipTLSEnv == "on"
+
+	// TLS verification is enabled by default for secure schemes, disabled only by env var
+	return skipTLSFromEnv
+}
+
+// parseTarget parses the target string into authority, path, isPlaintext, and tlsVerify
+func parseTarget(target string) (string, string, bool, bool, error) {
 	u, err := url.Parse(target)
 	if err != nil {
-		return "", "", false, err
+		return "", "", false, false, err
 	}
 
 	if !allowedSchemesRe.MatchString(u.Scheme) {
-		return "", "", false, ErrInvalidTargetScheme
+		return "", "", false, false, ErrInvalidTargetScheme
 	}
 
 	authority := u.Host
@@ -86,7 +113,7 @@ func parseTarget(target string) (string, string, bool, error) {
 		case "grpcs", "https":
 			authority += ":443"
 		default:
-			return "", "", false, fmt.Errorf("missing port with unsupported scheme: %s: %w", u.Scheme, ErrInvalidTargetScheme)
+			return "", "", false, false, fmt.Errorf("missing port with unsupported scheme: %s: %w", u.Scheme, ErrInvalidTargetScheme)
 		}
 	}
 
@@ -95,13 +122,13 @@ func parseTarget(target string) (string, string, bool, error) {
 		path = ""
 	}
 
-	tlsVerify := false
-	switch u.Scheme {
-	case "grpcs", "https":
-		tlsVerify = true
-	}
+	// Determine if this is a plaintext connection
+	isPlaintext := u.Scheme == "grpc" || u.Scheme == "http"
 
-	return authority, path, tlsVerify, nil
+	// Default to TLS verification for secure schemes, disable for plaintext or when explicitly skipped
+	tlsVerify := !isPlaintext && !skipTLSVerify()
+
+	return authority, path, isPlaintext, tlsVerify, nil
 }
 
 // getClientID returns the client ID either from provided value or environment variable
@@ -146,6 +173,14 @@ func getAuthRetries(maxAuthRetries int) (int, error) {
 	return maxAuthRetries, nil
 }
 
+// getCertFile returns the cert file path either from provided value or environment variable
+func getCertFile(certFile string) string {
+	if certFile == "" {
+		certFile = os.Getenv(DiodeCertFileEnvVarName)
+	}
+	return certFile
+}
+
 // Client is an interface that defines the methods available from Diode API
 type Client interface {
 	// Close closes the connection to the API service
@@ -175,6 +210,9 @@ type GRPCClient struct {
 	// Producer's application version
 	appVersion string
 
+	// Custom certificate file path
+	certFile string
+
 	// The client ID for the API
 	clientID string
 
@@ -190,7 +228,13 @@ type GRPCClient struct {
 	// GRPC path
 	path string
 
-	// TLS verify
+	// root CAs
+	rootCAs *x509.CertPool
+
+	// Plaintext connection (grpc://, http://)
+	isPlaintext bool
+
+	// TLS verify (only meaningful for secure connections)
 	tlsVerify bool
 
 	// Platform name
@@ -220,9 +264,23 @@ func WithClientSecret(clientSecret string) ClientOption {
 	}
 }
 
+// WithCertFile sets the certificate file path for the GRPCClient
+func WithCertFile(certFile string) ClientOption {
+	return func(c *GRPCClient) {
+		c.certFile = certFile
+	}
+}
+
+// WithSkipTLSVerify disables TLS certificate verification
+func WithSkipTLSVerify() ClientOption {
+	return func(c *GRPCClient) {
+		c.tlsVerify = false
+	}
+}
+
 // authenticate fetches an OAuth2 token using client credentials and updates the metadata with the token.
 func (g *GRPCClient) authenticate() error {
-	authClient := newDiodeAuthentication(g.target, g.path, g.tlsVerify, g.clientID, g.clientSecret)
+	authClient := newDiodeAuthentication(g.target, g.path, g.isPlaintext, g.tlsVerify, g.rootCAs, g.clientID, g.clientSecret)
 	accessToken, err := authClient.authenticate(g.logger, []string{DiodeOAuth2IngestScope})
 	if err != nil {
 		return fmt.Errorf("authentication failed: %w", err)
@@ -237,17 +295,21 @@ func (g *GRPCClient) authenticate() error {
 type diodeAuthentication struct {
 	target       string
 	path         string
+	rootCAs      *x509.CertPool
+	isPlaintext  bool
 	tlsVerify    bool
 	clientID     string
 	clientSecret string
 }
 
 // NewDiodeAuthentication creates a new instance of DiodeAuthentication.
-func newDiodeAuthentication(target string, path string, tlsVerify bool, clientID, clientSecret string) *diodeAuthentication {
+func newDiodeAuthentication(target string, path string, isPlaintext bool, tlsVerify bool, rootCAs *x509.CertPool, clientID, clientSecret string) *diodeAuthentication {
 	return &diodeAuthentication{
 		target:       target,
 		path:         path,
+		isPlaintext:  isPlaintext,
 		tlsVerify:    tlsVerify,
+		rootCAs:      rootCAs,
 		clientID:     clientID,
 		clientSecret: clientSecret,
 	}
@@ -255,9 +317,9 @@ func newDiodeAuthentication(target string, path string, tlsVerify bool, clientID
 
 // Authenticate requests an OAuth2 token using client credentials and returns it.
 func (d *diodeAuthentication) authenticate(logger *slog.Logger, scopes []string) (string, error) {
-	scheme := "http"
-	if d.tlsVerify {
-		scheme = "https"
+	scheme := "https"
+	if d.isPlaintext {
+		scheme = "http"
 	}
 	authURL := fmt.Sprintf("%s://%s/auth/token", scheme, d.target)
 	if d.path != "" {
@@ -275,9 +337,16 @@ func (d *diodeAuthentication) authenticate(logger *slog.Logger, scopes []string)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	client := &http.Client{}
-	if !d.tlsVerify {
+	if d.isPlaintext {
+		// HTTP plaintext - no TLS
+		client.Transport = &http.Transport{}
+	} else {
+		// HTTPS - always use TLS for secure schemes
 		client.Transport = &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig: &tls.Config{
+				RootCAs:            d.rootCAs,
+				InsecureSkipVerify: !d.tlsVerify, // Skip verification if tlsVerify is false
+			},
 		}
 	}
 
@@ -320,30 +389,7 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 		return nil, fmt.Errorf("app version is required")
 	}
 
-	target, path, tlsVerify, err := parseTarget(target)
-	if err != nil {
-		return nil, err
-	}
-
-	dialOpts := []grpc.DialOption{
-		grpc.WithUserAgent(userAgent()),
-	}
-
-	if path != "" {
-		logger.Debug("Setting up gRPC interceptor for path", "path", path)
-		dialOpts = append(dialOpts, methodUnaryInterceptor(path))
-	}
-
-	if tlsVerify {
-		logger.Debug("Setting up gRPC secure channel")
-		rootCAs := loadCerts()
-		dialOpts = append(dialOpts, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{RootCAs: rootCAs})))
-	} else {
-		logger.Debug("Setting up gRPC insecure channel")
-		dialOpts = append(dialOpts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	}
-
-	conn, err := grpc.NewClient(target, dialOpts...)
+	target, path, isPlaintext, tlsVerify, err := parseTarget(target)
 	if err != nil {
 		return nil, err
 	}
@@ -353,12 +399,11 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 
 	c := &GRPCClient{
 		logger:         logger,
-		conn:           conn,
-		client:         diodepb.NewIngesterServiceClient(conn),
 		appName:        appName,
 		appVersion:     appVersion,
 		target:         target,
 		path:           path,
+		isPlaintext:    isPlaintext,
 		tlsVerify:      tlsVerify,
 		platform:       platform,
 		goVersion:      goVersion,
@@ -371,6 +416,47 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 	for _, o := range opts {
 		o(c)
 	}
+
+	certFile := getCertFile(c.certFile)
+	c.certFile = certFile
+
+	// Load certificates
+	rootCAs, err := loadCerts(c.certFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load certificates: %w", err)
+	}
+	c.rootCAs = rootCAs
+
+	dialOpts := []grpc.DialOption{
+		grpc.WithUserAgent(userAgent()),
+	}
+
+	if path != "" {
+		logger.Debug("Setting up gRPC interceptor for path", "path", path)
+		dialOpts = append(dialOpts, methodUnaryInterceptor(path))
+	}
+
+	// Setup transport credentials based on connection type
+	if c.isPlaintext {
+		// Use plaintext for grpc:// and http://
+		logger.Debug("Setting up gRPC plaintext channel")
+		dialOpts = append(dialOpts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	} else {
+		// Always use TLS for secure schemes (grpcs://, https://)
+		logger.Debug("Setting up gRPC secure channel")
+		dialOpts = append(dialOpts, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{
+			RootCAs:            rootCAs,
+			InsecureSkipVerify: !c.tlsVerify, // Skip verification if tlsVerify is false
+		})))
+	}
+
+	conn, err := grpc.NewClient(target, dialOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	c.conn = conn
+	c.client = diodepb.NewIngesterServiceClient(conn)
 
 	c.metadata = metadata.Pairs("platform", platform, "go-version", goVersion)
 
