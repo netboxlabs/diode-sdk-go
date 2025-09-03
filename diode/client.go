@@ -13,6 +13,7 @@ import (
 	"os"
 	"regexp"
 	"runtime"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
@@ -32,9 +33,6 @@ import (
 const (
 	// SDKName is the name of the Diode SDK
 	SDKName = "diode-sdk-go"
-
-	// SDKVersion is the version of the Diode SDK
-	SDKVersion = "1.4.0"
 
 	// DiodeCertFileEnvVarName is the environment variable name for the custom certificate file path
 	DiodeCertFileEnvVarName = "DIODE_CERT_FILE"
@@ -181,6 +179,23 @@ func getCertFile(certFile string) string {
 	return certFile
 }
 
+// getSDKVersion returns the SDK version from build info or a fallback
+func getSDKVersion() string {
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return "dev"
+	}
+
+	// Check if this module is in the dependency list (when used as a dependency)
+	for _, mod := range info.Deps {
+		if strings.HasSuffix(mod.Path, "/diode-sdk-go") || mod.Path == "github.com/netboxlabs/diode-sdk-go" {
+			return mod.Version
+		}
+	}
+
+	return "dev"
+}
+
 // Client is an interface that defines the methods available from Diode API
 type Client interface {
 	// Close closes the connection to the API service
@@ -242,6 +257,12 @@ type GRPCClient struct {
 
 	// Go version
 	goVersion string
+
+	// SDK name
+	sdkName string
+
+	// SDK version
+	sdkVersion string
 
 	// Metadata
 	metadata metadata.MD
@@ -396,6 +417,7 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 
 	platform := fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH)
 	goVersion := runtime.Version()
+	sdkVersion := getSDKVersion()
 
 	c := &GRPCClient{
 		logger:         logger,
@@ -407,6 +429,8 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 		tlsVerify:      tlsVerify,
 		platform:       platform,
 		goVersion:      goVersion,
+		sdkName:        SDKName,
+		sdkVersion:     sdkVersion,
 		maxAuthRetries: 3,
 	}
 
@@ -428,7 +452,7 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 	c.rootCAs = rootCAs
 
 	dialOpts := []grpc.DialOption{
-		grpc.WithUserAgent(userAgent()),
+		grpc.WithUserAgent(fmt.Sprintf("%s/%s", c.sdkName, c.sdkVersion)),
 	}
 
 	if path != "" {
@@ -507,8 +531,8 @@ func (g *GRPCClient) IngestProto(ctx context.Context, entities []*diodepb.Entity
 		Stream:             stream,
 		ProducerAppName:    g.appName,
 		ProducerAppVersion: g.appVersion,
-		SdkName:            SDKName,
-		SdkVersion:         SDKVersion,
+		SdkName:            g.sdkName,
+		SdkVersion:         g.sdkVersion,
 	}
 
 	ctx = metadata.NewOutgoingContext(ctx, g.metadata)
@@ -561,11 +585,6 @@ func methodUnaryInterceptor(path string) grpc.DialOption {
 		method = fmt.Sprintf("%s%s", path, method)
 		return invoker(ctx, method, req, reply, cc, opts...)
 	})
-}
-
-// userAgent returns the user agent string for the SDK
-func userAgent() string {
-	return fmt.Sprintf("%s/%s", SDKName, SDKVersion)
 }
 
 // newLogger creates a new logger for the SDK

@@ -641,6 +641,77 @@ func TestMethodUnaryInterceptor(t *testing.T) {
 	}
 }
 
+func TestGetSDKVersion(t *testing.T) {
+	tests := []struct {
+		desc        string
+		wantVersion string
+	}{
+		{
+			desc:        "SDK version detection",
+			wantVersion: "dev", // When running tests, build info won't have module dependencies
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			version := getSDKVersion()
+			// Since we're running in a test environment without proper module deps,
+			// we should at least get a non-empty version string
+			assert.NotEmpty(t, version)
+			// When running tests locally, it should return "dev"
+			if version != "dev" {
+				// If not "dev", it should be a valid version string (starts with v or is a commit hash)
+				assert.True(t, version[0] == 'v' || len(version) >= 7,
+					"version should be 'dev', start with 'v', or be a commit hash (7+ chars): %s", version)
+			}
+		})
+	}
+}
+
+func TestClientSDKVersionCaching(t *testing.T) {
+	port, err := getFreePort()
+	require.NoError(t, err)
+
+	authServer, err := startMockAuthServer(port, "", false)
+	require.NoError(t, err)
+	defer authServer.Close()
+
+	_ = os.Setenv(DiodeClientIDEnvVarName, "client-id")
+	_ = os.Setenv(DiodeClientSecretEnvVarName, "client-secret")
+	defer func() {
+		_ = os.Unsetenv(DiodeClientIDEnvVarName)
+		_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+	}()
+
+	client, err := NewClient(fmt.Sprintf("grpc://localhost:%s", port), "my-producer", "0.1.0")
+	require.NoError(t, err)
+	defer func() {
+		err := client.Close()
+		require.NoError(t, err)
+	}()
+
+	grpcClient := client.(*GRPCClient)
+
+	// Verify that SDK name and version are cached
+	assert.Equal(t, SDKName, grpcClient.sdkName)
+	assert.NotEmpty(t, grpcClient.sdkVersion)
+
+	// The cached version should be consistent
+	cachedVersion := grpcClient.sdkVersion
+
+	// Create another client and verify it gets the same version
+	client2, err := NewClient(fmt.Sprintf("grpc://localhost:%s", port), "my-producer", "0.1.0")
+	require.NoError(t, err)
+	defer func() {
+		err := client2.Close()
+		require.NoError(t, err)
+	}()
+
+	grpcClient2 := client2.(*GRPCClient)
+	assert.Equal(t, cachedVersion, grpcClient2.sdkVersion)
+	assert.Equal(t, SDKName, grpcClient2.sdkName)
+}
+
 func TestNewLogger(t *testing.T) {
 	tests := []struct {
 		desc                string
