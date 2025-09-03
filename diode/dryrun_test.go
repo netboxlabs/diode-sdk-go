@@ -134,3 +134,31 @@ func TestLoadDryRunEntitiesError(t *testing.T) {
 	_, err := LoadDryRunEntities("not-exist.json")
 	require.Error(t, err)
 }
+
+func TestDryRunClientSDKVersionCaching(t *testing.T) {
+	client, err := NewDryRunClient("test-app", "")
+	require.NoError(t, err)
+	require.NotNil(t, client)
+
+	dryRunClient := client.(*DryRunClient)
+
+	// Verify that SDK name and version are cached during initialization
+	require.Equal(t, SDKName, dryRunClient.sdkName)
+	require.NotEmpty(t, dryRunClient.sdkVersion)
+
+	// The cached version should be consistent
+	cachedVersion := dryRunClient.sdkVersion
+	cachedName := dryRunClient.sdkName
+
+	// Create another client and verify it gets the same version
+	client2, err := NewDryRunClient("test-app-2", "")
+	require.NoError(t, err)
+	defer func() {
+		err := client2.Close()
+		require.NoError(t, err)
+	}()
+
+	dryRunClient2 := client2.(*DryRunClient)
+	require.Equal(t, cachedVersion, dryRunClient2.sdkVersion)
+	require.Equal(t, cachedName, dryRunClient2.sdkName)
+}
