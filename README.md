@@ -205,6 +205,32 @@ if err != nil {
 }
 ```
 
+### Queue client
+
+`QueueClient` serializes ingestion payloads to JSON and posts them to an orb-agent endpoint via HTTP(S). This is useful when the orb-agent (or another intermediary) exposes a lightweight transport instead of gRPC.
+
+```go
+client, err := diode.NewQueueClient(
+        "http://localhost:9000/queue",
+        "orb-producer",
+        "0.0.1",
+        diode.WithQueueName("devices"),
+)
+if err != nil {
+        log.Fatal(err)
+}
+defer client.Close()
+
+_, err = client.Ingest(context.Background(), []diode.Entity{
+        &diode.Site{Name: diode.String("Site 1")},
+})
+if err != nil {
+        log.Fatal(err)
+}
+```
+
+The request body mirrors the gRPC ingest payload, augmented with SDK and producer metadata so orb-agent can enrich and forward the message. The client returns a `QueueClientError` when the endpoint responds with a non-2xx status. TLS behaviour honours the existing `DIODE_SKIP_TLS_VERIFY` and `DIODE_CERT_FILE` environment variables, and the timeout can be customised via `diode.WithQueueTimeout`.
+
 ### CLI to replay dry-run files
 
 A small helper binary is included to ingest JSON files created by the
