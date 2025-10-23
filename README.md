@@ -205,16 +205,16 @@ if err != nil {
 }
 ```
 
-### Queue client
+### OTLP client
 
-`QueueClient` serializes ingestion payloads to JSON and posts them to an orb-agent endpoint via HTTP(S). This is useful when the orb-agent (or another intermediary) exposes a lightweight transport instead of gRPC.
+`OtlpClient` converts ingestion entities into OpenTelemetry log records and exports them to an OTLP collector over gRPC. This is useful when a collector receives log data and forwards it to Diode.
 
 ```go
-client, err := diode.NewQueueClient(
-        "http://localhost:9000/queue",
-        "orb-producer",
+client, err := diode.NewOtlpClient(
+        "grpc://localhost:4317",
+        "otlp-producer",
         "0.0.1",
-        diode.WithQueueName("devices"),
+        diode.WithOtlpMetadata(map[string]string{"authorization": "Bearer token"}),
 )
 if err != nil {
         log.Fatal(err)
@@ -229,7 +229,7 @@ if err != nil {
 }
 ```
 
-The request body mirrors the gRPC ingest payload, augmented with SDK and producer metadata so orb-agent can enrich and forward the message. The client returns a `QueueClientError` when the endpoint responds with a non-2xx status. TLS behaviour honours the existing `DIODE_SKIP_TLS_VERIFY` and `DIODE_CERT_FILE` environment variables, and the timeout can be customised via `diode.WithQueueTimeout`.
+Each entity is serialised with protobuf field names and emitted as a log record that includes producer metadata so downstream collectors can enrich and forward the payload. The client raises an `OtlpClientError` when the export fails. TLS behaviour honours the existing `DIODE_SKIP_TLS_VERIFY` and `DIODE_CERT_FILE` environment variables, and the export timeout can be customised via `diode.WithOtlpTimeout`.
 
 ### CLI to replay dry-run files
 
