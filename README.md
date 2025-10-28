@@ -207,10 +207,10 @@ if err != nil {
 
 ### OTLP client
 
-`DiodeOTLPClient` converts ingestion entities into OpenTelemetry log records and exports them to an OTLP collector over gRPC. This is useful when a collector receives log data and forwards it to Diode.
+`OTLPClient` converts ingestion entities into OpenTelemetry log records and exports them to an OTLP collector over gRPC. This is useful when a collector receives log data and forwards it to Diode.
 
 ```go
-client, err := diode.NewDiodeOTLPClient(
+client, err := diode.NewOTLPClient(
         "grpc://localhost:4317",
         "otlp-producer",
         "0.0.1",

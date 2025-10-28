@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	logsservicepb "go.opentelemetry.io/proto/otlp/collector/logs/v1"
 	commonpb "go.opentelemetry.io/proto/otlp/common/v1"
 	logspb "go.opentelemetry.io/proto/otlp/logs/v1"
@@ -24,16 +25,16 @@ import (
 )
 
 const (
-	diodeOTLPClientName   = "diode-sdk-go-otlp"
-	defaultOTLPTimeout    = 10 * time.Second
+	otlpClientName        = "diode-sdk-go-otlp"
+	defaultOtlpTimeout    = 10 * time.Second
 	otlpExportErrorPrefix = "OTLP export failed"
 )
 
-// DiodeOTLPClientOption configures the DiodeOTLPClient.
-type DiodeOTLPClientOption func(*DiodeOTLPClient) error
+// OTLPClientOption configures the OTLPClient.
+type OTLPClientOption func(*OTLPClient) error
 
-// DiodeOTLPClient implements Client and exports entities as OTLP log records.
-type DiodeOTLPClient struct {
+// OTLPClient implements Client and exports entities as OTLP log records.
+type OTLPClient struct {
 	appName    string
 	appVersion string
 
@@ -55,8 +56,8 @@ type DiodeOTLPClient struct {
 }
 
 // WithOtlpTimeout overrides the default export timeout.
-func WithOtlpTimeout(timeout time.Duration) DiodeOTLPClientOption {
-	return func(c *DiodeOTLPClient) error {
+func WithOtlpTimeout(timeout time.Duration) OTLPClientOption {
+	return func(c *OTLPClient) error {
 		if timeout <= 0 {
 			return fmt.Errorf("OTLP timeout must be greater than zero")
 		}
@@ -66,8 +67,8 @@ func WithOtlpTimeout(timeout time.Duration) DiodeOTLPClientOption {
 }
 
 // WithOtlpMetadata sets the metadata headers sent with each export call.
-func WithOtlpMetadata(md map[string]string) DiodeOTLPClientOption {
-	return func(c *DiodeOTLPClient) error {
+func WithOtlpMetadata(md map[string]string) OTLPClientOption {
+	return func(c *OTLPClient) error {
 		if len(md) == 0 {
 			c.metadata = nil
 			return nil
@@ -82,16 +83,16 @@ func WithOtlpMetadata(md map[string]string) DiodeOTLPClientOption {
 }
 
 // WithOtlpCertFile configures the certificate file to trust for secure endpoints.
-func WithOtlpCertFile(certFile string) DiodeOTLPClientOption {
-	return func(c *DiodeOTLPClient) error {
+func WithOtlpCertFile(certFile string) OTLPClientOption {
+	return func(c *OTLPClient) error {
 		c.certFile = certFile
 		return nil
 	}
 }
 
 // WithOtlpStream overrides the default stream value associated with exported entities.
-func WithOtlpStream(stream string) DiodeOTLPClientOption {
-	return func(c *DiodeOTLPClient) error {
+func WithOtlpStream(stream string) OTLPClientOption {
+	return func(c *OTLPClient) error {
 		if strings.TrimSpace(stream) == "" {
 			return fmt.Errorf("OTLP stream must not be empty")
 		}
@@ -100,14 +101,14 @@ func WithOtlpStream(stream string) DiodeOTLPClientOption {
 	}
 }
 
-// NewDiodeOTLPClient creates a new DiodeOTLPClient that exports entities as OTLP log records.
-func NewDiodeOTLPClient(target, appName, appVersion string, opts ...DiodeOTLPClientOption) (Client, error) {
+// NewOTLPClient creates a new OTLPClient that exports entities as OTLP log records.
+func NewOTLPClient(target, appName, appVersion string, opts ...OTLPClientOption) (Client, error) {
 	if target == "" {
 		return nil, fmt.Errorf("target is required")
 	}
 
 	if !strings.HasPrefix(target, "grpc://") && !strings.HasPrefix(target, "grpcs://") {
-		return nil, fmt.Errorf("DiodeOTLPClient target should start with grpc:// or grpcs://")
+		return nil, fmt.Errorf("OTLPClient target should start with grpc:// or grpcs://")
 	}
 
 	authority, path, isPlaintext, tlsVerify, err := parseTarget(target)
@@ -115,12 +116,12 @@ func NewDiodeOTLPClient(target, appName, appVersion string, opts ...DiodeOTLPCli
 		return nil, err
 	}
 
-	client := &DiodeOTLPClient{
+	client := &OTLPClient{
 		appName:    appName,
 		appVersion: appVersion,
-		timeout:    defaultOTLPTimeout,
+		timeout:    defaultOtlpTimeout,
 		stream:     defaultStreamName,
-		sdkName:    diodeOTLPClientName,
+		sdkName:    otlpClientName,
 		sdkVersion: getSDKVersion(),
 		platform:   runtime.GOOS + "/" + runtime.GOARCH,
 		goVersion:  runtime.Version(),
@@ -146,7 +147,7 @@ func NewDiodeOTLPClient(target, appName, appVersion string, opts ...DiodeOTLPCli
 	return client, nil
 }
 
-func (c *DiodeOTLPClient) dial(authority, path string, isPlaintext bool, tlsVerify bool) (*grpc.ClientConn, error) {
+func (c *OTLPClient) dial(authority, path string, isPlaintext bool, tlsVerify bool) (*grpc.ClientConn, error) {
 	var dialOpts []grpc.DialOption
 
 	userAgent := fmt.Sprintf("%s/%s %s/%s", c.sdkName, c.sdkVersion, c.appName, c.appVersion)
@@ -183,7 +184,7 @@ func (c *DiodeOTLPClient) dial(authority, path string, isPlaintext bool, tlsVeri
 }
 
 // Close closes the underlying gRPC connection.
-func (c *DiodeOTLPClient) Close() error {
+func (c *OTLPClient) Close() error {
 	if c.conn != nil {
 		return c.conn.Close()
 	}
@@ -191,12 +192,12 @@ func (c *DiodeOTLPClient) Close() error {
 }
 
 // Ingest converts the provided entities to proto messages before exporting them.
-func (c *DiodeOTLPClient) Ingest(ctx context.Context, entities []Entity) (*diodepb.IngestResponse, error) {
+func (c *OTLPClient) Ingest(ctx context.Context, entities []Entity) (*diodepb.IngestResponse, error) {
 	return c.IngestProto(ctx, convertEntitiesToProto(entities))
 }
 
 // IngestProto exports proto entities as OTLP log records.
-func (c *DiodeOTLPClient) IngestProto(ctx context.Context, entities []*diodepb.Entity) (*diodepb.IngestResponse, error) {
+func (c *OTLPClient) IngestProto(ctx context.Context, entities []*diodepb.Entity) (*diodepb.IngestResponse, error) {
 	logRecords := make([]*logspb.LogRecord, 0, len(entities))
 	for _, entity := range entities {
 		if entity == nil {
@@ -229,16 +230,22 @@ func (c *DiodeOTLPClient) IngestProto(ctx context.Context, entities []*diodepb.E
 	return &diodepb.IngestResponse{}, nil
 }
 
-func (c *DiodeOTLPClient) entityToLogRecord(entity *diodepb.Entity) (*logspb.LogRecord, error) {
+func (c *OTLPClient) entityToLogRecord(entity *diodepb.Entity) (*logspb.LogRecord, error) {
 	body, err := protojson.MarshalOptions{UseProtoNames: true}.Marshal(entity)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal entity: %w", err)
 	}
 
 	now := time.Now().UTC().UnixNano()
+	traceID := uuid.New()
+	spanID := uuid.New()
+
 	entityType := c.resolveEntityType(entity)
 
-	return &logspb.LogRecord{
+	traceBytes := append([]byte(nil), traceID[:]...)
+	spanBytes := append([]byte(nil), spanID[:8]...)
+
+	record := &logspb.LogRecord{
 		TimeUnixNano:         uint64(now),
 		ObservedTimeUnixNano: uint64(now),
 		SeverityNumber:       logspb.SeverityNumber_SEVERITY_NUMBER_INFO,
@@ -248,13 +255,17 @@ func (c *DiodeOTLPClient) entityToLogRecord(entity *diodepb.Entity) (*logspb.Log
 				StringValue: string(body),
 			},
 		},
-		Attributes: []*commonpb.KeyValue{
-			stringKV("diode.entity", entityType),
-		},
-	}, nil
+		TraceId: traceBytes,
+		SpanId:  spanBytes,
+	}
+	record.Attributes = []*commonpb.KeyValue{
+		stringKV("diode.entity", entityType),
+	}
+
+	return record, nil
 }
 
-func (c *DiodeOTLPClient) buildExportRequest(logRecords []*logspb.LogRecord) *logsservicepb.ExportLogsServiceRequest {
+func (c *OTLPClient) buildExportRequest(logRecords []*logspb.LogRecord) *logsservicepb.ExportLogsServiceRequest {
 	return &logsservicepb.ExportLogsServiceRequest{
 		ResourceLogs: []*logspb.ResourceLogs{
 			{
@@ -275,16 +286,18 @@ func (c *DiodeOTLPClient) buildExportRequest(logRecords []*logspb.LogRecord) *lo
 	}
 }
 
-func (c *DiodeOTLPClient) resourceAttributes() []*commonpb.KeyValue {
+func (c *OTLPClient) resourceAttributes() []*commonpb.KeyValue {
 	return []*commonpb.KeyValue{
-		stringKV("service.name", c.appName),
-		stringKV("service.version", c.appVersion),
+		stringKV("sdk.name", c.sdkName),
+		stringKV("sdk.version", c.sdkVersion),
+		stringKV("producer.app_name", c.appName),
+		stringKV("producer.app_version", c.appVersion),
 		stringKV("os.description", c.platform),
 		stringKV("process.runtime.version", c.goVersion),
 	}
 }
 
-func (c *DiodeOTLPClient) resolveEntityType(entity *diodepb.Entity) string {
+func (c *OTLPClient) resolveEntityType(entity *diodepb.Entity) string {
 	message := entity.ProtoReflect()
 	oneofs := message.Descriptor().Oneofs()
 	if oneofs.Len() == 0 {

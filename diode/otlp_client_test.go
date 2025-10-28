@@ -68,12 +68,12 @@ func startMockOTLPServer(t *testing.T, svc logsservicepb.LogsServiceServer, opts
 	return fmt.Sprintf("grpc://%s", listener.Addr().String()), cleanup
 }
 
-func TestDiodeOTLPClientExportsEntitiesAsLogs(t *testing.T) {
+func TestOTLPClientExportsEntitiesAsLogs(t *testing.T) {
 	service := &mockLogsService{}
 	target, cleanup := startMockOTLPServer(t, service)
 	defer cleanup()
 
-	client, err := NewDiodeOTLPClient(target, "otlp-producer", "1.2.3")
+	client, err := NewOTLPClient(target, "otlp-producer", "1.2.3")
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		require.NoError(t, client.Close())
@@ -96,7 +96,7 @@ func TestDiodeOTLPClientExportsEntitiesAsLogs(t *testing.T) {
 	resourceLogs := req.ResourceLogs[0]
 	require.NotNil(t, resourceLogs.Resource)
 	resourceAttr := attributesToMap(resourceLogs.Resource.Attributes)
-	assert.Equal(t, diodeOTLPClientName, resourceAttr["sdk.name"])
+	assert.Equal(t, otlpClientName, resourceAttr["sdk.name"])
 	assert.NotEmpty(t, resourceAttr["sdk.version"])
 	assert.Equal(t, "otlp-producer", resourceAttr["producer.app_name"])
 	assert.Equal(t, "1.2.3", resourceAttr["producer.app_version"])
@@ -105,7 +105,7 @@ func TestDiodeOTLPClientExportsEntitiesAsLogs(t *testing.T) {
 	require.Len(t, resourceLogs.ScopeLogs, 1)
 	scopeLogs := resourceLogs.ScopeLogs[0]
 	require.NotNil(t, scopeLogs.Scope)
-	assert.Equal(t, diodeOTLPClientName, scopeLogs.Scope.Name)
+	assert.Equal(t, otlpClientName, scopeLogs.Scope.Name)
 
 	require.Len(t, scopeLogs.LogRecords, 1)
 	record := scopeLogs.LogRecords[0]
@@ -124,14 +124,14 @@ func TestDiodeOTLPClientExportsEntitiesAsLogs(t *testing.T) {
 	assert.NotContains(t, attrMap, "diode.stream")
 }
 
-func TestDiodeOTLPClientWrapsExportErrors(t *testing.T) {
+func TestOTLPClientWrapsExportErrors(t *testing.T) {
 	service := &mockLogsService{
 		failWith: status.Error(codes.Internal, "collector exploded"),
 	}
 	target, cleanup := startMockOTLPServer(t, service)
 	defer cleanup()
 
-	client, err := NewDiodeOTLPClient(target, "otlp-producer", "1.2.3")
+	client, err := NewOTLPClient(target, "otlp-producer", "1.2.3")
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		require.NoError(t, client.Close())
@@ -149,12 +149,12 @@ func TestDiodeOTLPClientWrapsExportErrors(t *testing.T) {
 	assert.Contains(t, otlpErr.Details, "collector exploded")
 }
 
-func TestDiodeOTLPClientIncludesMetadata(t *testing.T) {
+func TestOTLPClientIncludesMetadata(t *testing.T) {
 	service := &mockLogsService{}
 	target, cleanup := startMockOTLPServer(t, service)
 	defer cleanup()
 
-	client, err := NewDiodeOTLPClient(
+	client, err := NewOTLPClient(
 		target,
 		"otlp-producer",
 		"1.2.3",
@@ -176,10 +176,10 @@ func TestDiodeOTLPClientIncludesMetadata(t *testing.T) {
 	assert.Equal(t, []string{"Bearer token"}, service.metadata[0].Get("authorization"))
 }
 
-func TestNewDiodeOTLPClientRejectsUnsupportedScheme(t *testing.T) {
-	_, err := NewDiodeOTLPClient("http://localhost:4318", "app", "1.0.0")
+func TestNewOTLPClientRejectsUnsupportedScheme(t *testing.T) {
+	_, err := NewOTLPClient("http://localhost:4318", "app", "1.0.0")
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "DiodeOTLPClient target should start with grpc:// or grpcs://")
+	assert.Contains(t, err.Error(), "OTLPClient target should start with grpc:// or grpcs://")
 }
 
 func attributesToMap(attributes []*commonpb.KeyValue) map[string]string {
