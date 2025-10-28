@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
 	logsservicepb "go.opentelemetry.io/proto/otlp/collector/logs/v1"
 	commonpb "go.opentelemetry.io/proto/otlp/common/v1"
 	logspb "go.opentelemetry.io/proto/otlp/logs/v1"
@@ -235,34 +234,20 @@ func (c *OTLPClient) entityToLogRecord(entity *diodepb.Entity) (*logspb.LogRecor
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal entity: %w", err)
 	}
-
-	now := time.Now().UTC().UnixNano()
-	traceID := uuid.New()
-	spanID := uuid.New()
-
 	entityType := c.resolveEntityType(entity)
-
-	traceBytes := append([]byte(nil), traceID[:]...)
-	spanBytes := append([]byte(nil), spanID[:8]...)
-
-	record := &logspb.LogRecord{
-		TimeUnixNano:         uint64(now),
-		ObservedTimeUnixNano: uint64(now),
-		SeverityNumber:       logspb.SeverityNumber_SEVERITY_NUMBER_INFO,
-		SeverityText:         "INFO",
+	return &logspb.LogRecord{
+		TimeUnixNano:   uint64(time.Now().UTC().UnixNano()),
+		SeverityNumber: logspb.SeverityNumber_SEVERITY_NUMBER_INFO,
+		SeverityText:   "INFO",
 		Body: &commonpb.AnyValue{
 			Value: &commonpb.AnyValue_StringValue{
 				StringValue: string(body),
 			},
 		},
-		TraceId: traceBytes,
-		SpanId:  spanBytes,
-	}
-	record.Attributes = []*commonpb.KeyValue{
-		stringKV("diode.entity", entityType),
-	}
-
-	return record, nil
+		Attributes: []*commonpb.KeyValue{
+			stringKV("diode.entity", entityType),
+		},
+	}, nil
 }
 
 func (c *OTLPClient) buildExportRequest(logRecords []*logspb.LogRecord) *logsservicepb.ExportLogsServiceRequest {
@@ -288,12 +273,11 @@ func (c *OTLPClient) buildExportRequest(logRecords []*logspb.LogRecord) *logsser
 
 func (c *OTLPClient) resourceAttributes() []*commonpb.KeyValue {
 	return []*commonpb.KeyValue{
-		stringKV("sdk.name", c.sdkName),
-		stringKV("sdk.version", c.sdkVersion),
-		stringKV("producer.app_name", c.appName),
-		stringKV("producer.app_version", c.appVersion),
+		stringKV("service.name", c.appName),
+		stringKV("service.version", c.appVersion),
 		stringKV("os.description", c.platform),
 		stringKV("process.runtime.version", c.goVersion),
+		stringKV("diode.stream", c.stream),
 	}
 }
 
