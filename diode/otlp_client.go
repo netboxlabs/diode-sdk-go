@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
 	logsservicepb "go.opentelemetry.io/proto/otlp/collector/logs/v1"
 	commonpb "go.opentelemetry.io/proto/otlp/common/v1"
 	logspb "go.opentelemetry.io/proto/otlp/logs/v1"
@@ -25,16 +24,16 @@ import (
 )
 
 const (
-	otlpClientName        = "diode-sdk-go-otlp"
-	defaultOtlpTimeout    = 10 * time.Second
+	diodeOTLPClientName   = "diode-sdk-go-otlp"
+	defaultOTLPTimeout    = 10 * time.Second
 	otlpExportErrorPrefix = "OTLP export failed"
 )
 
-// OtlpClientOption configures the OtlpClient.
-type OtlpClientOption func(*OtlpClient) error
+// DiodeOTLPClientOption configures the DiodeOTLPClient.
+type DiodeOTLPClientOption func(*DiodeOTLPClient) error
 
-// OtlpClient implements Client and exports entities as OTLP log records.
-type OtlpClient struct {
+// DiodeOTLPClient implements Client and exports entities as OTLP log records.
+type DiodeOTLPClient struct {
 	appName    string
 	appVersion string
 
@@ -56,8 +55,8 @@ type OtlpClient struct {
 }
 
 // WithOtlpTimeout overrides the default export timeout.
-func WithOtlpTimeout(timeout time.Duration) OtlpClientOption {
-	return func(c *OtlpClient) error {
+func WithOtlpTimeout(timeout time.Duration) DiodeOTLPClientOption {
+	return func(c *DiodeOTLPClient) error {
 		if timeout <= 0 {
 			return fmt.Errorf("OTLP timeout must be greater than zero")
 		}
@@ -67,8 +66,8 @@ func WithOtlpTimeout(timeout time.Duration) OtlpClientOption {
 }
 
 // WithOtlpMetadata sets the metadata headers sent with each export call.
-func WithOtlpMetadata(md map[string]string) OtlpClientOption {
-	return func(c *OtlpClient) error {
+func WithOtlpMetadata(md map[string]string) DiodeOTLPClientOption {
+	return func(c *DiodeOTLPClient) error {
 		if len(md) == 0 {
 			c.metadata = nil
 			return nil
@@ -83,16 +82,16 @@ func WithOtlpMetadata(md map[string]string) OtlpClientOption {
 }
 
 // WithOtlpCertFile configures the certificate file to trust for secure endpoints.
-func WithOtlpCertFile(certFile string) OtlpClientOption {
-	return func(c *OtlpClient) error {
+func WithOtlpCertFile(certFile string) DiodeOTLPClientOption {
+	return func(c *DiodeOTLPClient) error {
 		c.certFile = certFile
 		return nil
 	}
 }
 
 // WithOtlpStream overrides the default stream value associated with exported entities.
-func WithOtlpStream(stream string) OtlpClientOption {
-	return func(c *OtlpClient) error {
+func WithOtlpStream(stream string) DiodeOTLPClientOption {
+	return func(c *DiodeOTLPClient) error {
 		if strings.TrimSpace(stream) == "" {
 			return fmt.Errorf("OTLP stream must not be empty")
 		}
@@ -101,14 +100,14 @@ func WithOtlpStream(stream string) OtlpClientOption {
 	}
 }
 
-// NewOtlpClient creates a new OtlpClient that exports entities as OTLP log records.
-func NewOtlpClient(target, appName, appVersion string, opts ...OtlpClientOption) (Client, error) {
+// NewDiodeOTLPClient creates a new DiodeOTLPClient that exports entities as OTLP log records.
+func NewDiodeOTLPClient(target, appName, appVersion string, opts ...DiodeOTLPClientOption) (Client, error) {
 	if target == "" {
 		return nil, fmt.Errorf("target is required")
 	}
 
 	if !strings.HasPrefix(target, "grpc://") && !strings.HasPrefix(target, "grpcs://") {
-		return nil, fmt.Errorf("OtlpClient target should start with grpc:// or grpcs://")
+		return nil, fmt.Errorf("DiodeOTLPClient target should start with grpc:// or grpcs://")
 	}
 
 	authority, path, isPlaintext, tlsVerify, err := parseTarget(target)
@@ -116,12 +115,12 @@ func NewOtlpClient(target, appName, appVersion string, opts ...OtlpClientOption)
 		return nil, err
 	}
 
-	client := &OtlpClient{
+	client := &DiodeOTLPClient{
 		appName:    appName,
 		appVersion: appVersion,
-		timeout:    defaultOtlpTimeout,
+		timeout:    defaultOTLPTimeout,
 		stream:     defaultStreamName,
-		sdkName:    otlpClientName,
+		sdkName:    diodeOTLPClientName,
 		sdkVersion: getSDKVersion(),
 		platform:   runtime.GOOS + "/" + runtime.GOARCH,
 		goVersion:  runtime.Version(),
@@ -147,7 +146,7 @@ func NewOtlpClient(target, appName, appVersion string, opts ...OtlpClientOption)
 	return client, nil
 }
 
-func (c *OtlpClient) dial(authority, path string, isPlaintext bool, tlsVerify bool) (*grpc.ClientConn, error) {
+func (c *DiodeOTLPClient) dial(authority, path string, isPlaintext bool, tlsVerify bool) (*grpc.ClientConn, error) {
 	var dialOpts []grpc.DialOption
 
 	userAgent := fmt.Sprintf("%s/%s %s/%s", c.sdkName, c.sdkVersion, c.appName, c.appVersion)
@@ -184,7 +183,7 @@ func (c *OtlpClient) dial(authority, path string, isPlaintext bool, tlsVerify bo
 }
 
 // Close closes the underlying gRPC connection.
-func (c *OtlpClient) Close() error {
+func (c *DiodeOTLPClient) Close() error {
 	if c.conn != nil {
 		return c.conn.Close()
 	}
@@ -192,12 +191,12 @@ func (c *OtlpClient) Close() error {
 }
 
 // Ingest converts the provided entities to proto messages before exporting them.
-func (c *OtlpClient) Ingest(ctx context.Context, entities []Entity) (*diodepb.IngestResponse, error) {
+func (c *DiodeOTLPClient) Ingest(ctx context.Context, entities []Entity) (*diodepb.IngestResponse, error) {
 	return c.IngestProto(ctx, convertEntitiesToProto(entities))
 }
 
 // IngestProto exports proto entities as OTLP log records.
-func (c *OtlpClient) IngestProto(ctx context.Context, entities []*diodepb.Entity) (*diodepb.IngestResponse, error) {
+func (c *DiodeOTLPClient) IngestProto(ctx context.Context, entities []*diodepb.Entity) (*diodepb.IngestResponse, error) {
 	logRecords := make([]*logspb.LogRecord, 0, len(entities))
 	for _, entity := range entities {
 		if entity == nil {
@@ -224,26 +223,20 @@ func (c *OtlpClient) IngestProto(ctx context.Context, entities []*diodepb.Entity
 	}
 
 	if _, err := c.client.Export(exportCtx, request); err != nil {
-		return nil, newOtlpClientError(err, otlpExportErrorPrefix)
+		return nil, newOTLPClientError(err, otlpExportErrorPrefix)
 	}
 
 	return &diodepb.IngestResponse{}, nil
 }
 
-func (c *OtlpClient) entityToLogRecord(entity *diodepb.Entity) (*logspb.LogRecord, error) {
+func (c *DiodeOTLPClient) entityToLogRecord(entity *diodepb.Entity) (*logspb.LogRecord, error) {
 	body, err := protojson.MarshalOptions{UseProtoNames: true}.Marshal(entity)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal entity: %w", err)
 	}
 
 	now := time.Now().UTC().UnixNano()
-	traceID := uuid.New()
-	spanID := uuid.New()
-
 	entityType := c.resolveEntityType(entity)
-
-	traceBytes := append([]byte(nil), traceID[:]...)
-	spanBytes := append([]byte(nil), spanID[:8]...)
 
 	return &logspb.LogRecord{
 		TimeUnixNano:         uint64(now),
@@ -255,20 +248,13 @@ func (c *OtlpClient) entityToLogRecord(entity *diodepb.Entity) (*logspb.LogRecor
 				StringValue: string(body),
 			},
 		},
-		TraceId: traceBytes,
-		SpanId:  spanBytes,
 		Attributes: []*commonpb.KeyValue{
-			stringKV("diode.entity_type", entityType),
-			stringKV("diode.stream", c.stream),
-			stringKV("diode.sdk.name", c.sdkName),
-			stringKV("diode.sdk.version", c.sdkVersion),
-			stringKV("diode.producer.app_name", c.appName),
-			stringKV("diode.producer.app_version", c.appVersion),
+			stringKV("diode.entity", entityType),
 		},
 	}, nil
 }
 
-func (c *OtlpClient) buildExportRequest(logRecords []*logspb.LogRecord) *logsservicepb.ExportLogsServiceRequest {
+func (c *DiodeOTLPClient) buildExportRequest(logRecords []*logspb.LogRecord) *logsservicepb.ExportLogsServiceRequest {
 	return &logsservicepb.ExportLogsServiceRequest{
 		ResourceLogs: []*logspb.ResourceLogs{
 			{
@@ -289,19 +275,16 @@ func (c *OtlpClient) buildExportRequest(logRecords []*logspb.LogRecord) *logsser
 	}
 }
 
-func (c *OtlpClient) resourceAttributes() []*commonpb.KeyValue {
+func (c *DiodeOTLPClient) resourceAttributes() []*commonpb.KeyValue {
 	return []*commonpb.KeyValue{
 		stringKV("service.name", c.appName),
 		stringKV("service.version", c.appVersion),
-		stringKV("telemetry.sdk.name", c.sdkName),
-		stringKV("telemetry.sdk.language", "go"),
-		stringKV("telemetry.sdk.version", c.sdkVersion),
 		stringKV("os.description", c.platform),
 		stringKV("process.runtime.version", c.goVersion),
 	}
 }
 
-func (c *OtlpClient) resolveEntityType(entity *diodepb.Entity) string {
+func (c *DiodeOTLPClient) resolveEntityType(entity *diodepb.Entity) string {
 	message := entity.ProtoReflect()
 	oneofs := message.Descriptor().Oneofs()
 	if oneofs.Len() == 0 {
@@ -327,16 +310,16 @@ func stringKV(key, value string) *commonpb.KeyValue {
 	}
 }
 
-// OtlpClientError represents a failure while exporting log records.
-type OtlpClientError struct {
+// OTLPClientError represents a failure while exporting log records.
+type OTLPClientError struct {
 	Message    string
 	StatusCode codes.Code
 	Details    string
 	Err        error
 }
 
-func newOtlpClientError(err error, message string) *OtlpClientError {
-	e := &OtlpClientError{
+func newOTLPClientError(err error, message string) *OTLPClientError {
+	e := &OTLPClientError{
 		Message: message,
 		Err:     err,
 	}
@@ -352,7 +335,7 @@ func newOtlpClientError(err error, message string) *OtlpClientError {
 }
 
 // Error implements the error interface.
-func (e *OtlpClientError) Error() string {
+func (e *OTLPClientError) Error() string {
 	parts := []string{e.Message}
 
 	if e.StatusCode != codes.OK && e.StatusCode != codes.Unknown {
@@ -367,6 +350,6 @@ func (e *OtlpClientError) Error() string {
 }
 
 // Unwrap exposes the underlying error.
-func (e *OtlpClientError) Unwrap() error {
+func (e *OTLPClientError) Unwrap() error {
 	return e.Err
 }
