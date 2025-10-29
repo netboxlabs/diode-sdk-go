@@ -102,7 +102,7 @@ func NewOTLPClient(target, appName, appVersion string, opts ...OTLPClientOption)
 	client := &OTLPClient{
 		appName:    appName,
 		appVersion: appVersion,
-		timeout:    defaultOtlpTimeout,
+		timeout:    defaultOTLPTimeout,
 		stream:     defaultStreamName,
 		sdkName:    otlpClientName,
 		sdkVersion: getSDKVersion(),
