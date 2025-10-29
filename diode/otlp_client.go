@@ -54,8 +54,8 @@ type OTLPClient struct {
 	goVersion string
 }
 
-// WithOtlpTimeout overrides the default export timeout.
-func WithOtlpTimeout(timeout time.Duration) OTLPClientOption {
+// WithOTLPTimeout overrides the default export timeout.
+func WithOTLPTimeout(timeout time.Duration) OTLPClientOption {
 	return func(c *OTLPClient) error {
 		if timeout <= 0 {
 			return fmt.Errorf("OTLP timeout must be greater than zero")
