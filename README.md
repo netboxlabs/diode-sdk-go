@@ -214,7 +214,6 @@ client, err := diode.NewOTLPClient(
         "grpc://localhost:4317",
         "otlp-producer",
         "0.0.1",
-        diode.WithOtlpMetadata(map[string]string{"authorization": "Bearer token"}),
 )
 if err != nil {
         log.Fatal(err)

@@ -65,22 +65,6 @@ func WithOtlpTimeout(timeout time.Duration) OTLPClientOption {
 	}
 }
 
-// WithOtlpMetadata sets the metadata headers sent with each export call.
-func WithOtlpMetadata(md map[string]string) OTLPClientOption {
-	return func(c *OTLPClient) error {
-		if len(md) == 0 {
-			c.metadata = nil
-			return nil
-		}
-		newMD := metadata.MD{}
-		for k, v := range md {
-			newMD.Set(k, v)
-		}
-		c.metadata = newMD
-		return nil
-	}
-}
-
 // WithOtlpCertFile configures the certificate file to trust for secure endpoints.
 func WithOtlpCertFile(certFile string) OTLPClientOption {
 	return func(c *OTLPClient) error {

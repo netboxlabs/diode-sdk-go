@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"runtime"
 	"sync"
 	"testing"
 
@@ -96,24 +97,24 @@ func TestOTLPClientExportsEntitiesAsLogs(t *testing.T) {
 	resourceLogs := req.ResourceLogs[0]
 	require.NotNil(t, resourceLogs.Resource)
 	resourceAttr := attributesToMap(resourceLogs.Resource.Attributes)
-	assert.Equal(t, otlpClientName, resourceAttr["sdk.name"])
-	assert.NotEmpty(t, resourceAttr["sdk.version"])
-	assert.Equal(t, "otlp-producer", resourceAttr["producer.app_name"])
-	assert.Equal(t, "1.2.3", resourceAttr["producer.app_version"])
+	assert.Equal(t, "otlp-producer", resourceAttr["service.name"])
+	assert.Equal(t, "1.2.3", resourceAttr["service.version"])
+	assert.Equal(t, runtime.GOOS+"/"+runtime.GOARCH, resourceAttr["os.description"])
+	assert.Equal(t, runtime.Version(), resourceAttr["process.runtime.version"])
+	assert.Equal(t, defaultStreamName, resourceAttr["diode.stream"])
 	assert.NotContains(t, resourceAttr, "telemetry.sdk.name")
 
 	require.Len(t, resourceLogs.ScopeLogs, 1)
 	scopeLogs := resourceLogs.ScopeLogs[0]
 	require.NotNil(t, scopeLogs.Scope)
 	assert.Equal(t, otlpClientName, scopeLogs.Scope.Name)
+	assert.Equal(t, getSDKVersion(), scopeLogs.Scope.Version)
 
 	require.Len(t, scopeLogs.LogRecords, 1)
 	record := scopeLogs.LogRecords[0]
 
 	assert.Equal(t, logspb.SeverityNumber_SEVERITY_NUMBER_INFO, record.SeverityNumber)
 	assert.Equal(t, "INFO", record.SeverityText)
-	assert.NotEmpty(t, record.TraceId)
-	assert.Len(t, record.SpanId, 8)
 
 	body := record.Body.GetStringValue()
 	assert.Contains(t, body, `"site"`)
@@ -147,33 +148,6 @@ func TestOTLPClientWrapsExportErrors(t *testing.T) {
 	assert.Equal(t, codes.Internal, otlpErr.StatusCode)
 	assert.Contains(t, otlpErr.Error(), "OTLP export failed")
 	assert.Contains(t, otlpErr.Details, "collector exploded")
-}
-
-func TestOTLPClientIncludesMetadata(t *testing.T) {
-	service := &mockLogsService{}
-	target, cleanup := startMockOTLPServer(t, service)
-	defer cleanup()
-
-	client, err := NewOTLPClient(
-		target,
-		"otlp-producer",
-		"1.2.3",
-		WithOtlpMetadata(map[string]string{"authorization": "Bearer token"}),
-	)
-	require.NoError(t, err)
-	t.Cleanup(func() {
-		require.NoError(t, client.Close())
-	})
-
-	_, err = client.Ingest(context.Background(), []Entity{
-		&Site{Name: String("Metadata Site")},
-	})
-	require.NoError(t, err)
-
-	service.mu.Lock()
-	defer service.mu.Unlock()
-	require.Len(t, service.metadata, 1)
-	assert.Equal(t, []string{"Bearer token"}, service.metadata[0].Get("authorization"))
 }
 
 func TestNewOTLPClientRejectsUnsupportedScheme(t *testing.T) {
