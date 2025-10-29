@@ -65,8 +65,8 @@ func WithOTLPTimeout(timeout time.Duration) OTLPClientOption {
 	}
 }
 
-// WithOtlpCertFile configures the certificate file to trust for secure endpoints.
-func WithOtlpCertFile(certFile string) OTLPClientOption {
+// WithOTLPCertFile configures the certificate file to trust for secure endpoints.
+func WithOTLPCertFile(certFile string) OTLPClientOption {
 	return func(c *OTLPClient) error {
 		c.certFile = certFile
 		return nil
