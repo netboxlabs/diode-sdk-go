@@ -90,10 +90,6 @@ func NewOTLPClient(target, appName, appVersion string, opts ...OTLPClientOption)
 		return nil, fmt.Errorf("target is required")
 	}
 
-	if !strings.HasPrefix(target, "grpc://") && !strings.HasPrefix(target, "grpcs://") {
-		return nil, fmt.Errorf("OTLPClient target should start with grpc:// or grpcs://")
-	}
-
 	authority, path, isPlaintext, tlsVerify, err := parseTarget(target)
 	if err != nil {
 		return nil, err

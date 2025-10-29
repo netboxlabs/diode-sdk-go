@@ -150,12 +150,6 @@ func TestOTLPClientWrapsExportErrors(t *testing.T) {
 	assert.Contains(t, otlpErr.Details, "collector exploded")
 }
 
-func TestNewOTLPClientRejectsUnsupportedScheme(t *testing.T) {
-	_, err := NewOTLPClient("http://localhost:4318", "app", "1.0.0")
-	require.Error(t, err)
-	assert.Contains(t, err.Error(), "OTLPClient target should start with grpc:// or grpcs://")
-}
-
 func attributesToMap(attributes []*commonpb.KeyValue) map[string]string {
 	result := make(map[string]string, len(attributes))
 	for _, attr := range attributes {
