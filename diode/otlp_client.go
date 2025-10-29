@@ -73,8 +73,8 @@ func WithOTLPCertFile(certFile string) OTLPClientOption {
 	}
 }
 
-// WithOtlpStream overrides the default stream value associated with exported entities.
-func WithOtlpStream(stream string) OTLPClientOption {
+// WithOTLPStream overrides the default stream value associated with exported entities.
+func WithOTLPStream(stream string) OTLPClientOption {
 	return func(c *OTLPClient) error {
 		if strings.TrimSpace(stream) == "" {
 			return fmt.Errorf("OTLP stream must not be empty")
