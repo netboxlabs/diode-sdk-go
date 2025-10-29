@@ -25,7 +25,7 @@ import (
 
 const (
 	otlpClientName        = "diode-sdk-go-otlp"
-	defaultOtlpTimeout    = 10 * time.Second
+	defaultOTLPTimeout    = 10 * time.Second
 	otlpExportErrorPrefix = "OTLP export failed"
 )
 
