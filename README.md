@@ -228,7 +228,7 @@ if err != nil {
 }
 ```
 
-Each entity is serialised with protobuf field names and emitted as a log record that includes SDK and producer metadata via resource attributes so downstream collectors can enrich and forward the payload. The client raises an `OTLPClientError` when the export fails. TLS behaviour honours the existing `DIODE_SKIP_TLS_VERIFY` and `DIODE_CERT_FILE` environment variables, and the export timeout can be customised via `diode.WithOtlpTimeout`.
+Each entity is serialised with protobuf field names and emitted as a log record that includes SDK and producer metadata via resource attributes so downstream collectors can enrich and forward the payload. The client raises an `OTLPClientError` when the export fails. TLS behaviour honours the existing `DIODE_SKIP_TLS_VERIFY` and `DIODE_CERT_FILE` environment variables, and the export timeout can be customised via `diode.WithOTLPTimeout`.
 
 ### CLI to replay dry-run files
 
