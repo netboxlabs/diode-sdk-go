@@ -205,6 +205,31 @@ if err != nil {
 }
 ```
 
+### OTLP client
+
+`OTLPClient` converts ingestion entities into OpenTelemetry log records and exports them to an OTLP collector over gRPC. This is useful when a collector receives log data and forwards it to Diode.
+
+```go
+client, err := diode.NewOTLPClient(
+        "grpc://localhost:4317",
+        "otlp-producer",
+        "0.0.1",
+)
+if err != nil {
+        log.Fatal(err)
+}
+defer client.Close()
+
+_, err = client.Ingest(context.Background(), []diode.Entity{
+        &diode.Site{Name: diode.String("Site 1")},
+})
+if err != nil {
+        log.Fatal(err)
+}
+```
+
+Each entity is serialised with protobuf field names and emitted as a log record that includes SDK and producer metadata via resource attributes so downstream collectors can enrich and forward the payload. The client raises an `OTLPClientError` when the export fails. TLS behaviour honours the existing `DIODE_SKIP_TLS_VERIFY` and `DIODE_CERT_FILE` environment variables, and the export timeout can be customised via `diode.WithOTLPTimeout`.
+
 ### CLI to replay dry-run files
 
 A small helper binary is included to ingest JSON files created by the
