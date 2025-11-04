@@ -21,6 +21,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
@@ -1201,4 +1202,301 @@ func TestAuthRetryEnv(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestIngestWithMetadata(t *testing.T) {
+	defer func() {
+		_ = os.Unsetenv(DiodeClientIDEnvVarName)
+		_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+	}()
+
+	_ = os.Setenv(DiodeClientIDEnvVarName, "client-id")
+	_ = os.Setenv(DiodeClientSecretEnvVarName, "client-secret")
+
+	port, err := getFreePort()
+	require.NoError(t, err)
+
+	authServer, err := startMockAuthServer(port, "", false)
+	require.NoError(t, err)
+	defer authServer.Close()
+
+	client, err := NewClient(fmt.Sprintf("grpc://localhost:%s", port), "my-producer", "0.1.0")
+	require.NoError(t, err)
+	defer func() {
+		err := client.Close()
+		require.NoError(t, err)
+	}()
+
+	grpcClient := client.(*GRPCClient)
+
+	entities := []Entity{
+		&Device{
+			Name:     String("device-1"),
+			Metadata: Metadata{"foo": "bar"},
+			Site: &Site{
+				Name:     String("Site 1"),
+				Metadata: Metadata{"bar": "foo"},
+			},
+		},
+		&Site{Name: String("site-1")},
+	}
+
+	// Test with metadata
+	metadata := Metadata{
+		"batch_id":   "batch-123",
+		"source":     "network_discovery",
+		"priority":   1,
+		"verified":   true,
+		"importance": 42.5,
+	}
+
+	_, err = grpcClient.Ingest(context.Background(), entities, WithIngestMetadata(metadata))
+	require.NoError(t, err)
+
+	// Test without metadata (backward compatibility)
+	_, err = grpcClient.Ingest(context.Background(), entities)
+	require.NoError(t, err)
+}
+
+func TestIngestProtoWithMetadata(t *testing.T) {
+	defer func() {
+		_ = os.Unsetenv(DiodeClientIDEnvVarName)
+		_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+	}()
+
+	_ = os.Setenv(DiodeClientIDEnvVarName, "client-id")
+	_ = os.Setenv(DiodeClientSecretEnvVarName, "client-secret")
+
+	port, err := getFreePort()
+	require.NoError(t, err)
+
+	authServer, err := startMockAuthServer(port, "", false)
+	require.NoError(t, err)
+	defer authServer.Close()
+
+	client, err := NewClient(fmt.Sprintf("grpc://localhost:%s", port), "my-producer", "0.1.0")
+	require.NoError(t, err)
+	defer func() {
+		err := client.Close()
+		require.NoError(t, err)
+	}()
+
+	grpcClient := client.(*GRPCClient)
+
+	entities := []*diodepb.Entity{
+		{
+			Entity: &diodepb.Entity_Device{
+				Device: &diodepb.Device{
+					Name:        String("device-1"),
+					Description: String("Test device"),
+				},
+			},
+		},
+	}
+
+	// Test with metadata
+	metadata := Metadata{
+		"batch_id": "batch-456",
+		"source":   "manual_import",
+		"count":    10,
+	}
+
+	resp, err := grpcClient.IngestProto(context.Background(), entities, WithIngestMetadata(metadata))
+	require.NoError(t, err)
+	assert.NotNil(t, resp)
+	require.Empty(t, resp.Errors)
+
+	// Test without metadata (backward compatibility)
+	resp, err = grpcClient.IngestProto(context.Background(), entities)
+	require.NoError(t, err)
+	assert.NotNil(t, resp)
+	require.Empty(t, resp.Errors)
+}
+
+func TestIngestProtoWithMetadataTypes(t *testing.T) {
+	defer func() {
+		_ = os.Unsetenv(DiodeClientIDEnvVarName)
+		_ = os.Unsetenv(DiodeClientSecretEnvVarName)
+	}()
+
+	_ = os.Setenv(DiodeClientIDEnvVarName, "client-id")
+	_ = os.Setenv(DiodeClientSecretEnvVarName, "client-secret")
+
+	port, err := getFreePort()
+	require.NoError(t, err)
+
+	// Create a custom mock server that captures metadata
+	var capturedMetadata *structpb.Struct
+	mockIngester := &MockIngesterWithCapture{
+		captureFunc: func(req *diodepb.IngestRequest) {
+			capturedMetadata = req.Metadata
+		},
+	}
+
+	listener, err := net.Listen("tcp", "127.0.0.1:"+port)
+	require.NoError(t, err)
+
+	grpcServer := grpc.NewServer()
+	diodepb.RegisterIngesterServiceServer(grpcServer, mockIngester)
+
+	httpMux := http.NewServeMux()
+	httpMux.HandleFunc("/auth/token", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "invalid method", http.StatusMethodNotAllowed)
+			return
+		}
+		_ = r.ParseForm()
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"access_token": "mock-token"}`))
+	})
+
+	handler := h2c.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.ProtoMajor == 2 && strings.HasPrefix(r.Header.Get("Content-Type"), "application/grpc") {
+			grpcServer.ServeHTTP(w, r)
+		} else {
+			httpMux.ServeHTTP(w, r)
+		}
+	}), &http2.Server{})
+
+	httpServer := &http.Server{Handler: handler}
+	go func() {
+		_ = httpServer.Serve(listener)
+	}()
+	defer func() {
+		_ = httpServer.Close()
+		grpcServer.Stop()
+	}()
+
+	client, err := NewClient(fmt.Sprintf("grpc://localhost:%s", port), "my-producer", "0.1.0")
+	require.NoError(t, err)
+	defer func() {
+		err := client.Close()
+		require.NoError(t, err)
+	}()
+
+	grpcClient := client.(*GRPCClient)
+
+	entities := []*diodepb.Entity{
+		{
+			Entity: &diodepb.Entity_Device{
+				Device: &diodepb.Device{
+					Name:        String("device-1"),
+					Description: String("Test device"),
+				},
+			},
+		},
+	}
+
+	// Test with various data types in metadata
+	metadata := Metadata{
+		// Primitives
+		"string_value": "test-string",
+		"int_value":    42,
+		"int64_value":  int64(9223372036854775807),
+		"float_value":  3.14159,
+		"bool_value":   true,
+		"null_value":   nil,
+		// Collections
+		"array_value": []any{"item1", "item2", 123, true},
+		"nested_object": map[string]any{
+			"nested_string": "nested-value",
+			"nested_int":    99,
+			"nested_array":  []any{1, 2, 3},
+		},
+		"mixed_array": []any{
+			"string",
+			123,
+			map[string]any{"key": "value"},
+			[]any{"nested", "array"},
+		},
+		// Edge cases
+		"empty_string": "",
+		"zero_int":     0,
+		"zero_float":   0.0,
+		"false_bool":   false,
+		"empty_array":  []any{},
+		"empty_object": map[string]any{},
+	}
+
+	resp, err := grpcClient.IngestProto(context.Background(), entities, WithIngestMetadata(metadata))
+	require.NoError(t, err)
+	assert.NotNil(t, resp)
+	require.Empty(t, resp.Errors)
+
+	// Now verify the captured metadata
+	require.NotNil(t, capturedMetadata, "metadata should have been captured")
+	require.NotNil(t, capturedMetadata.Fields, "metadata fields should not be nil")
+
+	// Verify primitive types
+	assert.Equal(t, "test-string", capturedMetadata.Fields["string_value"].GetStringValue())
+	assert.Equal(t, float64(42), capturedMetadata.Fields["int_value"].GetNumberValue())
+	assert.Equal(t, float64(9223372036854775807), capturedMetadata.Fields["int64_value"].GetNumberValue())
+	assert.InDelta(t, 3.14159, capturedMetadata.Fields["float_value"].GetNumberValue(), 0.00001)
+	assert.Equal(t, true, capturedMetadata.Fields["bool_value"].GetBoolValue())
+	assert.Equal(t, structpb.NullValue_NULL_VALUE, capturedMetadata.Fields["null_value"].GetNullValue())
+
+	// Verify array
+	arrayValue := capturedMetadata.Fields["array_value"].GetListValue()
+	require.NotNil(t, arrayValue)
+	require.Len(t, arrayValue.Values, 4)
+	assert.Equal(t, "item1", arrayValue.Values[0].GetStringValue())
+	assert.Equal(t, "item2", arrayValue.Values[1].GetStringValue())
+	assert.Equal(t, float64(123), arrayValue.Values[2].GetNumberValue())
+	assert.Equal(t, true, arrayValue.Values[3].GetBoolValue())
+
+	// Verify nested object
+	nestedObj := capturedMetadata.Fields["nested_object"].GetStructValue()
+	require.NotNil(t, nestedObj)
+	assert.Equal(t, "nested-value", nestedObj.Fields["nested_string"].GetStringValue())
+	assert.Equal(t, float64(99), nestedObj.Fields["nested_int"].GetNumberValue())
+
+	nestedArray := nestedObj.Fields["nested_array"].GetListValue()
+	require.NotNil(t, nestedArray)
+	require.Len(t, nestedArray.Values, 3)
+	assert.Equal(t, float64(1), nestedArray.Values[0].GetNumberValue())
+	assert.Equal(t, float64(2), nestedArray.Values[1].GetNumberValue())
+	assert.Equal(t, float64(3), nestedArray.Values[2].GetNumberValue())
+
+	// Verify mixed array
+	mixedArray := capturedMetadata.Fields["mixed_array"].GetListValue()
+	require.NotNil(t, mixedArray)
+	require.Len(t, mixedArray.Values, 4)
+	assert.Equal(t, "string", mixedArray.Values[0].GetStringValue())
+	assert.Equal(t, float64(123), mixedArray.Values[1].GetNumberValue())
+
+	mixedObj := mixedArray.Values[2].GetStructValue()
+	require.NotNil(t, mixedObj)
+	assert.Equal(t, "value", mixedObj.Fields["key"].GetStringValue())
+
+	mixedNestedArray := mixedArray.Values[3].GetListValue()
+	require.NotNil(t, mixedNestedArray)
+	require.Len(t, mixedNestedArray.Values, 2)
+	assert.Equal(t, "nested", mixedNestedArray.Values[0].GetStringValue())
+	assert.Equal(t, "array", mixedNestedArray.Values[1].GetStringValue())
+
+	// Verify edge cases
+	assert.Equal(t, "", capturedMetadata.Fields["empty_string"].GetStringValue())
+	assert.Equal(t, float64(0), capturedMetadata.Fields["zero_int"].GetNumberValue())
+	assert.Equal(t, float64(0), capturedMetadata.Fields["zero_float"].GetNumberValue())
+	assert.Equal(t, false, capturedMetadata.Fields["false_bool"].GetBoolValue())
+
+	emptyArray := capturedMetadata.Fields["empty_array"].GetListValue()
+	require.NotNil(t, emptyArray)
+	assert.Empty(t, emptyArray.Values)
+
+	emptyObject := capturedMetadata.Fields["empty_object"].GetStructValue()
+	require.NotNil(t, emptyObject)
+	assert.Empty(t, emptyObject.Fields)
+}
+
+type MockIngesterWithCapture struct {
+	diodepb.UnimplementedIngesterServiceServer
+	captureFunc func(*diodepb.IngestRequest)
+}
+
+func (m *MockIngesterWithCapture) Ingest(_ context.Context, req *diodepb.IngestRequest) (*diodepb.IngestResponse, error) {
+	if m.captureFunc != nil {
+		m.captureFunc(req)
+	}
+	return &diodepb.IngestResponse{Errors: nil}, nil
 }

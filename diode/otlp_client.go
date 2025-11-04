@@ -171,12 +171,19 @@ func (c *OTLPClient) Close() error {
 }
 
 // Ingest converts the provided entities to proto messages before exporting them.
-func (c *OTLPClient) Ingest(ctx context.Context, entities []Entity) (*diodepb.IngestResponse, error) {
-	return c.IngestProto(ctx, convertEntitiesToProto(entities))
+func (c *OTLPClient) Ingest(ctx context.Context, entities []Entity, opts ...IngestOption) (*diodepb.IngestResponse, error) {
+	return c.IngestProto(ctx, convertEntitiesToProto(entities), opts...)
 }
 
 // IngestProto exports proto entities as OTLP log records.
-func (c *OTLPClient) IngestProto(ctx context.Context, entities []*diodepb.Entity) (*diodepb.IngestResponse, error) {
+// IngestRequest metadata from IngestOption will be added as OTLP resource attributes.
+func (c *OTLPClient) IngestProto(ctx context.Context, entities []*diodepb.Entity, opts ...IngestOption) (*diodepb.IngestResponse, error) {
+	// Apply options to get request-level metadata
+	cfg := &ingestConfig{}
+	for _, opt := range opts {
+		opt(cfg)
+	}
+
 	logRecords := make([]*logspb.LogRecord, 0, len(entities))
 	for _, entity := range entities {
 		if entity == nil {
@@ -193,7 +200,7 @@ func (c *OTLPClient) IngestProto(ctx context.Context, entities []*diodepb.Entity
 		return &diodepb.IngestResponse{}, nil
 	}
 
-	request := c.buildExportRequest(logRecords)
+	request := c.buildExportRequest(logRecords, cfg.metadata)
 
 	exportCtx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
@@ -230,12 +237,12 @@ func (c *OTLPClient) entityToLogRecord(entity *diodepb.Entity) (*logspb.LogRecor
 	}, nil
 }
 
-func (c *OTLPClient) buildExportRequest(logRecords []*logspb.LogRecord) *logsservicepb.ExportLogsServiceRequest {
+func (c *OTLPClient) buildExportRequest(logRecords []*logspb.LogRecord, requestMetadata Metadata) *logsservicepb.ExportLogsServiceRequest {
 	return &logsservicepb.ExportLogsServiceRequest{
 		ResourceLogs: []*logspb.ResourceLogs{
 			{
 				Resource: &resourcepb.Resource{
-					Attributes: c.resourceAttributes(),
+					Attributes: c.resourceAttributes(requestMetadata),
 				},
 				ScopeLogs: []*logspb.ScopeLogs{
 					{
@@ -251,14 +258,58 @@ func (c *OTLPClient) buildExportRequest(logRecords []*logspb.LogRecord) *logsser
 	}
 }
 
-func (c *OTLPClient) resourceAttributes() []*commonpb.KeyValue {
-	return []*commonpb.KeyValue{
+func (c *OTLPClient) resourceAttributes(requestMetadata Metadata) []*commonpb.KeyValue {
+	attrs := []*commonpb.KeyValue{
 		stringKV("service.name", c.appName),
 		stringKV("service.version", c.appVersion),
 		stringKV("os.description", c.platform),
 		stringKV("process.runtime.version", c.goVersion),
 		stringKV("diode.stream", c.stream),
 	}
+
+	// Add request-level metadata as resource attributes with "diode.metadata." prefix
+	if len(requestMetadata) > 0 {
+		for key, value := range requestMetadata {
+			attrs = append(attrs, metadataValueToKV(fmt.Sprintf("diode.metadata.%s", key), value))
+		}
+	}
+
+	return attrs
+}
+
+// metadataValueToKV converts a metadata value to an OTLP KeyValue
+func metadataValueToKV(key string, value interface{}) *commonpb.KeyValue {
+	kv := &commonpb.KeyValue{Key: key}
+
+	switch v := value.(type) {
+	case string:
+		kv.Value = &commonpb.AnyValue{
+			Value: &commonpb.AnyValue_StringValue{StringValue: v},
+		}
+	case int:
+		kv.Value = &commonpb.AnyValue{
+			Value: &commonpb.AnyValue_IntValue{IntValue: int64(v)},
+		}
+	case int64:
+		kv.Value = &commonpb.AnyValue{
+			Value: &commonpb.AnyValue_IntValue{IntValue: v},
+		}
+	case float64:
+		kv.Value = &commonpb.AnyValue{
+			Value: &commonpb.AnyValue_DoubleValue{DoubleValue: v},
+		}
+	case bool:
+		kv.Value = &commonpb.AnyValue{
+			Value: &commonpb.AnyValue_BoolValue{BoolValue: v},
+		}
+	default:
+		// For complex types, convert to string representation
+		kv.Value = &commonpb.AnyValue{
+			Value: &commonpb.AnyValue_StringValue{StringValue: fmt.Sprintf("%v", v)},
+		}
+	}
+
+	return kv
 }
 
 func (c *OTLPClient) resolveEntityType(entity *diodepb.Entity) string {

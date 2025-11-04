@@ -162,3 +162,48 @@ func TestDryRunClientSDKVersionCaching(t *testing.T) {
 	require.Equal(t, cachedVersion, dryRunClient2.sdkVersion)
 	require.Equal(t, cachedName, dryRunClient2.sdkName)
 }
+
+func TestDryRunClientIngestWithMetadata(t *testing.T) {
+	dir := t.TempDir()
+
+	c, err := NewDryRunClient("app", dir)
+	require.NoError(t, err)
+	drc := c.(*DryRunClient)
+
+	entities := []Entity{
+		&Device{Name: String("dev1"), Description: String("Test device")},
+	}
+
+	// Test with metadata
+	metadata := Metadata{
+		"batch_id": "batch-789",
+		"source":   "auto_discovery",
+		"priority": 2,
+		"verified": false,
+	}
+
+	_, err = drc.Ingest(context.Background(), entities, WithIngestMetadata(metadata))
+	require.NoError(t, err)
+
+	// Test without metadata (backward compatibility)
+	_, err = drc.Ingest(context.Background(), entities)
+	require.NoError(t, err)
+
+	require.NoError(t, drc.Close())
+
+	// Verify two files were created
+	entries, err := os.ReadDir(dir)
+	require.NoError(t, err)
+	require.Len(t, entries, 2)
+
+	// Load the first file (with metadata) and verify metadata is present
+	loaded, err := LoadDryRunEntities(filepath.Join(dir, entries[0].Name()))
+	require.NoError(t, err)
+	require.Len(t, loaded, 1)
+
+	// Read the raw JSON to verify metadata is included in the IngestRequest
+	data, err := os.ReadFile(filepath.Join(dir, entries[0].Name()))
+	require.NoError(t, err)
+	require.Contains(t, string(data), "batch-789")
+	require.Contains(t, string(data), "auto_discovery")
+}

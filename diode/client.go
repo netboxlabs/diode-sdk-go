@@ -25,6 +25,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
@@ -202,10 +204,25 @@ type Client interface {
 	Close() error
 
 	// Ingest sends an ingest request to the ingester service
-	Ingest(context.Context, []Entity) (*diodepb.IngestResponse, error)
+	Ingest(context.Context, []Entity, ...IngestOption) (*diodepb.IngestResponse, error)
 
 	// IngestProto sends an ingest request to the ingester service with proto entities
-	IngestProto(context.Context, []*diodepb.Entity) (*diodepb.IngestResponse, error)
+	IngestProto(context.Context, []*diodepb.Entity, ...IngestOption) (*diodepb.IngestResponse, error)
+}
+
+// IngestOption is a functional option for ingest operations
+type IngestOption func(*ingestConfig)
+
+// ingestConfig holds configuration for ingest operations
+type ingestConfig struct {
+	metadata Metadata
+}
+
+// WithIngestMetadata adds optional metadata to the IngestRequest
+func WithIngestMetadata(metadata Metadata) IngestOption {
+	return func(c *ingestConfig) {
+		c.metadata = metadata
+	}
 }
 
 // GRPCClient is a gRPC implementation of the ingester service
@@ -517,12 +534,18 @@ func (g *GRPCClient) Close() error {
 }
 
 // Ingest sends an ingest request to the ingester service
-func (g *GRPCClient) Ingest(ctx context.Context, entities []Entity) (*diodepb.IngestResponse, error) {
-	return g.IngestProto(ctx, convertEntitiesToProto(entities))
+func (g *GRPCClient) Ingest(ctx context.Context, entities []Entity, opts ...IngestOption) (*diodepb.IngestResponse, error) {
+	return g.IngestProto(ctx, convertEntitiesToProto(entities), opts...)
 }
 
 // IngestProto sends an ingest request to the ingester service with proto entities
-func (g *GRPCClient) IngestProto(ctx context.Context, entities []*diodepb.Entity) (*diodepb.IngestResponse, error) {
+func (g *GRPCClient) IngestProto(ctx context.Context, entities []*diodepb.Entity, opts ...IngestOption) (*diodepb.IngestResponse, error) {
+	// Apply options
+	cfg := &ingestConfig{}
+	for _, opt := range opts {
+		opt(cfg)
+	}
+
 	stream := defaultStreamName
 
 	req := &diodepb.IngestRequest{
@@ -534,6 +557,15 @@ func (g *GRPCClient) IngestProto(ctx context.Context, entities []*diodepb.Entity
 		SdkName:            g.sdkName,
 		SdkVersion:         g.sdkVersion,
 	}
+
+	// Add metadata to request if provided
+	if len(cfg.metadata) > 0 {
+		req.Metadata, _ = structpb.NewStruct(cfg.metadata)
+	}
+
+	data, _ := protojson.MarshalOptions{UseProtoNames: true, Indent: "  "}.Marshal(req)
+
+	fmt.Printf("entities: %s\n", data)
 
 	ctx = metadata.NewOutgoingContext(ctx, g.metadata)
 
