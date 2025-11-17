@@ -9,6 +9,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/encoding/protojson"
+
+	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
 
 func TestNewDryRunClient(t *testing.T) {
@@ -201,9 +204,18 @@ func TestDryRunClientIngestWithMetadata(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, loaded, 1)
 
-	// Read the raw JSON to verify metadata is included in the IngestRequest
+	// Load the IngestRequest to verify metadata is included
 	data, err := os.ReadFile(filepath.Join(dir, entries[0].Name()))
 	require.NoError(t, err)
-	require.Contains(t, string(data), "batch-789")
-	require.Contains(t, string(data), "auto_discovery")
+
+	var req diodepb.IngestRequest
+	err = protojson.Unmarshal(data, &req)
+	require.NoError(t, err)
+	require.NotNil(t, req.Metadata)
+
+	metadataMap := req.Metadata.AsMap()
+	require.Equal(t, "batch-789", metadataMap["batch_id"])
+	require.Equal(t, "auto_discovery", metadataMap["source"])
+	require.Equal(t, float64(2), metadataMap["priority"])
+	require.Equal(t, false, metadataMap["verified"])
 }
