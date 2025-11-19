@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
@@ -1526,6 +1527,462 @@ func TestVirtualDiskMethods(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			require.Equal(t, tt.expected, tt.method(tt.virtualDisk))
+		})
+	}
+}
+
+func TestMetadataConversion(t *testing.T) {
+	tests := []struct {
+		name            string
+		entity          Entity
+		metadata        Metadata
+		getMetadataFunc func(*diodepb.Entity) *structpb.Struct
+	}{
+		{
+			name: "ASN with metadata",
+			entity: &ASN{
+				Asn: Int64(64512),
+				Metadata: Metadata{
+					"source":      "import",
+					"imported_at": "2024-01-01T00:00:00Z",
+					"priority":    1,
+				},
+			},
+			metadata: Metadata{
+				"source":      "import",
+				"imported_at": "2024-01-01T00:00:00Z",
+				"priority":    1,
+			},
+			getMetadataFunc: func(e *diodepb.Entity) *structpb.Struct {
+				return e.GetAsn().GetMetadata()
+			},
+		},
+		{
+			name: "Device with metadata",
+			entity: &Device{
+				Name: String("device-1"),
+				Metadata: Metadata{
+					"environment": "production",
+					"owner":       "team-a",
+					"cost_center": 12345,
+				},
+			},
+			metadata: Metadata{
+				"environment": "production",
+				"owner":       "team-a",
+				"cost_center": 12345,
+			},
+			getMetadataFunc: func(e *diodepb.Entity) *structpb.Struct {
+				return e.GetDevice().GetMetadata()
+			},
+		},
+		{
+			name: "IPAddress with metadata",
+			entity: &IPAddress{
+				Address: String("192.168.1.1/24"),
+				Metadata: Metadata{
+					"last_seen":  "2024-01-01T00:00:00Z",
+					"discovered": true,
+					"scan_id":    "scan-123",
+				},
+			},
+			metadata: Metadata{
+				"last_seen":  "2024-01-01T00:00:00Z",
+				"discovered": true,
+				"scan_id":    "scan-123",
+			},
+			getMetadataFunc: func(e *diodepb.Entity) *structpb.Struct {
+				return e.GetIpAddress().GetMetadata()
+			},
+		},
+		{
+			name: "Site with metadata",
+			entity: &Site{
+				Name: String("site-1"),
+				Metadata: Metadata{
+					"region":    "us-west",
+					"capacity":  500,
+					"is_active": true,
+				},
+			},
+			metadata: Metadata{
+				"region":    "us-west",
+				"capacity":  500,
+				"is_active": true,
+			},
+			getMetadataFunc: func(e *diodepb.Entity) *structpb.Struct {
+				return e.GetSite().GetMetadata()
+			},
+		},
+		{
+			name: "Interface with metadata",
+			entity: &Interface{
+				Name: String("eth0"),
+				Metadata: Metadata{
+					"monitored":    true,
+					"vlan_id":      100,
+					"uplink_speed": "10G",
+				},
+			},
+			metadata: Metadata{
+				"monitored":    true,
+				"vlan_id":      100,
+				"uplink_speed": "10G",
+			},
+			getMetadataFunc: func(e *diodepb.Entity) *structpb.Struct {
+				return e.GetInterface().GetMetadata()
+			},
+		},
+		{
+			name: "VirtualMachine with metadata",
+			entity: &VirtualMachine{
+				Name: String("vm-1"),
+				Metadata: Metadata{
+					"hypervisor": "vmware",
+					"cluster_id": "cluster-001",
+					"tier":       2,
+				},
+			},
+			metadata: Metadata{
+				"hypervisor": "vmware",
+				"cluster_id": "cluster-001",
+				"tier":       2,
+			},
+			getMetadataFunc: func(e *diodepb.Entity) *structpb.Struct {
+				return e.GetVirtualMachine().GetMetadata()
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			protoEntity := tt.entity.ConvertToProtoEntity()
+			metadata := tt.getMetadataFunc(protoEntity)
+
+			require.NotNil(t, metadata)
+
+			for key, expectedValue := range tt.metadata {
+				actualValue := metadata.Fields[key]
+				require.NotNil(t, actualValue, "metadata key %s should be present", key)
+
+				switch v := expectedValue.(type) {
+				case string:
+					require.Equal(t, v, actualValue.GetStringValue())
+				case int:
+					require.Equal(t, float64(v), actualValue.GetNumberValue())
+				case bool:
+					require.Equal(t, v, actualValue.GetBoolValue())
+				}
+			}
+		})
+	}
+}
+
+func TestMetadataConversionNil(t *testing.T) {
+	tests := []struct {
+		name            string
+		entity          Entity
+		getMetadataFunc func(*diodepb.Entity) *structpb.Struct
+	}{
+		{
+			name:   "ASN without metadata",
+			entity: &ASN{Asn: Int64(64512)},
+			getMetadataFunc: func(e *diodepb.Entity) *structpb.Struct {
+				return e.GetAsn().GetMetadata()
+			},
+		},
+		{
+			name:   "Device without metadata",
+			entity: &Device{Name: String("device-1")},
+			getMetadataFunc: func(e *diodepb.Entity) *structpb.Struct {
+				return e.GetDevice().GetMetadata()
+			},
+		},
+		{
+			name:   "IPAddress without metadata",
+			entity: &IPAddress{Address: String("192.168.1.1/24")},
+			getMetadataFunc: func(e *diodepb.Entity) *structpb.Struct {
+				return e.GetIpAddress().GetMetadata()
+			},
+		},
+		{
+			name:   "Site without metadata",
+			entity: &Site{Name: String("site-1")},
+			getMetadataFunc: func(e *diodepb.Entity) *structpb.Struct {
+				return e.GetSite().GetMetadata()
+			},
+		},
+		{
+			name:   "Interface without metadata",
+			entity: &Interface{Name: String("eth0")},
+			getMetadataFunc: func(e *diodepb.Entity) *structpb.Struct {
+				return e.GetInterface().GetMetadata()
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			protoEntity := tt.entity.ConvertToProtoEntity()
+
+			metadata := tt.getMetadataFunc(protoEntity)
+			require.Nil(t, metadata)
+		})
+	}
+}
+
+func TestMetadataConversionEmpty(t *testing.T) {
+	tests := []struct {
+		name            string
+		entity          Entity
+		getMetadataFunc func(*diodepb.Entity) *structpb.Struct
+	}{
+		{
+			name: "ASN with empty metadata",
+			entity: &ASN{
+				Asn:      Int64(64512),
+				Metadata: Metadata{},
+			},
+			getMetadataFunc: func(e *diodepb.Entity) *structpb.Struct {
+				return e.GetAsn().GetMetadata()
+			},
+		},
+		{
+			name: "Device with empty metadata",
+			entity: &Device{
+				Name:     String("device-1"),
+				Metadata: Metadata{},
+			},
+			getMetadataFunc: func(e *diodepb.Entity) *structpb.Struct {
+				return e.GetDevice().GetMetadata()
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			protoEntity := tt.entity.ConvertToProtoEntity()
+			metadata := tt.getMetadataFunc(protoEntity)
+
+			require.NotNil(t, metadata)
+			require.Empty(t, metadata.Fields)
+		})
+	}
+}
+
+func TestMetadataConversionComplexTypes(t *testing.T) {
+	tests := []struct {
+		name            string
+		entity          Entity
+		metadata        Metadata
+		getMetadataFunc func(*diodepb.Entity) *structpb.Struct
+	}{
+		{
+			name: "Device with nested metadata",
+			entity: &Device{
+				Name: String("device-1"),
+				Metadata: Metadata{
+					"config": map[string]interface{}{
+						"enabled": true,
+						"timeout": 30,
+					},
+					"tags": []interface{}{"production", "critical"},
+				},
+			},
+			metadata: Metadata{
+				"config": map[string]interface{}{
+					"enabled": true,
+					"timeout": 30,
+				},
+				"tags": []interface{}{"production", "critical"},
+			},
+			getMetadataFunc: func(e *diodepb.Entity) *structpb.Struct {
+				return e.GetDevice().GetMetadata()
+			},
+		},
+		{
+			name: "IPAddress with mixed types",
+			entity: &IPAddress{
+				Address: String("10.0.0.1/24"),
+				Metadata: Metadata{
+					"null_value":   nil,
+					"string_value": "test",
+					"number_value": 42.5,
+					"bool_value":   false,
+				},
+			},
+			metadata: Metadata{
+				"null_value":   nil,
+				"string_value": "test",
+				"number_value": 42.5,
+				"bool_value":   false,
+			},
+			getMetadataFunc: func(e *diodepb.Entity) *structpb.Struct {
+				return e.GetIpAddress().GetMetadata()
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			protoEntity := tt.entity.ConvertToProtoEntity()
+			metadata := tt.getMetadataFunc(protoEntity)
+
+			require.NotNil(t, metadata)
+
+			for key := range tt.metadata {
+				_, exists := metadata.Fields[key]
+				require.True(t, exists, "metadata key %s should be present", key)
+			}
+		})
+	}
+}
+
+func TestMetadataConversionNestedEntities(t *testing.T) {
+	tests := []struct {
+		name             string
+		entity           Entity
+		parentMetadata   Metadata
+		nestedMetadata   Metadata
+		verifyNestedFunc func(*testing.T, *diodepb.Entity)
+	}{
+		{
+			name: "Device with Site both having metadata",
+			entity: &Device{
+				Name: String("device-1"),
+				Site: &Site{
+					Name: String("site-1"),
+					Metadata: Metadata{
+						"site_region":   "us-west",
+						"site_capacity": 1000,
+					},
+				},
+				Metadata: Metadata{
+					"device_owner": "team-a",
+					"device_tier":  1,
+				},
+			},
+			parentMetadata: Metadata{
+				"device_owner": "team-a",
+				"device_tier":  1,
+			},
+			nestedMetadata: Metadata{
+				"site_region":   "us-west",
+				"site_capacity": 1000,
+			},
+			verifyNestedFunc: func(t *testing.T, protoEntity *diodepb.Entity) {
+				deviceEntity := protoEntity.GetDevice()
+				require.NotNil(t, deviceEntity)
+
+				site := deviceEntity.GetSite()
+				require.NotNil(t, site)
+				require.Equal(t, "site-1", site.GetName())
+			},
+		},
+		{
+			name: "IPAddress with Interface both having metadata",
+			entity: &IPAddress{
+				Address: String("192.168.1.1/24"),
+				AssignedObject: &Interface{
+					Name: String("eth0"),
+					Metadata: Metadata{
+						"interface_speed": "10G",
+						"interface_vlan":  100,
+					},
+				},
+				Metadata: Metadata{
+					"ip_discovered": true,
+					"ip_scan_id":    "scan-123",
+				},
+			},
+			parentMetadata: Metadata{
+				"ip_discovered": true,
+				"ip_scan_id":    "scan-123",
+			},
+			nestedMetadata: Metadata{
+				"interface_speed": "10G",
+				"interface_vlan":  100,
+			},
+			verifyNestedFunc: func(t *testing.T, protoEntity *diodepb.Entity) {
+				ipEntity := protoEntity.GetIpAddress()
+				require.NotNil(t, ipEntity)
+
+				assignedObj := ipEntity.GetAssignedObjectInterface()
+				require.NotNil(t, assignedObj)
+				require.Equal(t, "eth0", assignedObj.GetName())
+			},
+		},
+		{
+			name: "VirtualMachine with Cluster both having metadata",
+			entity: &VirtualMachine{
+				Name: String("vm-1"),
+				Cluster: &Cluster{
+					Name: String("cluster-1"),
+					Metadata: Metadata{
+						"cluster_size": 5,
+						"cluster_type": "production",
+					},
+				},
+				Metadata: Metadata{
+					"vm_hypervisor": "vmware",
+					"vm_template":   "ubuntu-20.04",
+				},
+			},
+			parentMetadata: Metadata{
+				"vm_hypervisor": "vmware",
+				"vm_template":   "ubuntu-20.04",
+			},
+			nestedMetadata: Metadata{
+				"cluster_size": 5,
+				"cluster_type": "production",
+			},
+			verifyNestedFunc: func(t *testing.T, protoEntity *diodepb.Entity) {
+				vmEntity := protoEntity.GetVirtualMachine()
+				require.NotNil(t, vmEntity)
+
+				cluster := vmEntity.GetCluster()
+				require.NotNil(t, cluster)
+				require.Equal(t, "cluster-1", cluster.GetName())
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Convert to proto entity
+			protoEntity := tt.entity.ConvertToProtoEntity()
+
+			// Get the parent entity's metadata from the specific entity type
+			var parentMetadata *structpb.Struct
+			switch protoEntity.GetEntity().(type) {
+			case *diodepb.Entity_Device:
+				parentMetadata = protoEntity.GetDevice().GetMetadata()
+			case *diodepb.Entity_IpAddress:
+				parentMetadata = protoEntity.GetIpAddress().GetMetadata()
+			case *diodepb.Entity_VirtualMachine:
+				parentMetadata = protoEntity.GetVirtualMachine().GetMetadata()
+			}
+
+			// Verify parent entity metadata is present
+			require.NotNil(t, parentMetadata, "parent entity should have metadata")
+
+			// Verify parent metadata fields
+			for key, expectedValue := range tt.parentMetadata {
+				actualValue := parentMetadata.Fields[key]
+				require.NotNil(t, actualValue, "parent metadata key %s should be present", key)
+
+				switch v := expectedValue.(type) {
+				case string:
+					require.Equal(t, v, actualValue.GetStringValue())
+				case int:
+					require.Equal(t, float64(v), actualValue.GetNumberValue())
+				case bool:
+					require.Equal(t, v, actualValue.GetBoolValue())
+				}
+			}
+
+			// Verify nested entity structure
+			tt.verifyNestedFunc(t, protoEntity)
 		})
 	}
 }

@@ -119,6 +119,173 @@ func main() {
 
 See all [examples](./examples/main.go) for reference.
 
+### Using Metadata
+
+Entities support attaching custom metadata as key-value pairs. Metadata can be used to store additional context, tracking information, or custom attributes that don't fit into the standard NetBox fields.
+
+```go
+package main
+
+import (
+	"context"
+	"log"
+
+	"github.com/netboxlabs/diode-sdk-go/diode"
+)
+
+func main() {
+	client, err := diode.NewClient(
+		"grpc://localhost:8080/diode",
+		"example-app",
+		"0.1.0",
+		diode.WithClientID("YOUR_CLIENT_ID"),
+		diode.WithClientSecret("YOUR_CLIENT_SECRET"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create a device with metadata
+	// Note: Both the device and its nested site can have its own metadata
+	deviceEntity := &diode.Device{
+		Name: diode.String("Device A"),
+		Site: &diode.Site{
+			Name: diode.String("Site ABC"),
+			Metadata: diode.Metadata{
+				"site_region":      "us-west",
+				"site_cost_center": "CC-001",
+			},
+		},
+		DeviceType: &diode.DeviceType{
+			Model: diode.String("Device Type A"),
+		},
+		Role: &diode.DeviceRole{
+			Name: diode.String("Role ABC"),
+		},
+		Metadata: diode.Metadata{
+			"source":        "network_discovery",
+			"discovered_at": "2024-01-15T10:30:00Z",
+			"import_batch":  "batch-123",
+			"priority":      1,
+			"verified":      true,
+		},
+	}
+
+	// Create an IP address with metadata
+	ipEntity := &diode.IPAddress{
+		Address: diode.String("192.168.1.10/24"),
+		Status:  diode.String("active"),
+		Metadata: diode.Metadata{
+			"last_scan":     "2024-01-15T12:00:00Z",
+			"scan_id":       "scan-456",
+			"response_time": 23.5,
+			"reachable":     true,
+			"owner_team":    "network-ops",
+		},
+	}
+
+	// Create a site with metadata
+	siteEntity := &diode.Site{
+		Name:   diode.String("Data Center 1"),
+		Status: diode.String("active"),
+		Metadata: diode.Metadata{
+			"region":       "us-west",
+			"cost_center":  "CC-001",
+			"capacity":     500,
+			"is_primary":   true,
+			"contact_email": "dc1-ops@example.com",
+		},
+	}
+
+	entities := []diode.Entity{
+		deviceEntity,
+		ipEntity,
+		siteEntity,
+	}
+
+	resp, err := client.Ingest(context.Background(), entities)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if resp != nil && resp.Errors != nil {
+		log.Printf("Errors: %v\n", resp.Errors)
+	} else {
+		log.Printf("Success\n")
+	}
+}
+```
+
+#### Adding request-level metadata
+
+In addition to entity-level metadata, you can attach metadata to the entire ingestion request using `WithIngestMetadata`. This is useful for tracking information about the ingestion batch itself, such as the data source, batch ID, or processing context.
+
+```go
+package main
+
+import (
+	"context"
+	"log"
+
+	"github.com/netboxlabs/diode-sdk-go/diode"
+)
+
+func main() {
+	client, err := diode.NewClient(
+		"grpc://localhost:8080/diode",
+		"example-app",
+		"0.1.0",
+		diode.WithClientID("YOUR_CLIENT_ID"),
+		diode.WithClientSecret("YOUR_CLIENT_SECRET"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create entities
+	entities := []diode.Entity{
+		&diode.Device{
+			Name: diode.String("Device A"),
+			Site: &diode.Site{
+				Name: diode.String("Site ABC"),
+			},
+		},
+		&diode.Device{
+			Name: diode.String("Device B"),
+			Site: &diode.Site{
+				Name: diode.String("Site XYZ"),
+			},
+		},
+	}
+
+	// Add request-level metadata to track the ingestion batch
+	resp, err := client.Ingest(
+		context.Background(),
+		entities,
+		diode.WithIngestMetadata(diode.Metadata{
+			"batch_id":      "import-2024-01-15",
+			"source_system": "network_scanner",
+			"import_type":   "automated",
+			"record_count":  2,
+			"validated":     true,
+		}),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if resp != nil && resp.Errors != nil {
+		log.Printf("Errors: %v\n", resp.Errors)
+	} else {
+		log.Printf("Success\n")
+	}
+}
+```
+
+Request-level metadata is included in the `IngestRequest` and can be useful for:
+- Tracking data sources and ingestion pipelines
+- Correlating entities within a batch
+- Debugging and auditing data imports
+- Adding contextual information for downstream processing
+
 ### TLS verification and certificates
 
 TLS verification is controlled by the target URL scheme:
@@ -180,6 +347,36 @@ _, _ = client.Ingest(context.Background(), []diode.Entity{
 _ = client.Close()
 ```
 
+#### Adding request-level metadata to dry run output
+
+You can include request-level metadata in the dry run output using `WithIngestMetadata`. This metadata will be included in the JSON output file as part of the `IngestRequest`:
+
+```go
+client, err := diode.NewDryRunClient("example-app", "/tmp")
+if err != nil {
+        log.Fatal(err)
+}
+
+// Add request-level metadata
+_, _ = client.Ingest(
+        context.Background(),
+        []diode.Entity{
+                &diode.Device{Name: diode.String("Device A")},
+        },
+        diode.WithIngestMetadata(diode.Metadata{
+                "batch_id":   "import-2024-01",
+                "source":     "csv_import",
+                "validated":  true,
+                "record_count": 150,
+        }),
+)
+_ = client.Close()
+```
+
+The resulting JSON file will include the metadata in the `IngestRequest`, making it visible when reviewing the dry run output.
+
+#### Loading and replaying dry run data
+
 Loaded entities can later be ingested using a real client:
 
 ```go
@@ -229,6 +426,47 @@ if err != nil {
 ```
 
 Each entity is serialised with protobuf field names and emitted as a log record that includes SDK and producer metadata via resource attributes so downstream collectors can enrich and forward the payload. The client raises an `OTLPClientError` when the export fails. TLS behaviour honours the existing `DIODE_SKIP_TLS_VERIFY` and `DIODE_CERT_FILE` environment variables, and the export timeout can be customised via `diode.WithOTLPTimeout`.
+
+#### Adding request-level metadata as OTLP resource attributes
+
+You can add request-level metadata to OTLP exports using `WithIngestMetadata`. This metadata is automatically mapped to OTLP resource attributes with a `diode.metadata.` prefix:
+
+```go
+client, err := diode.NewOTLPClient(
+        "grpc://localhost:4317",
+        "otlp-producer",
+        "0.0.1",
+)
+if err != nil {
+        log.Fatal(err)
+}
+defer client.Close()
+
+// Add request-level metadata
+_, err = client.Ingest(
+        context.Background(),
+        []diode.Entity{
+                &diode.Site{Name: diode.String("Site 1")},
+        },
+        diode.WithIngestMetadata(diode.Metadata{
+                "environment": "production",
+                "deployment":  "us-west-2",
+                "version":     "1.2.3",
+                "priority":    5,
+        }),
+)
+if err != nil {
+        log.Fatal(err)
+}
+```
+
+The resulting OTLP log records will include resource attributes like:
+- `diode.metadata.environment="production"`
+- `diode.metadata.deployment="us-west-2"`
+- `diode.metadata.version="1.2.3"`
+- `diode.metadata.priority=5` (as integer)
+
+These attributes are added alongside standard OTLP resource attributes (`service.name`, `service.version`, `diode.stream`, etc.), allowing downstream collectors and observability platforms to filter, route, and enrich the data based on this metadata.
 
 ### CLI to replay dry-run files
 

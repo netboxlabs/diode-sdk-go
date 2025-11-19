@@ -9,6 +9,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/encoding/protojson"
+
+	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
 
 func TestNewDryRunClient(t *testing.T) {
@@ -161,4 +164,58 @@ func TestDryRunClientSDKVersionCaching(t *testing.T) {
 	dryRunClient2 := client2.(*DryRunClient)
 	require.Equal(t, cachedVersion, dryRunClient2.sdkVersion)
 	require.Equal(t, cachedName, dryRunClient2.sdkName)
+}
+
+func TestDryRunClientIngestWithMetadata(t *testing.T) {
+	dir := t.TempDir()
+
+	c, err := NewDryRunClient("app", dir)
+	require.NoError(t, err)
+	drc := c.(*DryRunClient)
+
+	entities := []Entity{
+		&Device{Name: String("dev1"), Description: String("Test device")},
+	}
+
+	// Test with metadata
+	metadata := Metadata{
+		"batch_id": "batch-789",
+		"source":   "auto_discovery",
+		"priority": 2,
+		"verified": false,
+	}
+
+	_, err = drc.Ingest(context.Background(), entities, WithIngestMetadata(metadata))
+	require.NoError(t, err)
+
+	// Test without metadata (backward compatibility)
+	_, err = drc.Ingest(context.Background(), entities)
+	require.NoError(t, err)
+
+	require.NoError(t, drc.Close())
+
+	// Verify two files were created
+	entries, err := os.ReadDir(dir)
+	require.NoError(t, err)
+	require.Len(t, entries, 2)
+
+	// Load the first file (with metadata) and verify metadata is present
+	loaded, err := LoadDryRunEntities(filepath.Join(dir, entries[0].Name()))
+	require.NoError(t, err)
+	require.Len(t, loaded, 1)
+
+	// Load the IngestRequest to verify metadata is included
+	data, err := os.ReadFile(filepath.Join(dir, entries[0].Name()))
+	require.NoError(t, err)
+
+	var req diodepb.IngestRequest
+	err = protojson.Unmarshal(data, &req)
+	require.NoError(t, err)
+	require.NotNil(t, req.Metadata)
+
+	metadataMap := req.Metadata.AsMap()
+	require.Equal(t, "batch-789", metadataMap["batch_id"])
+	require.Equal(t, "auto_discovery", metadataMap["source"])
+	require.Equal(t, float64(2), metadataMap["priority"])
+	require.Equal(t, false, metadataMap["verified"])
 }
