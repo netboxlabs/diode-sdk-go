@@ -1,5 +1,5 @@
 // Generated code. DO NOT EDIT.
-// Timestamp: 2025-10-02 12:39:10Z
+// Timestamp: 2025-11-14 18:10:23Z
 //
 
 package diode
@@ -7,9 +7,11 @@ package diode
 import (
 	"encoding/json"
 	"fmt"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
+
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	pb "github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
@@ -20,6 +22,9 @@ type Entity interface {
 	ConvertToProtoEntity() *pb.Entity
 }
 
+// Metadata is a map of arbitrary key-value pairs that can be attached to entities
+type Metadata map[string]any
+
 type ASN struct {
 	Asn          *int64
 	Rir          *RIR
@@ -28,6 +33,7 @@ type ASN struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *ASN) ConvertToProtoMessage() proto.Message {
@@ -39,6 +45,7 @@ func (e *ASN) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -119,6 +126,14 @@ func (e *ASN) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *ASN) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type ASNRange struct {
 	Name         *string
 	Slug         *string
@@ -129,6 +144,7 @@ type ASNRange struct {
 	Description  *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *ASNRange) ConvertToProtoMessage() proto.Message {
@@ -142,6 +158,7 @@ func (e *ASNRange) ConvertToProtoMessage() proto.Message {
 		Description:  e.GetDescription(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -238,6 +255,14 @@ func (e *ASNRange) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *ASNRange) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Aggregate struct {
 	Prefix       *string
 	Rir          *RIR
@@ -247,6 +272,7 @@ type Aggregate struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *Aggregate) ConvertToProtoMessage() proto.Message {
@@ -259,6 +285,7 @@ func (e *Aggregate) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -347,6 +374,14 @@ func (e *Aggregate) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *Aggregate) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Cable struct {
 	Type          *string
 	ATerminations []*GenericObject
@@ -361,6 +396,7 @@ type Cable struct {
 	Comments      *string
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
+	Metadata      Metadata
 }
 
 func (e *Cable) ConvertToProtoMessage() proto.Message {
@@ -378,6 +414,7 @@ func (e *Cable) ConvertToProtoMessage() proto.Message {
 		Comments:      e.GetComments(),
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
+		Metadata:      e.GetMetadata(),
 	}
 	return r
 }
@@ -510,10 +547,19 @@ func (e *Cable) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *Cable) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type CablePath struct {
 	IsActive   *bool
 	IsComplete *bool
 	IsSplit    *bool
+	Metadata   Metadata
 }
 
 func (e *CablePath) ConvertToProtoMessage() proto.Message {
@@ -521,6 +567,7 @@ func (e *CablePath) ConvertToProtoMessage() proto.Message {
 		IsActive:   e.GetIsActive(),
 		IsComplete: e.GetIsComplete(),
 		IsSplit:    e.GetIsSplit(),
+		Metadata:   e.GetMetadata(),
 	}
 	return r
 }
@@ -557,6 +604,14 @@ func (e *CablePath) GetIsSplit() *bool {
 	return r
 }
 
+func (e *CablePath) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type CableTermination struct {
 	Cable    *Cable
 	CableEnd *string
@@ -571,12 +626,14 @@ type CableTermination struct {
 	//  - PowerPort
 	//  - RearPort
 	Termination anyCableTerminationTerminationValue
+	Metadata    Metadata
 }
 
 func (e *CableTermination) ConvertToProtoMessage() proto.Message {
 	r := &pb.CableTermination{
 		Cable:    e.GetCable(),
 		CableEnd: e.GetCableEnd(),
+		Metadata: e.GetMetadata(),
 	}
 	if e.Termination != nil {
 		e.Termination.anyCableTerminationTerminationValueApplyTo(r)
@@ -618,6 +675,14 @@ func (e *CableTermination) GetTermination() any {
 	return r
 }
 
+func (e *CableTermination) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Circuit struct {
 	Cid             *string
 	Provider        *Provider
@@ -635,6 +700,7 @@ type Circuit struct {
 	Tags            []*Tag
 	Assignments     []*CircuitGroupAssignment
 	CustomFields    map[string]*CustomFieldValue
+	Metadata        Metadata
 }
 
 func (e *Circuit) ConvertToProtoMessage() proto.Message {
@@ -655,6 +721,7 @@ func (e *Circuit) ConvertToProtoMessage() proto.Message {
 		Tags:            e.GetTags(),
 		Assignments:     e.GetAssignments(),
 		CustomFields:    e.GetCustomFields(),
+		Metadata:        e.GetMetadata(),
 	}
 	return r
 }
@@ -809,6 +876,14 @@ func (e *Circuit) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *Circuit) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type CircuitGroup struct {
 	Name         *string
 	Slug         *string
@@ -816,6 +891,7 @@ type CircuitGroup struct {
 	Tenant       *Tenant
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *CircuitGroup) ConvertToProtoMessage() proto.Message {
@@ -826,6 +902,7 @@ func (e *CircuitGroup) ConvertToProtoMessage() proto.Message {
 		Tenant:       e.GetTenant(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -898,6 +975,14 @@ func (e *CircuitGroup) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *CircuitGroup) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type CircuitGroupAssignment struct {
 	Group *CircuitGroup
 	// Member can be:
@@ -906,6 +991,7 @@ type CircuitGroupAssignment struct {
 	Member   anyCircuitGroupAssignmentMemberValue
 	Priority *string
 	Tags     []*Tag
+	Metadata Metadata
 }
 
 func (e *CircuitGroupAssignment) ConvertToProtoMessage() proto.Message {
@@ -913,6 +999,7 @@ func (e *CircuitGroupAssignment) ConvertToProtoMessage() proto.Message {
 		Group:    e.GetGroup(),
 		Priority: e.GetPriority(),
 		Tags:     e.GetTags(),
+		Metadata: e.GetMetadata(),
 	}
 	if e.Member != nil {
 		e.Member.anyCircuitGroupAssignmentMemberValueApplyTo(r)
@@ -964,6 +1051,14 @@ func (e *CircuitGroupAssignment) GetTags() []*pb.Tag {
 	return r
 }
 
+func (e *CircuitGroupAssignment) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type CircuitTermination struct {
 	Circuit  *Circuit
 	TermSide *string
@@ -982,6 +1077,7 @@ type CircuitTermination struct {
 	MarkConnected *bool
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
+	Metadata      Metadata
 }
 
 func (e *CircuitTermination) ConvertToProtoMessage() proto.Message {
@@ -996,6 +1092,7 @@ func (e *CircuitTermination) ConvertToProtoMessage() proto.Message {
 		MarkConnected: e.GetMarkConnected(),
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
+		Metadata:      e.GetMetadata(),
 	}
 	if e.Termination != nil {
 		e.Termination.anyCircuitTerminationTerminationValueApplyTo(r)
@@ -1113,6 +1210,14 @@ func (e *CircuitTermination) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *CircuitTermination) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type CircuitType struct {
 	Name         *string
 	Slug         *string
@@ -1120,6 +1225,7 @@ type CircuitType struct {
 	Description  *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *CircuitType) ConvertToProtoMessage() proto.Message {
@@ -1130,6 +1236,7 @@ func (e *CircuitType) ConvertToProtoMessage() proto.Message {
 		Description:  e.GetDescription(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -1202,6 +1309,14 @@ func (e *CircuitType) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *CircuitType) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Cluster struct {
 	Name   *string
 	Type   *ClusterType
@@ -1218,6 +1333,7 @@ type Cluster struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *Cluster) ConvertToProtoMessage() proto.Message {
@@ -1231,6 +1347,7 @@ func (e *Cluster) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	if e.Scope != nil {
 		e.Scope.anyClusterScopeValueApplyTo(r)
@@ -1340,12 +1457,21 @@ func (e *Cluster) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *Cluster) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type ClusterGroup struct {
 	Name         *string
 	Slug         *string
 	Description  *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *ClusterGroup) ConvertToProtoMessage() proto.Message {
@@ -1355,6 +1481,7 @@ func (e *ClusterGroup) ConvertToProtoMessage() proto.Message {
 		Description:  e.GetDescription(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -1419,12 +1546,21 @@ func (e *ClusterGroup) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *ClusterGroup) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type ClusterType struct {
 	Name         *string
 	Slug         *string
 	Description  *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *ClusterType) ConvertToProtoMessage() proto.Message {
@@ -1434,6 +1570,7 @@ func (e *ClusterType) ConvertToProtoMessage() proto.Message {
 		Description:  e.GetDescription(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -1498,6 +1635,14 @@ func (e *ClusterType) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *ClusterType) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type ConsolePort struct {
 	Device        *Device
 	Module        *Module
@@ -1509,6 +1654,7 @@ type ConsolePort struct {
 	MarkConnected *bool
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
+	Metadata      Metadata
 }
 
 func (e *ConsolePort) ConvertToProtoMessage() proto.Message {
@@ -1523,6 +1669,7 @@ func (e *ConsolePort) ConvertToProtoMessage() proto.Message {
 		MarkConnected: e.GetMarkConnected(),
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
+		Metadata:      e.GetMetadata(),
 	}
 	return r
 }
@@ -1627,6 +1774,14 @@ func (e *ConsolePort) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *ConsolePort) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type ConsoleServerPort struct {
 	Device        *Device
 	Module        *Module
@@ -1638,6 +1793,7 @@ type ConsoleServerPort struct {
 	MarkConnected *bool
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
+	Metadata      Metadata
 }
 
 func (e *ConsoleServerPort) ConvertToProtoMessage() proto.Message {
@@ -1652,6 +1808,7 @@ func (e *ConsoleServerPort) ConvertToProtoMessage() proto.Message {
 		MarkConnected: e.GetMarkConnected(),
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
+		Metadata:      e.GetMetadata(),
 	}
 	return r
 }
@@ -1756,6 +1913,14 @@ func (e *ConsoleServerPort) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *ConsoleServerPort) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Contact struct {
 	Group        *ContactGroup
 	Name         *string
@@ -1769,6 +1934,7 @@ type Contact struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Groups       []*ContactGroup
+	Metadata     Metadata
 }
 
 func (e *Contact) ConvertToProtoMessage() proto.Message {
@@ -1785,6 +1951,7 @@ func (e *Contact) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Groups:       e.GetGroups(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -1907,6 +2074,14 @@ func (e *Contact) GetGroups() []*pb.ContactGroup {
 	return r
 }
 
+func (e *Contact) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type ContactAssignment struct {
 	// Object can be any Entity type
 	Object       anyContactAssignmentObjectValue
@@ -1915,6 +2090,7 @@ type ContactAssignment struct {
 	Priority     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *ContactAssignment) ConvertToProtoMessage() proto.Message {
@@ -1924,6 +2100,7 @@ func (e *ContactAssignment) ConvertToProtoMessage() proto.Message {
 		Priority:     e.GetPriority(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	if e.Object != nil {
 		e.Object.anyContactAssignmentObjectValueApplyTo(r)
@@ -2001,6 +2178,14 @@ func (e *ContactAssignment) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *ContactAssignment) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type ContactGroup struct {
 	Name         *string
 	Slug         *string
@@ -2009,6 +2194,7 @@ type ContactGroup struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Comments     *string
+	Metadata     Metadata
 }
 
 func (e *ContactGroup) ConvertToProtoMessage() proto.Message {
@@ -2020,6 +2206,7 @@ func (e *ContactGroup) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Comments:     e.GetComments(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -2100,12 +2287,21 @@ func (e *ContactGroup) GetComments() *string {
 	return r
 }
 
+func (e *ContactGroup) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type ContactRole struct {
 	Name         *string
 	Slug         *string
 	Description  *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *ContactRole) ConvertToProtoMessage() proto.Message {
@@ -2115,6 +2311,7 @@ func (e *ContactRole) ConvertToProtoMessage() proto.Message {
 		Description:  e.GetDescription(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -2175,6 +2372,14 @@ func (e *ContactRole) GetCustomFields() map[string]*pb.CustomFieldValue {
 		for k, v := range e.CustomFields {
 			r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
 		}
+	}
+	return r
+}
+
+func (e *ContactRole) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
 	}
 	return r
 }
@@ -2289,6 +2494,7 @@ type Device struct {
 	Comments       *string
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
+	Metadata       Metadata
 }
 
 func (e *Device) ConvertToProtoMessage() proto.Message {
@@ -2320,6 +2526,7 @@ func (e *Device) ConvertToProtoMessage() proto.Message {
 		Comments:       e.GetComments(),
 		Tags:           e.GetTags(),
 		CustomFields:   e.GetCustomFields(),
+		Metadata:       e.GetMetadata(),
 	}
 	return r
 }
@@ -2560,6 +2767,14 @@ func (e *Device) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *Device) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type DeviceBay struct {
 	Device          *Device
 	Name            *string
@@ -2568,6 +2783,7 @@ type DeviceBay struct {
 	InstalledDevice *Device
 	Tags            []*Tag
 	CustomFields    map[string]*CustomFieldValue
+	Metadata        Metadata
 }
 
 func (e *DeviceBay) ConvertToProtoMessage() proto.Message {
@@ -2579,6 +2795,7 @@ func (e *DeviceBay) ConvertToProtoMessage() proto.Message {
 		InstalledDevice: e.GetInstalledDevice(),
 		Tags:            e.GetTags(),
 		CustomFields:    e.GetCustomFields(),
+		Metadata:        e.GetMetadata(),
 	}
 	return r
 }
@@ -2659,6 +2876,14 @@ func (e *DeviceBay) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *DeviceBay) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type DeviceRole struct {
 	Name         *string
 	Slug         *string
@@ -2669,6 +2894,7 @@ type DeviceRole struct {
 	CustomFields map[string]*CustomFieldValue
 	Parent       *DeviceRole
 	Comments     *string
+	Metadata     Metadata
 }
 
 func (e *DeviceRole) ConvertToProtoMessage() proto.Message {
@@ -2682,6 +2908,7 @@ func (e *DeviceRole) ConvertToProtoMessage() proto.Message {
 		CustomFields: e.GetCustomFields(),
 		Parent:       e.GetParent(),
 		Comments:     e.GetComments(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -2778,6 +3005,14 @@ func (e *DeviceRole) GetComments() *string {
 	return r
 }
 
+func (e *DeviceRole) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type DeviceType struct {
 	Manufacturer           *Manufacturer
 	DefaultPlatform        *Platform
@@ -2795,6 +3030,7 @@ type DeviceType struct {
 	Comments               *string
 	Tags                   []*Tag
 	CustomFields           map[string]*CustomFieldValue
+	Metadata               Metadata
 }
 
 func (e *DeviceType) ConvertToProtoMessage() proto.Message {
@@ -2815,6 +3051,7 @@ func (e *DeviceType) ConvertToProtoMessage() proto.Message {
 		Comments:               e.GetComments(),
 		Tags:                   e.GetTags(),
 		CustomFields:           e.GetCustomFields(),
+		Metadata:               e.GetMetadata(),
 	}
 	return r
 }
@@ -2967,6 +3204,14 @@ func (e *DeviceType) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *DeviceType) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type FHRPGroup struct {
 	Name         *string
 	Protocol     *string
@@ -2977,6 +3222,7 @@ type FHRPGroup struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *FHRPGroup) ConvertToProtoMessage() proto.Message {
@@ -2990,6 +3236,7 @@ func (e *FHRPGroup) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -3086,17 +3333,27 @@ func (e *FHRPGroup) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *FHRPGroup) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type FHRPGroupAssignment struct {
 	Group *FHRPGroup
 	// Interface can be any Entity type
 	Interface anyFHRPGroupAssignmentInterfaceValue
 	Priority  *int64
+	Metadata  Metadata
 }
 
 func (e *FHRPGroupAssignment) ConvertToProtoMessage() proto.Message {
 	r := &pb.FHRPGroupAssignment{
 		Group:    e.GetGroup(),
 		Priority: e.GetPriority(),
+		Metadata: e.GetMetadata(),
 	}
 	if e.Interface != nil {
 		e.Interface.anyFHRPGroupAssignmentInterfaceValueApplyTo(r)
@@ -3138,6 +3395,14 @@ func (e *FHRPGroupAssignment) GetPriority() int64 {
 	return r
 }
 
+func (e *FHRPGroupAssignment) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type FrontPort struct {
 	Device           *Device
 	Module           *Module
@@ -3151,6 +3416,7 @@ type FrontPort struct {
 	MarkConnected    *bool
 	Tags             []*Tag
 	CustomFields     map[string]*CustomFieldValue
+	Metadata         Metadata
 }
 
 func (e *FrontPort) ConvertToProtoMessage() proto.Message {
@@ -3167,6 +3433,7 @@ func (e *FrontPort) ConvertToProtoMessage() proto.Message {
 		MarkConnected:    e.GetMarkConnected(),
 		Tags:             e.GetTags(),
 		CustomFields:     e.GetCustomFields(),
+		Metadata:         e.GetMetadata(),
 	}
 	return r
 }
@@ -3287,6 +3554,14 @@ func (e *FrontPort) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *FrontPort) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type GenericObject struct {
 	// Object can be any Entity type
 	Object anyGenericObjectObjectValue
@@ -3320,6 +3595,7 @@ type IKEPolicy struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Proposals    []*IKEProposal
+	Metadata     Metadata
 }
 
 func (e *IKEPolicy) ConvertToProtoMessage() proto.Message {
@@ -3333,6 +3609,7 @@ func (e *IKEPolicy) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Proposals:    e.GetProposals(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -3431,6 +3708,14 @@ func (e *IKEPolicy) GetProposals() []*pb.IKEProposal {
 	return r
 }
 
+func (e *IKEPolicy) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type IKEProposal struct {
 	Name                    *string
 	Description             *string
@@ -3442,6 +3727,7 @@ type IKEProposal struct {
 	Comments                *string
 	Tags                    []*Tag
 	CustomFields            map[string]*CustomFieldValue
+	Metadata                Metadata
 }
 
 func (e *IKEProposal) ConvertToProtoMessage() proto.Message {
@@ -3456,6 +3742,7 @@ func (e *IKEProposal) ConvertToProtoMessage() proto.Message {
 		Comments:                e.GetComments(),
 		Tags:                    e.GetTags(),
 		CustomFields:            e.GetCustomFields(),
+		Metadata:                e.GetMetadata(),
 	}
 	return r
 }
@@ -3560,6 +3847,14 @@ func (e *IKEProposal) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *IKEProposal) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type IPAddress struct {
 	Address *string
 	Vrf     *VRF
@@ -3577,6 +3872,7 @@ type IPAddress struct {
 	Comments       *string
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
+	Metadata       Metadata
 }
 
 func (e *IPAddress) ConvertToProtoMessage() proto.Message {
@@ -3592,6 +3888,7 @@ func (e *IPAddress) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	if e.AssignedObject != nil {
 		e.AssignedObject.anyIPAddressAssignedObjectValueApplyTo(r)
@@ -3717,6 +4014,14 @@ func (e *IPAddress) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *IPAddress) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type IPRange struct {
 	StartAddress  *string
 	EndAddress    *string
@@ -3730,6 +4035,7 @@ type IPRange struct {
 	MarkUtilized  *bool
 	CustomFields  map[string]*CustomFieldValue
 	MarkPopulated *bool
+	Metadata      Metadata
 }
 
 func (e *IPRange) ConvertToProtoMessage() proto.Message {
@@ -3746,6 +4052,7 @@ func (e *IPRange) ConvertToProtoMessage() proto.Message {
 		MarkUtilized:  e.GetMarkUtilized(),
 		CustomFields:  e.GetCustomFields(),
 		MarkPopulated: e.GetMarkPopulated(),
+		Metadata:      e.GetMetadata(),
 	}
 	return r
 }
@@ -3866,6 +4173,14 @@ func (e *IPRange) GetMarkPopulated() *bool {
 	return r
 }
 
+func (e *IPRange) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type IPSecPolicy struct {
 	Name         *string
 	Description  *string
@@ -3874,6 +4189,7 @@ type IPSecPolicy struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Proposals    []*IPSecProposal
+	Metadata     Metadata
 }
 
 func (e *IPSecPolicy) ConvertToProtoMessage() proto.Message {
@@ -3885,6 +4201,7 @@ func (e *IPSecPolicy) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Proposals:    e.GetProposals(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -3967,6 +4284,14 @@ func (e *IPSecPolicy) GetProposals() []*pb.IPSecProposal {
 	return r
 }
 
+func (e *IPSecPolicy) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type IPSecProfile struct {
 	Name         *string
 	Description  *string
@@ -3976,6 +4301,7 @@ type IPSecProfile struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *IPSecProfile) ConvertToProtoMessage() proto.Message {
@@ -3988,6 +4314,7 @@ func (e *IPSecProfile) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -4076,6 +4403,14 @@ func (e *IPSecProfile) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *IPSecProfile) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type IPSecProposal struct {
 	Name                    *string
 	Description             *string
@@ -4086,6 +4421,7 @@ type IPSecProposal struct {
 	Comments                *string
 	Tags                    []*Tag
 	CustomFields            map[string]*CustomFieldValue
+	Metadata                Metadata
 }
 
 func (e *IPSecProposal) ConvertToProtoMessage() proto.Message {
@@ -4099,6 +4435,7 @@ func (e *IPSecProposal) ConvertToProtoMessage() proto.Message {
 		Comments:                e.GetComments(),
 		Tags:                    e.GetTags(),
 		CustomFields:            e.GetCustomFields(),
+		Metadata:                e.GetMetadata(),
 	}
 	return r
 }
@@ -4195,6 +4532,14 @@ func (e *IPSecProposal) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *IPSecProposal) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Interface struct {
 	Device                *Device
 	Module                *Module
@@ -4230,6 +4575,7 @@ type Interface struct {
 	Vdcs                  []*VirtualDeviceContext
 	TaggedVlans           []*VLAN
 	WirelessLans          []*WirelessLAN
+	Metadata              Metadata
 }
 
 func (e *Interface) ConvertToProtoMessage() proto.Message {
@@ -4268,6 +4614,7 @@ func (e *Interface) ConvertToProtoMessage() proto.Message {
 		Vdcs:                  e.GetVdcs(),
 		TaggedVlans:           e.GetTaggedVlans(),
 		WirelessLans:          e.GetWirelessLans(),
+		Metadata:              e.GetMetadata(),
 	}
 	return r
 }
@@ -4570,6 +4917,14 @@ func (e *Interface) GetWirelessLans() []*pb.WirelessLAN {
 	return r
 }
 
+func (e *Interface) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type InventoryItem struct {
 	Device       *Device
 	Parent       *InventoryItem
@@ -4594,6 +4949,7 @@ type InventoryItem struct {
 	Component    anyInventoryItemComponentValue
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *InventoryItem) ConvertToProtoMessage() proto.Message {
@@ -4612,6 +4968,7 @@ func (e *InventoryItem) ConvertToProtoMessage() proto.Message {
 		Description:  e.GetDescription(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	if e.Component != nil {
 		e.Component.anyInventoryItemComponentValueApplyTo(r)
@@ -4761,6 +5118,14 @@ func (e *InventoryItem) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *InventoryItem) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type InventoryItemRole struct {
 	Name         *string
 	Slug         *string
@@ -4768,6 +5133,7 @@ type InventoryItemRole struct {
 	Description  *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *InventoryItemRole) ConvertToProtoMessage() proto.Message {
@@ -4778,6 +5144,7 @@ func (e *InventoryItemRole) ConvertToProtoMessage() proto.Message {
 		Description:  e.GetDescription(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -4850,6 +5217,14 @@ func (e *InventoryItemRole) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *InventoryItemRole) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type L2VPN struct {
 	Identifier    *int64
 	Name          *string
@@ -4863,6 +5238,7 @@ type L2VPN struct {
 	ImportTargets []*RouteTarget
 	ExportTargets []*RouteTarget
 	Status        *string
+	Metadata      Metadata
 }
 
 func (e *L2VPN) ConvertToProtoMessage() proto.Message {
@@ -4879,6 +5255,7 @@ func (e *L2VPN) ConvertToProtoMessage() proto.Message {
 		ImportTargets: e.GetImportTargets(),
 		ExportTargets: e.GetExportTargets(),
 		Status:        e.GetStatus(),
+		Metadata:      e.GetMetadata(),
 	}
 	return r
 }
@@ -5003,12 +5380,21 @@ func (e *L2VPN) GetStatus() *string {
 	return r
 }
 
+func (e *L2VPN) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type L2VPNTermination struct {
 	L2Vpn *L2VPN
 	// AssignedObject can be any Entity type
 	AssignedObject anyL2VPNTerminationAssignedObjectValue
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
+	Metadata       Metadata
 }
 
 func (e *L2VPNTermination) ConvertToProtoMessage() proto.Message {
@@ -5016,6 +5402,7 @@ func (e *L2VPNTermination) ConvertToProtoMessage() proto.Message {
 		L2Vpn:        e.GetL2Vpn(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	if e.AssignedObject != nil {
 		e.AssignedObject.anyL2VPNTerminationAssignedObjectValueApplyTo(r)
@@ -5077,6 +5464,14 @@ func (e *L2VPNTermination) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *L2VPNTermination) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Location struct {
 	Name         *string
 	Slug         *string
@@ -5089,6 +5484,7 @@ type Location struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Comments     *string
+	Metadata     Metadata
 }
 
 func (e *Location) ConvertToProtoMessage() proto.Message {
@@ -5104,6 +5500,7 @@ func (e *Location) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Comments:     e.GetComments(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -5216,6 +5613,14 @@ func (e *Location) GetComments() *string {
 	return r
 }
 
+func (e *Location) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type MACAddress struct {
 	MacAddress *string
 	// AssignedObject can be:
@@ -5226,6 +5631,7 @@ type MACAddress struct {
 	Comments       *string
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
+	Metadata       Metadata
 }
 
 func (e *MACAddress) ConvertToProtoMessage() proto.Message {
@@ -5235,6 +5641,7 @@ func (e *MACAddress) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	if e.AssignedObject != nil {
 		e.AssignedObject.anyMACAddressAssignedObjectValueApplyTo(r)
@@ -5312,12 +5719,21 @@ func (e *MACAddress) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *MACAddress) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Manufacturer struct {
 	Name         *string
 	Slug         *string
 	Description  *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *Manufacturer) ConvertToProtoMessage() proto.Message {
@@ -5327,6 +5743,7 @@ func (e *Manufacturer) ConvertToProtoMessage() proto.Message {
 		Description:  e.GetDescription(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -5391,6 +5808,14 @@ func (e *Manufacturer) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *Manufacturer) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Module struct {
 	Device       *Device
 	ModuleBay    *ModuleBay
@@ -5402,6 +5827,7 @@ type Module struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *Module) ConvertToProtoMessage() proto.Message {
@@ -5416,6 +5842,7 @@ func (e *Module) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -5520,6 +5947,14 @@ func (e *Module) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *Module) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type ModuleBay struct {
 	Device          *Device
 	Module          *Module
@@ -5530,6 +5965,7 @@ type ModuleBay struct {
 	Description     *string
 	Tags            []*Tag
 	CustomFields    map[string]*CustomFieldValue
+	Metadata        Metadata
 }
 
 func (e *ModuleBay) ConvertToProtoMessage() proto.Message {
@@ -5543,6 +5979,7 @@ func (e *ModuleBay) ConvertToProtoMessage() proto.Message {
 		Description:     e.GetDescription(),
 		Tags:            e.GetTags(),
 		CustomFields:    e.GetCustomFields(),
+		Metadata:        e.GetMetadata(),
 	}
 	return r
 }
@@ -5639,6 +6076,14 @@ func (e *ModuleBay) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *ModuleBay) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type ModuleType struct {
 	Manufacturer *Manufacturer
 	Model        *string
@@ -5652,6 +6097,7 @@ type ModuleType struct {
 	CustomFields map[string]*CustomFieldValue
 	Profile      *ModuleTypeProfile
 	Attributes   *string
+	Metadata     Metadata
 }
 
 func (e *ModuleType) ConvertToProtoMessage() proto.Message {
@@ -5668,6 +6114,7 @@ func (e *ModuleType) ConvertToProtoMessage() proto.Message {
 		CustomFields: e.GetCustomFields(),
 		Profile:      e.GetProfile(),
 		Attributes:   e.GetAttributes(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -5788,6 +6235,14 @@ func (e *ModuleType) GetAttributes() *string {
 	return r
 }
 
+func (e *ModuleType) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Platform struct {
 	Name         *string
 	Slug         *string
@@ -5797,6 +6252,7 @@ type Platform struct {
 	CustomFields map[string]*CustomFieldValue
 	Parent       *Platform
 	Comments     *string
+	Metadata     Metadata
 }
 
 func (e *Platform) ConvertToProtoMessage() proto.Message {
@@ -5809,6 +6265,7 @@ func (e *Platform) ConvertToProtoMessage() proto.Message {
 		CustomFields: e.GetCustomFields(),
 		Parent:       e.GetParent(),
 		Comments:     e.GetComments(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -5897,6 +6354,14 @@ func (e *Platform) GetComments() *string {
 	return r
 }
 
+func (e *Platform) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type PowerFeed struct {
 	PowerPanel     *PowerPanel
 	Rack           *Rack
@@ -5914,6 +6379,7 @@ type PowerFeed struct {
 	Comments       *string
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
+	Metadata       Metadata
 }
 
 func (e *PowerFeed) ConvertToProtoMessage() proto.Message {
@@ -5934,6 +6400,7 @@ func (e *PowerFeed) ConvertToProtoMessage() proto.Message {
 		Comments:       e.GetComments(),
 		Tags:           e.GetTags(),
 		CustomFields:   e.GetCustomFields(),
+		Metadata:       e.GetMetadata(),
 	}
 	return r
 }
@@ -6086,6 +6553,14 @@ func (e *PowerFeed) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *PowerFeed) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type PowerOutlet struct {
 	Device        *Device
 	Module        *Module
@@ -6100,6 +6575,7 @@ type PowerOutlet struct {
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
 	Status        *string
+	Metadata      Metadata
 }
 
 func (e *PowerOutlet) ConvertToProtoMessage() proto.Message {
@@ -6117,6 +6593,7 @@ func (e *PowerOutlet) ConvertToProtoMessage() proto.Message {
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
 		Status:        e.GetStatus(),
+		Metadata:      e.GetMetadata(),
 	}
 	return r
 }
@@ -6245,6 +6722,14 @@ func (e *PowerOutlet) GetStatus() *string {
 	return r
 }
 
+func (e *PowerOutlet) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type PowerPanel struct {
 	Site         *Site
 	Location     *Location
@@ -6253,6 +6738,7 @@ type PowerPanel struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *PowerPanel) ConvertToProtoMessage() proto.Message {
@@ -6264,6 +6750,7 @@ func (e *PowerPanel) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -6344,6 +6831,14 @@ func (e *PowerPanel) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *PowerPanel) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type PowerPort struct {
 	Device        *Device
 	Module        *Module
@@ -6356,6 +6851,7 @@ type PowerPort struct {
 	MarkConnected *bool
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
+	Metadata      Metadata
 }
 
 func (e *PowerPort) ConvertToProtoMessage() proto.Message {
@@ -6371,6 +6867,7 @@ func (e *PowerPort) ConvertToProtoMessage() proto.Message {
 		MarkConnected: e.GetMarkConnected(),
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
+		Metadata:      e.GetMetadata(),
 	}
 	return r
 }
@@ -6483,6 +6980,14 @@ func (e *PowerPort) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *PowerPort) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Prefix struct {
 	Prefix *string
 	Vrf    *VRF
@@ -6502,6 +7007,7 @@ type Prefix struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *Prefix) ConvertToProtoMessage() proto.Message {
@@ -6518,6 +7024,7 @@ func (e *Prefix) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	if e.Scope != nil {
 		e.Scope.anyPrefixScopeValueApplyTo(r)
@@ -6651,6 +7158,14 @@ func (e *Prefix) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *Prefix) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Provider struct {
 	Name         *string
 	Slug         *string
@@ -6660,6 +7175,7 @@ type Provider struct {
 	CustomFields map[string]*CustomFieldValue
 	Accounts     []*ProviderAccount
 	Asns         []*ASN
+	Metadata     Metadata
 }
 
 func (e *Provider) ConvertToProtoMessage() proto.Message {
@@ -6672,6 +7188,7 @@ func (e *Provider) ConvertToProtoMessage() proto.Message {
 		CustomFields: e.GetCustomFields(),
 		Accounts:     e.GetAccounts(),
 		Asns:         e.GetAsns(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -6764,6 +7281,14 @@ func (e *Provider) GetAsns() []*pb.ASN {
 	return r
 }
 
+func (e *Provider) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type ProviderAccount struct {
 	Provider     *Provider
 	Name         *string
@@ -6772,6 +7297,7 @@ type ProviderAccount struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *ProviderAccount) ConvertToProtoMessage() proto.Message {
@@ -6783,6 +7309,7 @@ func (e *ProviderAccount) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -6863,6 +7390,14 @@ func (e *ProviderAccount) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *ProviderAccount) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type ProviderNetwork struct {
 	Provider     *Provider
 	Name         *string
@@ -6871,6 +7406,7 @@ type ProviderNetwork struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *ProviderNetwork) ConvertToProtoMessage() proto.Message {
@@ -6882,6 +7418,7 @@ func (e *ProviderNetwork) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -6962,6 +7499,14 @@ func (e *ProviderNetwork) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *ProviderNetwork) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type RIR struct {
 	Name         *string
 	Slug         *string
@@ -6969,6 +7514,7 @@ type RIR struct {
 	Description  *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *RIR) ConvertToProtoMessage() proto.Message {
@@ -6979,6 +7525,7 @@ func (e *RIR) ConvertToProtoMessage() proto.Message {
 		Description:  e.GetDescription(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -7051,6 +7598,14 @@ func (e *RIR) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *RIR) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Rack struct {
 	Name          *string
 	FacilityId    *string
@@ -7080,6 +7635,7 @@ type Rack struct {
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
 	OuterHeight   *int64
+	Metadata      Metadata
 }
 
 func (e *Rack) ConvertToProtoMessage() proto.Message {
@@ -7112,6 +7668,7 @@ func (e *Rack) ConvertToProtoMessage() proto.Message {
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
 		OuterHeight:   e.GetOuterHeight(),
+		Metadata:      e.GetMetadata(),
 	}
 	return r
 }
@@ -7360,6 +7917,14 @@ func (e *Rack) GetOuterHeight() *int64 {
 	return r
 }
 
+func (e *Rack) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type RackReservation struct {
 	Rack         *Rack
 	Units        []int64
@@ -7369,6 +7934,7 @@ type RackReservation struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Status       *string
+	Metadata     Metadata
 }
 
 func (e *RackReservation) ConvertToProtoMessage() proto.Message {
@@ -7381,6 +7947,7 @@ func (e *RackReservation) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Status:       e.GetStatus(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -7471,6 +8038,14 @@ func (e *RackReservation) GetStatus() *string {
 	return r
 }
 
+func (e *RackReservation) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type RackRole struct {
 	Name         *string
 	Slug         *string
@@ -7478,6 +8053,7 @@ type RackRole struct {
 	Description  *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *RackRole) ConvertToProtoMessage() proto.Message {
@@ -7488,6 +8064,7 @@ func (e *RackRole) ConvertToProtoMessage() proto.Message {
 		Description:  e.GetDescription(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -7560,6 +8137,14 @@ func (e *RackRole) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *RackRole) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type RackType struct {
 	Manufacturer  *Manufacturer
 	Model         *string
@@ -7581,6 +8166,7 @@ type RackType struct {
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
 	OuterHeight   *int64
+	Metadata      Metadata
 }
 
 func (e *RackType) ConvertToProtoMessage() proto.Message {
@@ -7605,6 +8191,7 @@ func (e *RackType) ConvertToProtoMessage() proto.Message {
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
 		OuterHeight:   e.GetOuterHeight(),
+		Metadata:      e.GetMetadata(),
 	}
 	return r
 }
@@ -7789,6 +8376,14 @@ func (e *RackType) GetOuterHeight() *int64 {
 	return r
 }
 
+func (e *RackType) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type RearPort struct {
 	Device        *Device
 	Module        *Module
@@ -7801,6 +8396,7 @@ type RearPort struct {
 	MarkConnected *bool
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
+	Metadata      Metadata
 }
 
 func (e *RearPort) ConvertToProtoMessage() proto.Message {
@@ -7816,6 +8412,7 @@ func (e *RearPort) ConvertToProtoMessage() proto.Message {
 		MarkConnected: e.GetMarkConnected(),
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
+		Metadata:      e.GetMetadata(),
 	}
 	return r
 }
@@ -7928,6 +8525,14 @@ func (e *RearPort) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *RearPort) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Region struct {
 	Name         *string
 	Slug         *string
@@ -7936,6 +8541,7 @@ type Region struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Comments     *string
+	Metadata     Metadata
 }
 
 func (e *Region) ConvertToProtoMessage() proto.Message {
@@ -7947,6 +8553,7 @@ func (e *Region) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Comments:     e.GetComments(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -8027,6 +8634,14 @@ func (e *Region) GetComments() *string {
 	return r
 }
 
+func (e *Region) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Role struct {
 	Name         *string
 	Slug         *string
@@ -8034,6 +8649,7 @@ type Role struct {
 	Description  *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *Role) ConvertToProtoMessage() proto.Message {
@@ -8044,6 +8660,7 @@ func (e *Role) ConvertToProtoMessage() proto.Message {
 		Description:  e.GetDescription(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -8116,6 +8733,14 @@ func (e *Role) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *Role) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type RouteTarget struct {
 	Name         *string
 	Tenant       *Tenant
@@ -8123,6 +8748,7 @@ type RouteTarget struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *RouteTarget) ConvertToProtoMessage() proto.Message {
@@ -8133,6 +8759,7 @@ func (e *RouteTarget) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -8205,6 +8832,14 @@ func (e *RouteTarget) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *RouteTarget) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Service struct {
 	Device         *Device
 	VirtualMachine *VirtualMachine
@@ -8221,6 +8856,7 @@ type Service struct {
 	//  - FHRPGroup
 	//  - VirtualMachine
 	ParentObject anyServiceParentObjectValue
+	Metadata     Metadata
 }
 
 func (e *Service) ConvertToProtoMessage() proto.Message {
@@ -8235,6 +8871,7 @@ func (e *Service) ConvertToProtoMessage() proto.Message {
 		Tags:           e.GetTags(),
 		CustomFields:   e.GetCustomFields(),
 		Ipaddresses:    e.GetIpaddresses(),
+		Metadata:       e.GetMetadata(),
 	}
 	if e.ParentObject != nil {
 		e.ParentObject.anyServiceParentObjectValueApplyTo(r)
@@ -8356,6 +8993,14 @@ func (e *Service) GetParentObject() any {
 	return r
 }
 
+func (e *Service) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Site struct {
 	Name            *string
 	Slug            *string
@@ -8374,6 +9019,7 @@ type Site struct {
 	Tags            []*Tag
 	CustomFields    map[string]*CustomFieldValue
 	Asns            []*ASN
+	Metadata        Metadata
 }
 
 func (e *Site) ConvertToProtoMessage() proto.Message {
@@ -8395,6 +9041,7 @@ func (e *Site) ConvertToProtoMessage() proto.Message {
 		Tags:            e.GetTags(),
 		CustomFields:    e.GetCustomFields(),
 		Asns:            e.GetAsns(),
+		Metadata:        e.GetMetadata(),
 	}
 	return r
 }
@@ -8557,6 +9204,14 @@ func (e *Site) GetAsns() []*pb.ASN {
 	return r
 }
 
+func (e *Site) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type SiteGroup struct {
 	Name         *string
 	Slug         *string
@@ -8565,6 +9220,7 @@ type SiteGroup struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Comments     *string
+	Metadata     Metadata
 }
 
 func (e *SiteGroup) ConvertToProtoMessage() proto.Message {
@@ -8576,6 +9232,7 @@ func (e *SiteGroup) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Comments:     e.GetComments(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -8656,6 +9313,14 @@ func (e *SiteGroup) GetComments() *string {
 	return r
 }
 
+func (e *SiteGroup) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Tag struct {
 	Name        *string
 	Slug        *string
@@ -8663,6 +9328,7 @@ type Tag struct {
 	Description *string
 	Weight      *int64
 	ObjectTypes []string
+	Metadata    Metadata
 }
 
 func (e *Tag) ConvertToProtoMessage() proto.Message {
@@ -8673,6 +9339,7 @@ func (e *Tag) ConvertToProtoMessage() proto.Message {
 		Description: e.GetDescription(),
 		Weight:      e.GetWeight(),
 		ObjectTypes: e.GetObjectTypes(),
+		Metadata:    e.GetMetadata(),
 	}
 	return r
 }
@@ -8735,6 +9402,14 @@ func (e *Tag) GetObjectTypes() []string {
 	return r
 }
 
+func (e *Tag) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Tenant struct {
 	Name         *string
 	Slug         *string
@@ -8743,6 +9418,7 @@ type Tenant struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *Tenant) ConvertToProtoMessage() proto.Message {
@@ -8754,6 +9430,7 @@ func (e *Tenant) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -8834,6 +9511,14 @@ func (e *Tenant) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *Tenant) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type TenantGroup struct {
 	Name         *string
 	Slug         *string
@@ -8842,6 +9527,7 @@ type TenantGroup struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Comments     *string
+	Metadata     Metadata
 }
 
 func (e *TenantGroup) ConvertToProtoMessage() proto.Message {
@@ -8853,6 +9539,7 @@ func (e *TenantGroup) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Comments:     e.GetComments(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -8933,6 +9620,14 @@ func (e *TenantGroup) GetComments() *string {
 	return r
 }
 
+func (e *TenantGroup) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type Tunnel struct {
 	Name          *string
 	Status        *string
@@ -8945,6 +9640,7 @@ type Tunnel struct {
 	Comments      *string
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
+	Metadata      Metadata
 }
 
 func (e *Tunnel) ConvertToProtoMessage() proto.Message {
@@ -8960,6 +9656,7 @@ func (e *Tunnel) ConvertToProtoMessage() proto.Message {
 		Comments:      e.GetComments(),
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
+		Metadata:      e.GetMetadata(),
 	}
 	return r
 }
@@ -9072,12 +9769,21 @@ func (e *Tunnel) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *Tunnel) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type TunnelGroup struct {
 	Name         *string
 	Slug         *string
 	Description  *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *TunnelGroup) ConvertToProtoMessage() proto.Message {
@@ -9087,6 +9793,7 @@ func (e *TunnelGroup) ConvertToProtoMessage() proto.Message {
 		Description:  e.GetDescription(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -9151,6 +9858,14 @@ func (e *TunnelGroup) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *TunnelGroup) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type TunnelTermination struct {
 	Tunnel *Tunnel
 	Role   *string
@@ -9159,6 +9874,7 @@ type TunnelTermination struct {
 	OutsideIp    *IPAddress
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *TunnelTermination) ConvertToProtoMessage() proto.Message {
@@ -9168,6 +9884,7 @@ func (e *TunnelTermination) ConvertToProtoMessage() proto.Message {
 		OutsideIp:    e.GetOutsideIp(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	if e.Termination != nil {
 		e.Termination.anyTunnelTerminationTerminationValueApplyTo(r)
@@ -9245,6 +9962,14 @@ func (e *TunnelTermination) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *TunnelTermination) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type VLAN struct {
 	Site         *Site
 	Group        *VLANGroup
@@ -9259,6 +9984,7 @@ type VLAN struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *VLAN) ConvertToProtoMessage() proto.Message {
@@ -9276,6 +10002,7 @@ func (e *VLAN) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -9404,6 +10131,14 @@ func (e *VLAN) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *VLAN) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type VLANGroup struct {
 	Name *string
 	Slug *string
@@ -9421,6 +10156,7 @@ type VLANGroup struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Tenant       *Tenant
+	Metadata     Metadata
 }
 
 func (e *VLANGroup) ConvertToProtoMessage() proto.Message {
@@ -9432,6 +10168,7 @@ func (e *VLANGroup) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Tenant:       e.GetTenant(),
+		Metadata:     e.GetMetadata(),
 	}
 	if e.Scope != nil {
 		e.Scope.anyVLANGroupScopeValueApplyTo(r)
@@ -9527,15 +10264,25 @@ func (e *VLANGroup) GetTenant() *pb.Tenant {
 	return r
 }
 
+func (e *VLANGroup) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type VLANTranslationPolicy struct {
 	Name        *string
 	Description *string
+	Metadata    Metadata
 }
 
 func (e *VLANTranslationPolicy) ConvertToProtoMessage() proto.Message {
 	r := &pb.VLANTranslationPolicy{
 		Name:        e.GetName(),
 		Description: e.GetDescription(),
+		Metadata:    e.GetMetadata(),
 	}
 	return r
 }
@@ -9564,11 +10311,20 @@ func (e *VLANTranslationPolicy) GetDescription() *string {
 	return r
 }
 
+func (e *VLANTranslationPolicy) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type VLANTranslationRule struct {
 	Policy      *VLANTranslationPolicy
 	LocalVid    *int64
 	RemoteVid   *int64
 	Description *string
+	Metadata    Metadata
 }
 
 func (e *VLANTranslationRule) ConvertToProtoMessage() proto.Message {
@@ -9577,6 +10333,7 @@ func (e *VLANTranslationRule) ConvertToProtoMessage() proto.Message {
 		LocalVid:    e.GetLocalVid(),
 		RemoteVid:   e.GetRemoteVid(),
 		Description: e.GetDescription(),
+		Metadata:    e.GetMetadata(),
 	}
 	return r
 }
@@ -9621,6 +10378,14 @@ func (e *VLANTranslationRule) GetDescription() *string {
 	return r
 }
 
+func (e *VLANTranslationRule) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type VMInterface struct {
 	VirtualMachine        *VirtualMachine
 	Name                  *string
@@ -9638,6 +10403,7 @@ type VMInterface struct {
 	Tags                  []*Tag
 	CustomFields          map[string]*CustomFieldValue
 	TaggedVlans           []*VLAN
+	Metadata              Metadata
 }
 
 func (e *VMInterface) ConvertToProtoMessage() proto.Message {
@@ -9658,6 +10424,7 @@ func (e *VMInterface) ConvertToProtoMessage() proto.Message {
 		Tags:                  e.GetTags(),
 		CustomFields:          e.GetCustomFields(),
 		TaggedVlans:           e.GetTaggedVlans(),
+		Metadata:              e.GetMetadata(),
 	}
 	return r
 }
@@ -9812,6 +10579,14 @@ func (e *VMInterface) GetTaggedVlans() []*pb.VLAN {
 	return r
 }
 
+func (e *VMInterface) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type VRF struct {
 	Name          *string
 	Rd            *string
@@ -9823,6 +10598,7 @@ type VRF struct {
 	CustomFields  map[string]*CustomFieldValue
 	ImportTargets []*RouteTarget
 	ExportTargets []*RouteTarget
+	Metadata      Metadata
 }
 
 func (e *VRF) ConvertToProtoMessage() proto.Message {
@@ -9837,6 +10613,7 @@ func (e *VRF) ConvertToProtoMessage() proto.Message {
 		CustomFields:  e.GetCustomFields(),
 		ImportTargets: e.GetImportTargets(),
 		ExportTargets: e.GetExportTargets(),
+		Metadata:      e.GetMetadata(),
 	}
 	return r
 }
@@ -9945,6 +10722,14 @@ func (e *VRF) GetExportTargets() []*pb.RouteTarget {
 	return r
 }
 
+func (e *VRF) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type VirtualChassis struct {
 	Name         *string
 	Domain       *string
@@ -9953,6 +10738,7 @@ type VirtualChassis struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *VirtualChassis) ConvertToProtoMessage() proto.Message {
@@ -9964,6 +10750,7 @@ func (e *VirtualChassis) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -10044,6 +10831,14 @@ func (e *VirtualChassis) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *VirtualChassis) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type VirtualCircuit struct {
 	Cid             *string
 	ProviderNetwork *ProviderNetwork
@@ -10055,6 +10850,7 @@ type VirtualCircuit struct {
 	Comments        *string
 	Tags            []*Tag
 	CustomFields    map[string]*CustomFieldValue
+	Metadata        Metadata
 }
 
 func (e *VirtualCircuit) ConvertToProtoMessage() proto.Message {
@@ -10069,6 +10865,7 @@ func (e *VirtualCircuit) ConvertToProtoMessage() proto.Message {
 		Comments:        e.GetComments(),
 		Tags:            e.GetTags(),
 		CustomFields:    e.GetCustomFields(),
+		Metadata:        e.GetMetadata(),
 	}
 	return r
 }
@@ -10173,6 +10970,14 @@ func (e *VirtualCircuit) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *VirtualCircuit) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type VirtualCircuitTermination struct {
 	VirtualCircuit *VirtualCircuit
 	Role           *string
@@ -10180,6 +10985,7 @@ type VirtualCircuitTermination struct {
 	Description    *string
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
+	Metadata       Metadata
 }
 
 func (e *VirtualCircuitTermination) ConvertToProtoMessage() proto.Message {
@@ -10190,6 +10996,7 @@ func (e *VirtualCircuitTermination) ConvertToProtoMessage() proto.Message {
 		Description:    e.GetDescription(),
 		Tags:           e.GetTags(),
 		CustomFields:   e.GetCustomFields(),
+		Metadata:       e.GetMetadata(),
 	}
 	return r
 }
@@ -10262,6 +11069,14 @@ func (e *VirtualCircuitTermination) GetCustomFields() map[string]*pb.CustomField
 	return r
 }
 
+func (e *VirtualCircuitTermination) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type VirtualCircuitType struct {
 	Name         *string
 	Slug         *string
@@ -10269,6 +11084,7 @@ type VirtualCircuitType struct {
 	Description  *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *VirtualCircuitType) ConvertToProtoMessage() proto.Message {
@@ -10279,6 +11095,7 @@ func (e *VirtualCircuitType) ConvertToProtoMessage() proto.Message {
 		Description:  e.GetDescription(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -10351,6 +11168,14 @@ func (e *VirtualCircuitType) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *VirtualCircuitType) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type VirtualDeviceContext struct {
 	Name         *string
 	Device       *Device
@@ -10363,6 +11188,7 @@ type VirtualDeviceContext struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *VirtualDeviceContext) ConvertToProtoMessage() proto.Message {
@@ -10378,6 +11204,7 @@ func (e *VirtualDeviceContext) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -10490,6 +11317,14 @@ func (e *VirtualDeviceContext) GetCustomFields() map[string]*pb.CustomFieldValue
 	return r
 }
 
+func (e *VirtualDeviceContext) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type VirtualDisk struct {
 	VirtualMachine *VirtualMachine
 	Name           *string
@@ -10497,6 +11332,7 @@ type VirtualDisk struct {
 	Size           *int64
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
+	Metadata       Metadata
 }
 
 func (e *VirtualDisk) ConvertToProtoMessage() proto.Message {
@@ -10507,6 +11343,7 @@ func (e *VirtualDisk) ConvertToProtoMessage() proto.Message {
 		Size:           e.GetSize(),
 		Tags:           e.GetTags(),
 		CustomFields:   e.GetCustomFields(),
+		Metadata:       e.GetMetadata(),
 	}
 	return r
 }
@@ -10579,6 +11416,14 @@ func (e *VirtualDisk) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *VirtualDisk) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type VirtualMachine struct {
 	Name         *string
 	Status       *string
@@ -10598,6 +11443,7 @@ type VirtualMachine struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *VirtualMachine) ConvertToProtoMessage() proto.Message {
@@ -10620,6 +11466,7 @@ func (e *VirtualMachine) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -10788,6 +11635,14 @@ func (e *VirtualMachine) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *VirtualMachine) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type WirelessLAN struct {
 	Ssid        *string
 	Description *string
@@ -10807,6 +11662,7 @@ type WirelessLAN struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *WirelessLAN) ConvertToProtoMessage() proto.Message {
@@ -10823,6 +11679,7 @@ func (e *WirelessLAN) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	if e.Scope != nil {
 		e.Scope.anyWirelessLANScopeValueApplyTo(r)
@@ -10956,6 +11813,14 @@ func (e *WirelessLAN) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *WirelessLAN) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type WirelessLANGroup struct {
 	Name         *string
 	Slug         *string
@@ -10964,6 +11829,7 @@ type WirelessLANGroup struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Comments     *string
+	Metadata     Metadata
 }
 
 func (e *WirelessLANGroup) ConvertToProtoMessage() proto.Message {
@@ -10975,6 +11841,7 @@ func (e *WirelessLANGroup) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Comments:     e.GetComments(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -11055,6 +11922,14 @@ func (e *WirelessLANGroup) GetComments() *string {
 	return r
 }
 
+func (e *WirelessLANGroup) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type WirelessLink struct {
 	InterfaceA   *Interface
 	InterfaceB   *Interface
@@ -11070,6 +11945,7 @@ type WirelessLink struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *WirelessLink) ConvertToProtoMessage() proto.Message {
@@ -11088,6 +11964,7 @@ func (e *WirelessLink) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -11224,6 +12101,14 @@ func (e *WirelessLink) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *WirelessLink) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type CustomField struct {
 	Type                *string
 	RelatedObjectType   *string
@@ -11247,6 +12132,7 @@ type CustomField struct {
 	ChoiceSet           *CustomFieldChoiceSet
 	Comments            *string
 	ObjectTypes         []string
+	Metadata            Metadata
 }
 
 func (e *CustomField) ConvertToProtoMessage() proto.Message {
@@ -11273,6 +12159,7 @@ func (e *CustomField) ConvertToProtoMessage() proto.Message {
 		ChoiceSet:           e.GetChoiceSet(),
 		Comments:            e.GetComments(),
 		ObjectTypes:         e.GetObjectTypes(),
+		Metadata:            e.GetMetadata(),
 	}
 	return r
 }
@@ -11463,12 +12350,21 @@ func (e *CustomField) GetObjectTypes() []string {
 	return r
 }
 
+func (e *CustomField) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type CustomFieldChoiceSet struct {
 	Name                *string
 	Description         *string
 	BaseChoices         *string
 	OrderAlphabetically *bool
 	ExtraChoices        []string
+	Metadata            Metadata
 }
 
 func (e *CustomFieldChoiceSet) ConvertToProtoMessage() proto.Message {
@@ -11478,6 +12374,7 @@ func (e *CustomFieldChoiceSet) ConvertToProtoMessage() proto.Message {
 		BaseChoices:         e.GetBaseChoices(),
 		OrderAlphabetically: e.GetOrderAlphabetically(),
 		ExtraChoices:        e.GetExtraChoices(),
+		Metadata:            e.GetMetadata(),
 	}
 	return r
 }
@@ -11532,6 +12429,14 @@ func (e *CustomFieldChoiceSet) GetExtraChoices() []string {
 	return r
 }
 
+func (e *CustomFieldChoiceSet) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type JournalEntry struct {
 	// AssignedObject can be any Entity type
 	AssignedObject anyJournalEntryAssignedObjectValue
@@ -11539,6 +12444,7 @@ type JournalEntry struct {
 	Comments       *string
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
+	Metadata       Metadata
 }
 
 func (e *JournalEntry) ConvertToProtoMessage() proto.Message {
@@ -11547,6 +12453,7 @@ func (e *JournalEntry) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	if e.AssignedObject != nil {
 		e.AssignedObject.anyJournalEntryAssignedObjectValueApplyTo(r)
@@ -11616,6 +12523,14 @@ func (e *JournalEntry) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *JournalEntry) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type ModuleTypeProfile struct {
 	Name         *string
 	Description  *string
@@ -11623,6 +12538,7 @@ type ModuleTypeProfile struct {
 	Comments     *string
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
 }
 
 func (e *ModuleTypeProfile) ConvertToProtoMessage() proto.Message {
@@ -11633,6 +12549,7 @@ func (e *ModuleTypeProfile) ConvertToProtoMessage() proto.Message {
 		Comments:     e.GetComments(),
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
 	}
 	return r
 }
@@ -11705,6 +12622,14 @@ func (e *ModuleTypeProfile) GetCustomFields() map[string]*pb.CustomFieldValue {
 	return r
 }
 
+func (e *ModuleTypeProfile) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
 type CustomLink struct {
 	Name        *string
 	Enabled     *bool
@@ -11715,6 +12640,7 @@ type CustomLink struct {
 	ButtonClass *string
 	NewWindow   *bool
 	ObjectTypes []string
+	Metadata    Metadata
 }
 
 func (e *CustomLink) ConvertToProtoMessage() proto.Message {
@@ -11728,6 +12654,7 @@ func (e *CustomLink) ConvertToProtoMessage() proto.Message {
 		ButtonClass: e.GetButtonClass(),
 		NewWindow:   e.GetNewWindow(),
 		ObjectTypes: e.GetObjectTypes(),
+		Metadata:    e.GetMetadata(),
 	}
 	return r
 }
@@ -11810,6 +12737,14 @@ func (e *CustomLink) GetObjectTypes() []string {
 		for _, v := range e.ObjectTypes {
 			r = append(r, v)
 		}
+	}
+	return r
+}
+
+func (e *CustomLink) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
 	}
 	return r
 }

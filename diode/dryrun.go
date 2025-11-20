@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
@@ -56,19 +57,30 @@ func (d *DryRunClient) Close() error {
 
 // Ingest writes the given entities to stdout or a file depending on the configuration.
 // This is a wrapper around IngestProto that converts the entities to protobuf first.
-func (d *DryRunClient) Ingest(ctx context.Context, entities []Entity) (*diodepb.IngestResponse, error) {
-	return d.IngestProto(ctx, convertEntitiesToProto(entities))
+func (d *DryRunClient) Ingest(ctx context.Context, entities []Entity, opts ...IngestOption) (*diodepb.IngestResponse, error) {
+	return d.IngestProto(ctx, convertEntitiesToProto(entities), opts...)
 }
 
 // IngestProto serializes entities as JSON and writes them to stdout or a file.
 // If a directory is configured, it creates a new timestamped file in that directory.
 // Otherwise, it writes to stdout.
-func (d *DryRunClient) IngestProto(_ context.Context, entities []*diodepb.Entity) (*diodepb.IngestResponse, error) {
+func (d *DryRunClient) IngestProto(_ context.Context, entities []*diodepb.Entity, opts ...IngestOption) (*diodepb.IngestResponse, error) {
+	// Apply options
+	cfg := &ingestConfig{}
+	for _, opt := range opts {
+		opt(cfg)
+	}
+
 	wrapper := &diodepb.IngestRequest{
 		Id:         uuid.New().String(),
 		Entities:   entities,
 		SdkName:    d.sdkName,
 		SdkVersion: d.sdkVersion,
+	}
+
+	// Add metadata to request if provided
+	if len(cfg.metadata) > 0 {
+		wrapper.Metadata, _ = structpb.NewStruct(cfg.metadata)
 	}
 
 	data, err := protojson.MarshalOptions{UseProtoNames: true, Indent: "  "}.Marshal(wrapper)
