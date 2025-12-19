@@ -25,7 +25,6 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -562,10 +561,6 @@ func (g *GRPCClient) IngestProto(ctx context.Context, entities []*diodepb.Entity
 	if len(cfg.metadata) > 0 {
 		req.Metadata, _ = structpb.NewStruct(cfg.metadata)
 	}
-
-	data, _ := protojson.MarshalOptions{UseProtoNames: true, Indent: "  "}.Marshal(req)
-
-	fmt.Printf("entities: %s\n", data)
 
 	ctx = metadata.NewOutgoingContext(ctx, g.metadata)
 
