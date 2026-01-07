@@ -376,10 +376,13 @@ func (d *diodeAuthentication) authenticate(logger *slog.Logger, scopes []string)
 	client := &http.Client{}
 	if d.isPlaintext {
 		// HTTP plaintext - no TLS
-		client.Transport = &http.Transport{}
+		client.Transport = &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
+		}
 	} else {
 		// HTTPS - always use TLS for secure schemes
 		client.Transport = &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
 			TLSClientConfig: &tls.Config{
 				RootCAs:            d.rootCAs,
 				InsecureSkipVerify: !d.tlsVerify, // Skip verification if tlsVerify is false
