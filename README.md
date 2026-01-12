@@ -545,6 +545,8 @@ credentials can be supplied using `-client-id` and `-client-secret` or the
 * Module
 * Module Bay
 * Module Type
+* Owner
+* Owner Group
 * Platform
 * Power Feed
 * Power Outlet

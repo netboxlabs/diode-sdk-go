@@ -1,5 +1,5 @@
 // Generated code. DO NOT EDIT.
-// Timestamp: 2025-11-14 18:10:23Z
+// Timestamp: 2026-01-12 10:39:07Z
 //
 
 package diode
@@ -34,6 +34,8 @@ type ASN struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
+	Sites        []*Site
 }
 
 func (e *ASN) ConvertToProtoMessage() proto.Message {
@@ -46,6 +48,8 @@ func (e *ASN) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
+		Sites:        e.GetSites(),
 	}
 	return r
 }
@@ -134,6 +138,24 @@ func (e *ASN) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *ASN) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *ASN) GetSites() []*pb.Site {
+	var r []*pb.Site
+	if e != nil && e.Sites != nil {
+		for _, v := range e.Sites {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Site))
+		}
+	}
+	return r
+}
+
 type ASNRange struct {
 	Name         *string
 	Slug         *string
@@ -145,6 +167,8 @@ type ASNRange struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
+	Comments     *string
 }
 
 func (e *ASNRange) ConvertToProtoMessage() proto.Message {
@@ -159,6 +183,8 @@ func (e *ASNRange) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
 	}
 	return r
 }
@@ -263,6 +289,22 @@ func (e *ASNRange) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *ASNRange) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *ASNRange) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
 type Aggregate struct {
 	Prefix       *string
 	Rir          *RIR
@@ -273,6 +315,7 @@ type Aggregate struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *Aggregate) ConvertToProtoMessage() proto.Message {
@@ -286,6 +329,7 @@ func (e *Aggregate) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -382,6 +426,14 @@ func (e *Aggregate) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Aggregate) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type Cable struct {
 	Type          *string
 	ATerminations []*GenericObject
@@ -397,6 +449,8 @@ type Cable struct {
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
 	Metadata      Metadata
+	Profile       *string
+	Owner         *Owner
 }
 
 func (e *Cable) ConvertToProtoMessage() proto.Message {
@@ -415,6 +469,8 @@ func (e *Cable) ConvertToProtoMessage() proto.Message {
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
 		Metadata:      e.GetMetadata(),
+		Profile:       e.GetProfile(),
+		Owner:         e.GetOwner(),
 	}
 	return r
 }
@@ -551,6 +607,22 @@ func (e *Cable) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
 		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
+func (e *Cable) GetProfile() *string {
+	var r *string
+	if e != nil && e.Profile != nil {
+		r = e.Profile
+	}
+	return r
+}
+
+func (e *Cable) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
 	}
 	return r
 }
@@ -701,6 +773,7 @@ type Circuit struct {
 	Assignments     []*CircuitGroupAssignment
 	CustomFields    map[string]*CustomFieldValue
 	Metadata        Metadata
+	Owner           *Owner
 }
 
 func (e *Circuit) ConvertToProtoMessage() proto.Message {
@@ -722,6 +795,7 @@ func (e *Circuit) ConvertToProtoMessage() proto.Message {
 		Assignments:     e.GetAssignments(),
 		CustomFields:    e.GetCustomFields(),
 		Metadata:        e.GetMetadata(),
+		Owner:           e.GetOwner(),
 	}
 	return r
 }
@@ -884,6 +958,14 @@ func (e *Circuit) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Circuit) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type CircuitGroup struct {
 	Name         *string
 	Slug         *string
@@ -892,6 +974,8 @@ type CircuitGroup struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
+	Comments     *string
 }
 
 func (e *CircuitGroup) ConvertToProtoMessage() proto.Message {
@@ -903,6 +987,8 @@ func (e *CircuitGroup) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
 	}
 	return r
 }
@@ -979,6 +1065,22 @@ func (e *CircuitGroup) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
 		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
+func (e *CircuitGroup) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *CircuitGroup) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
 	}
 	return r
 }
@@ -1226,6 +1328,8 @@ type CircuitType struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
+	Comments     *string
 }
 
 func (e *CircuitType) ConvertToProtoMessage() proto.Message {
@@ -1237,6 +1341,8 @@ func (e *CircuitType) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
 	}
 	return r
 }
@@ -1317,6 +1423,22 @@ func (e *CircuitType) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *CircuitType) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *CircuitType) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
 type Cluster struct {
 	Name   *string
 	Type   *ClusterType
@@ -1334,6 +1456,7 @@ type Cluster struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *Cluster) ConvertToProtoMessage() proto.Message {
@@ -1348,6 +1471,7 @@ func (e *Cluster) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	if e.Scope != nil {
 		e.Scope.anyClusterScopeValueApplyTo(r)
@@ -1465,6 +1589,14 @@ func (e *Cluster) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Cluster) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type ClusterGroup struct {
 	Name         *string
 	Slug         *string
@@ -1472,6 +1604,8 @@ type ClusterGroup struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
+	Comments     *string
 }
 
 func (e *ClusterGroup) ConvertToProtoMessage() proto.Message {
@@ -1482,6 +1616,8 @@ func (e *ClusterGroup) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
 	}
 	return r
 }
@@ -1554,6 +1690,22 @@ func (e *ClusterGroup) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *ClusterGroup) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *ClusterGroup) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
 type ClusterType struct {
 	Name         *string
 	Slug         *string
@@ -1561,6 +1713,8 @@ type ClusterType struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
+	Comments     *string
 }
 
 func (e *ClusterType) ConvertToProtoMessage() proto.Message {
@@ -1571,6 +1725,8 @@ func (e *ClusterType) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
 	}
 	return r
 }
@@ -1643,6 +1799,22 @@ func (e *ClusterType) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *ClusterType) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *ClusterType) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
 type ConsolePort struct {
 	Device        *Device
 	Module        *Module
@@ -1655,6 +1827,7 @@ type ConsolePort struct {
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
 	Metadata      Metadata
+	Owner         *Owner
 }
 
 func (e *ConsolePort) ConvertToProtoMessage() proto.Message {
@@ -1670,6 +1843,7 @@ func (e *ConsolePort) ConvertToProtoMessage() proto.Message {
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
 		Metadata:      e.GetMetadata(),
+		Owner:         e.GetOwner(),
 	}
 	return r
 }
@@ -1782,6 +1956,14 @@ func (e *ConsolePort) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *ConsolePort) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type ConsoleServerPort struct {
 	Device        *Device
 	Module        *Module
@@ -1794,6 +1976,7 @@ type ConsoleServerPort struct {
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
 	Metadata      Metadata
+	Owner         *Owner
 }
 
 func (e *ConsoleServerPort) ConvertToProtoMessage() proto.Message {
@@ -1809,6 +1992,7 @@ func (e *ConsoleServerPort) ConvertToProtoMessage() proto.Message {
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
 		Metadata:      e.GetMetadata(),
+		Owner:         e.GetOwner(),
 	}
 	return r
 }
@@ -1921,6 +2105,14 @@ func (e *ConsoleServerPort) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *ConsoleServerPort) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type Contact struct {
 	Group        *ContactGroup
 	Name         *string
@@ -1935,6 +2127,7 @@ type Contact struct {
 	CustomFields map[string]*CustomFieldValue
 	Groups       []*ContactGroup
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *Contact) ConvertToProtoMessage() proto.Message {
@@ -1952,6 +2145,7 @@ func (e *Contact) ConvertToProtoMessage() proto.Message {
 		CustomFields: e.GetCustomFields(),
 		Groups:       e.GetGroups(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -2082,6 +2276,14 @@ func (e *Contact) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Contact) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type ContactAssignment struct {
 	// Object can be any Entity type
 	Object       anyContactAssignmentObjectValue
@@ -2195,6 +2397,7 @@ type ContactGroup struct {
 	CustomFields map[string]*CustomFieldValue
 	Comments     *string
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *ContactGroup) ConvertToProtoMessage() proto.Message {
@@ -2207,6 +2410,7 @@ func (e *ContactGroup) ConvertToProtoMessage() proto.Message {
 		CustomFields: e.GetCustomFields(),
 		Comments:     e.GetComments(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -2295,6 +2499,14 @@ func (e *ContactGroup) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *ContactGroup) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type ContactRole struct {
 	Name         *string
 	Slug         *string
@@ -2302,6 +2514,8 @@ type ContactRole struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
+	Comments     *string
 }
 
 func (e *ContactRole) ConvertToProtoMessage() proto.Message {
@@ -2312,6 +2526,8 @@ func (e *ContactRole) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
 	}
 	return r
 }
@@ -2380,6 +2596,22 @@ func (e *ContactRole) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
 		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
+func (e *ContactRole) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *ContactRole) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
 	}
 	return r
 }
@@ -2495,6 +2727,7 @@ type Device struct {
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
 	Metadata       Metadata
+	Owner          *Owner
 }
 
 func (e *Device) ConvertToProtoMessage() proto.Message {
@@ -2527,6 +2760,7 @@ func (e *Device) ConvertToProtoMessage() proto.Message {
 		Tags:           e.GetTags(),
 		CustomFields:   e.GetCustomFields(),
 		Metadata:       e.GetMetadata(),
+		Owner:          e.GetOwner(),
 	}
 	return r
 }
@@ -2775,6 +3009,14 @@ func (e *Device) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Device) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type DeviceBay struct {
 	Device          *Device
 	Name            *string
@@ -2784,6 +3026,7 @@ type DeviceBay struct {
 	Tags            []*Tag
 	CustomFields    map[string]*CustomFieldValue
 	Metadata        Metadata
+	Owner           *Owner
 }
 
 func (e *DeviceBay) ConvertToProtoMessage() proto.Message {
@@ -2796,6 +3039,7 @@ func (e *DeviceBay) ConvertToProtoMessage() proto.Message {
 		Tags:            e.GetTags(),
 		CustomFields:    e.GetCustomFields(),
 		Metadata:        e.GetMetadata(),
+		Owner:           e.GetOwner(),
 	}
 	return r
 }
@@ -2884,6 +3128,14 @@ func (e *DeviceBay) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *DeviceBay) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type DeviceRole struct {
 	Name         *string
 	Slug         *string
@@ -2895,6 +3147,7 @@ type DeviceRole struct {
 	Parent       *DeviceRole
 	Comments     *string
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *DeviceRole) ConvertToProtoMessage() proto.Message {
@@ -2909,6 +3162,7 @@ func (e *DeviceRole) ConvertToProtoMessage() proto.Message {
 		Parent:       e.GetParent(),
 		Comments:     e.GetComments(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -3013,6 +3267,14 @@ func (e *DeviceRole) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *DeviceRole) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type DeviceType struct {
 	Manufacturer           *Manufacturer
 	DefaultPlatform        *Platform
@@ -3031,6 +3293,7 @@ type DeviceType struct {
 	Tags                   []*Tag
 	CustomFields           map[string]*CustomFieldValue
 	Metadata               Metadata
+	Owner                  *Owner
 }
 
 func (e *DeviceType) ConvertToProtoMessage() proto.Message {
@@ -3052,6 +3315,7 @@ func (e *DeviceType) ConvertToProtoMessage() proto.Message {
 		Tags:                   e.GetTags(),
 		CustomFields:           e.GetCustomFields(),
 		Metadata:               e.GetMetadata(),
+		Owner:                  e.GetOwner(),
 	}
 	return r
 }
@@ -3212,6 +3476,14 @@ func (e *DeviceType) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *DeviceType) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type FHRPGroup struct {
 	Name         *string
 	Protocol     *string
@@ -3223,6 +3495,7 @@ type FHRPGroup struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *FHRPGroup) ConvertToProtoMessage() proto.Message {
@@ -3237,6 +3510,7 @@ func (e *FHRPGroup) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -3341,6 +3615,14 @@ func (e *FHRPGroup) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *FHRPGroup) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type FHRPGroupAssignment struct {
 	Group *FHRPGroup
 	// Interface can be any Entity type
@@ -3417,6 +3699,8 @@ type FrontPort struct {
 	Tags             []*Tag
 	CustomFields     map[string]*CustomFieldValue
 	Metadata         Metadata
+	Positions        *int64
+	Owner            *Owner
 }
 
 func (e *FrontPort) ConvertToProtoMessage() proto.Message {
@@ -3434,6 +3718,8 @@ func (e *FrontPort) ConvertToProtoMessage() proto.Message {
 		Tags:             e.GetTags(),
 		CustomFields:     e.GetCustomFields(),
 		Metadata:         e.GetMetadata(),
+		Positions:        e.GetPositions(),
+		Owner:            e.GetOwner(),
 	}
 	return r
 }
@@ -3562,6 +3848,22 @@ func (e *FrontPort) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *FrontPort) GetPositions() *int64 {
+	var r *int64
+	if e != nil && e.Positions != nil {
+		r = e.Positions
+	}
+	return r
+}
+
+func (e *FrontPort) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type GenericObject struct {
 	// Object can be any Entity type
 	Object anyGenericObjectObjectValue
@@ -3596,6 +3898,7 @@ type IKEPolicy struct {
 	CustomFields map[string]*CustomFieldValue
 	Proposals    []*IKEProposal
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *IKEPolicy) ConvertToProtoMessage() proto.Message {
@@ -3610,6 +3913,7 @@ func (e *IKEPolicy) ConvertToProtoMessage() proto.Message {
 		CustomFields: e.GetCustomFields(),
 		Proposals:    e.GetProposals(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -3716,6 +4020,14 @@ func (e *IKEPolicy) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *IKEPolicy) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type IKEProposal struct {
 	Name                    *string
 	Description             *string
@@ -3728,6 +4040,7 @@ type IKEProposal struct {
 	Tags                    []*Tag
 	CustomFields            map[string]*CustomFieldValue
 	Metadata                Metadata
+	Owner                   *Owner
 }
 
 func (e *IKEProposal) ConvertToProtoMessage() proto.Message {
@@ -3743,6 +4056,7 @@ func (e *IKEProposal) ConvertToProtoMessage() proto.Message {
 		Tags:                    e.GetTags(),
 		CustomFields:            e.GetCustomFields(),
 		Metadata:                e.GetMetadata(),
+		Owner:                   e.GetOwner(),
 	}
 	return r
 }
@@ -3855,6 +4169,14 @@ func (e *IKEProposal) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *IKEProposal) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type IPAddress struct {
 	Address *string
 	Vrf     *VRF
@@ -3873,6 +4195,7 @@ type IPAddress struct {
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
 	Metadata       Metadata
+	Owner          *Owner
 }
 
 func (e *IPAddress) ConvertToProtoMessage() proto.Message {
@@ -3889,6 +4212,7 @@ func (e *IPAddress) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	if e.AssignedObject != nil {
 		e.AssignedObject.anyIPAddressAssignedObjectValueApplyTo(r)
@@ -4022,6 +4346,14 @@ func (e *IPAddress) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *IPAddress) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type IPRange struct {
 	StartAddress  *string
 	EndAddress    *string
@@ -4036,6 +4368,7 @@ type IPRange struct {
 	CustomFields  map[string]*CustomFieldValue
 	MarkPopulated *bool
 	Metadata      Metadata
+	Owner         *Owner
 }
 
 func (e *IPRange) ConvertToProtoMessage() proto.Message {
@@ -4053,6 +4386,7 @@ func (e *IPRange) ConvertToProtoMessage() proto.Message {
 		CustomFields:  e.GetCustomFields(),
 		MarkPopulated: e.GetMarkPopulated(),
 		Metadata:      e.GetMetadata(),
+		Owner:         e.GetOwner(),
 	}
 	return r
 }
@@ -4181,6 +4515,14 @@ func (e *IPRange) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *IPRange) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type IPSecPolicy struct {
 	Name         *string
 	Description  *string
@@ -4190,6 +4532,7 @@ type IPSecPolicy struct {
 	CustomFields map[string]*CustomFieldValue
 	Proposals    []*IPSecProposal
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *IPSecPolicy) ConvertToProtoMessage() proto.Message {
@@ -4202,6 +4545,7 @@ func (e *IPSecPolicy) ConvertToProtoMessage() proto.Message {
 		CustomFields: e.GetCustomFields(),
 		Proposals:    e.GetProposals(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -4292,6 +4636,14 @@ func (e *IPSecPolicy) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *IPSecPolicy) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type IPSecProfile struct {
 	Name         *string
 	Description  *string
@@ -4302,6 +4654,7 @@ type IPSecProfile struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *IPSecProfile) ConvertToProtoMessage() proto.Message {
@@ -4315,6 +4668,7 @@ func (e *IPSecProfile) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -4411,6 +4765,14 @@ func (e *IPSecProfile) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *IPSecProfile) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type IPSecProposal struct {
 	Name                    *string
 	Description             *string
@@ -4422,6 +4784,7 @@ type IPSecProposal struct {
 	Tags                    []*Tag
 	CustomFields            map[string]*CustomFieldValue
 	Metadata                Metadata
+	Owner                   *Owner
 }
 
 func (e *IPSecProposal) ConvertToProtoMessage() proto.Message {
@@ -4436,6 +4799,7 @@ func (e *IPSecProposal) ConvertToProtoMessage() proto.Message {
 		Tags:                    e.GetTags(),
 		CustomFields:            e.GetCustomFields(),
 		Metadata:                e.GetMetadata(),
+		Owner:                   e.GetOwner(),
 	}
 	return r
 }
@@ -4540,6 +4904,14 @@ func (e *IPSecProposal) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *IPSecProposal) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type Interface struct {
 	Device                *Device
 	Module                *Module
@@ -4576,6 +4948,7 @@ type Interface struct {
 	TaggedVlans           []*VLAN
 	WirelessLans          []*WirelessLAN
 	Metadata              Metadata
+	Owner                 *Owner
 }
 
 func (e *Interface) ConvertToProtoMessage() proto.Message {
@@ -4615,6 +4988,7 @@ func (e *Interface) ConvertToProtoMessage() proto.Message {
 		TaggedVlans:           e.GetTaggedVlans(),
 		WirelessLans:          e.GetWirelessLans(),
 		Metadata:              e.GetMetadata(),
+		Owner:                 e.GetOwner(),
 	}
 	return r
 }
@@ -4925,6 +5299,14 @@ func (e *Interface) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Interface) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type InventoryItem struct {
 	Device       *Device
 	Parent       *InventoryItem
@@ -4950,6 +5332,7 @@ type InventoryItem struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *InventoryItem) ConvertToProtoMessage() proto.Message {
@@ -4969,6 +5352,7 @@ func (e *InventoryItem) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	if e.Component != nil {
 		e.Component.anyInventoryItemComponentValueApplyTo(r)
@@ -5126,6 +5510,14 @@ func (e *InventoryItem) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *InventoryItem) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type InventoryItemRole struct {
 	Name         *string
 	Slug         *string
@@ -5134,6 +5526,8 @@ type InventoryItemRole struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
+	Comments     *string
 }
 
 func (e *InventoryItemRole) ConvertToProtoMessage() proto.Message {
@@ -5145,6 +5539,8 @@ func (e *InventoryItemRole) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
 	}
 	return r
 }
@@ -5225,6 +5621,22 @@ func (e *InventoryItemRole) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *InventoryItemRole) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *InventoryItemRole) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
 type L2VPN struct {
 	Identifier    *int64
 	Name          *string
@@ -5239,6 +5651,7 @@ type L2VPN struct {
 	ExportTargets []*RouteTarget
 	Status        *string
 	Metadata      Metadata
+	Owner         *Owner
 }
 
 func (e *L2VPN) ConvertToProtoMessage() proto.Message {
@@ -5256,6 +5669,7 @@ func (e *L2VPN) ConvertToProtoMessage() proto.Message {
 		ExportTargets: e.GetExportTargets(),
 		Status:        e.GetStatus(),
 		Metadata:      e.GetMetadata(),
+		Owner:         e.GetOwner(),
 	}
 	return r
 }
@@ -5388,6 +5802,14 @@ func (e *L2VPN) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *L2VPN) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type L2VPNTermination struct {
 	L2Vpn *L2VPN
 	// AssignedObject can be any Entity type
@@ -5485,6 +5907,7 @@ type Location struct {
 	CustomFields map[string]*CustomFieldValue
 	Comments     *string
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *Location) ConvertToProtoMessage() proto.Message {
@@ -5501,6 +5924,7 @@ func (e *Location) ConvertToProtoMessage() proto.Message {
 		CustomFields: e.GetCustomFields(),
 		Comments:     e.GetComments(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -5621,6 +6045,14 @@ func (e *Location) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Location) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type MACAddress struct {
 	MacAddress *string
 	// AssignedObject can be:
@@ -5632,6 +6064,7 @@ type MACAddress struct {
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
 	Metadata       Metadata
+	Owner          *Owner
 }
 
 func (e *MACAddress) ConvertToProtoMessage() proto.Message {
@@ -5642,6 +6075,7 @@ func (e *MACAddress) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	if e.AssignedObject != nil {
 		e.AssignedObject.anyMACAddressAssignedObjectValueApplyTo(r)
@@ -5727,6 +6161,14 @@ func (e *MACAddress) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *MACAddress) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type Manufacturer struct {
 	Name         *string
 	Slug         *string
@@ -5734,6 +6176,8 @@ type Manufacturer struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
+	Comments     *string
 }
 
 func (e *Manufacturer) ConvertToProtoMessage() proto.Message {
@@ -5744,6 +6188,8 @@ func (e *Manufacturer) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
 	}
 	return r
 }
@@ -5816,6 +6262,22 @@ func (e *Manufacturer) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Manufacturer) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *Manufacturer) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
 type Module struct {
 	Device       *Device
 	ModuleBay    *ModuleBay
@@ -5828,6 +6290,7 @@ type Module struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *Module) ConvertToProtoMessage() proto.Message {
@@ -5843,6 +6306,7 @@ func (e *Module) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -5955,6 +6419,14 @@ func (e *Module) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Module) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type ModuleBay struct {
 	Device          *Device
 	Module          *Module
@@ -5966,6 +6438,7 @@ type ModuleBay struct {
 	Tags            []*Tag
 	CustomFields    map[string]*CustomFieldValue
 	Metadata        Metadata
+	Owner           *Owner
 }
 
 func (e *ModuleBay) ConvertToProtoMessage() proto.Message {
@@ -5980,6 +6453,7 @@ func (e *ModuleBay) ConvertToProtoMessage() proto.Message {
 		Tags:            e.GetTags(),
 		CustomFields:    e.GetCustomFields(),
 		Metadata:        e.GetMetadata(),
+		Owner:           e.GetOwner(),
 	}
 	return r
 }
@@ -6084,6 +6558,14 @@ func (e *ModuleBay) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *ModuleBay) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type ModuleType struct {
 	Manufacturer *Manufacturer
 	Model        *string
@@ -6098,6 +6580,7 @@ type ModuleType struct {
 	Profile      *ModuleTypeProfile
 	Attributes   *string
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *ModuleType) ConvertToProtoMessage() proto.Message {
@@ -6115,6 +6598,7 @@ func (e *ModuleType) ConvertToProtoMessage() proto.Message {
 		Profile:      e.GetProfile(),
 		Attributes:   e.GetAttributes(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -6243,6 +6727,14 @@ func (e *ModuleType) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *ModuleType) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type Platform struct {
 	Name         *string
 	Slug         *string
@@ -6253,6 +6745,7 @@ type Platform struct {
 	Parent       *Platform
 	Comments     *string
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *Platform) ConvertToProtoMessage() proto.Message {
@@ -6266,6 +6759,7 @@ func (e *Platform) ConvertToProtoMessage() proto.Message {
 		Parent:       e.GetParent(),
 		Comments:     e.GetComments(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -6362,6 +6856,14 @@ func (e *Platform) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Platform) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type PowerFeed struct {
 	PowerPanel     *PowerPanel
 	Rack           *Rack
@@ -6380,6 +6882,7 @@ type PowerFeed struct {
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
 	Metadata       Metadata
+	Owner          *Owner
 }
 
 func (e *PowerFeed) ConvertToProtoMessage() proto.Message {
@@ -6401,6 +6904,7 @@ func (e *PowerFeed) ConvertToProtoMessage() proto.Message {
 		Tags:           e.GetTags(),
 		CustomFields:   e.GetCustomFields(),
 		Metadata:       e.GetMetadata(),
+		Owner:          e.GetOwner(),
 	}
 	return r
 }
@@ -6561,6 +7065,14 @@ func (e *PowerFeed) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *PowerFeed) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type PowerOutlet struct {
 	Device        *Device
 	Module        *Module
@@ -6576,6 +7088,7 @@ type PowerOutlet struct {
 	CustomFields  map[string]*CustomFieldValue
 	Status        *string
 	Metadata      Metadata
+	Owner         *Owner
 }
 
 func (e *PowerOutlet) ConvertToProtoMessage() proto.Message {
@@ -6594,6 +7107,7 @@ func (e *PowerOutlet) ConvertToProtoMessage() proto.Message {
 		CustomFields:  e.GetCustomFields(),
 		Status:        e.GetStatus(),
 		Metadata:      e.GetMetadata(),
+		Owner:         e.GetOwner(),
 	}
 	return r
 }
@@ -6730,6 +7244,14 @@ func (e *PowerOutlet) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *PowerOutlet) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type PowerPanel struct {
 	Site         *Site
 	Location     *Location
@@ -6739,6 +7261,7 @@ type PowerPanel struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *PowerPanel) ConvertToProtoMessage() proto.Message {
@@ -6751,6 +7274,7 @@ func (e *PowerPanel) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -6839,6 +7363,14 @@ func (e *PowerPanel) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *PowerPanel) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type PowerPort struct {
 	Device        *Device
 	Module        *Module
@@ -6852,6 +7384,7 @@ type PowerPort struct {
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
 	Metadata      Metadata
+	Owner         *Owner
 }
 
 func (e *PowerPort) ConvertToProtoMessage() proto.Message {
@@ -6868,6 +7401,7 @@ func (e *PowerPort) ConvertToProtoMessage() proto.Message {
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
 		Metadata:      e.GetMetadata(),
+		Owner:         e.GetOwner(),
 	}
 	return r
 }
@@ -6988,6 +7522,14 @@ func (e *PowerPort) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *PowerPort) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type Prefix struct {
 	Prefix *string
 	Vrf    *VRF
@@ -7008,6 +7550,7 @@ type Prefix struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *Prefix) ConvertToProtoMessage() proto.Message {
@@ -7025,6 +7568,7 @@ func (e *Prefix) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	if e.Scope != nil {
 		e.Scope.anyPrefixScopeValueApplyTo(r)
@@ -7166,6 +7710,14 @@ func (e *Prefix) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Prefix) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type Provider struct {
 	Name         *string
 	Slug         *string
@@ -7176,6 +7728,7 @@ type Provider struct {
 	Accounts     []*ProviderAccount
 	Asns         []*ASN
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *Provider) ConvertToProtoMessage() proto.Message {
@@ -7189,6 +7742,7 @@ func (e *Provider) ConvertToProtoMessage() proto.Message {
 		Accounts:     e.GetAccounts(),
 		Asns:         e.GetAsns(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -7289,6 +7843,14 @@ func (e *Provider) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Provider) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type ProviderAccount struct {
 	Provider     *Provider
 	Name         *string
@@ -7298,6 +7860,7 @@ type ProviderAccount struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *ProviderAccount) ConvertToProtoMessage() proto.Message {
@@ -7310,6 +7873,7 @@ func (e *ProviderAccount) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -7398,6 +7962,14 @@ func (e *ProviderAccount) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *ProviderAccount) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type ProviderNetwork struct {
 	Provider     *Provider
 	Name         *string
@@ -7407,6 +7979,7 @@ type ProviderNetwork struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *ProviderNetwork) ConvertToProtoMessage() proto.Message {
@@ -7419,6 +7992,7 @@ func (e *ProviderNetwork) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -7507,6 +8081,14 @@ func (e *ProviderNetwork) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *ProviderNetwork) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type RIR struct {
 	Name         *string
 	Slug         *string
@@ -7515,6 +8097,8 @@ type RIR struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
+	Comments     *string
 }
 
 func (e *RIR) ConvertToProtoMessage() proto.Message {
@@ -7526,6 +8110,8 @@ func (e *RIR) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
 	}
 	return r
 }
@@ -7606,6 +8192,22 @@ func (e *RIR) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *RIR) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *RIR) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
 type Rack struct {
 	Name          *string
 	FacilityId    *string
@@ -7636,6 +8238,7 @@ type Rack struct {
 	CustomFields  map[string]*CustomFieldValue
 	OuterHeight   *int64
 	Metadata      Metadata
+	Owner         *Owner
 }
 
 func (e *Rack) ConvertToProtoMessage() proto.Message {
@@ -7669,6 +8272,7 @@ func (e *Rack) ConvertToProtoMessage() proto.Message {
 		CustomFields:  e.GetCustomFields(),
 		OuterHeight:   e.GetOuterHeight(),
 		Metadata:      e.GetMetadata(),
+		Owner:         e.GetOwner(),
 	}
 	return r
 }
@@ -7925,6 +8529,14 @@ func (e *Rack) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Rack) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type RackReservation struct {
 	Rack         *Rack
 	Units        []int64
@@ -7935,6 +8547,7 @@ type RackReservation struct {
 	CustomFields map[string]*CustomFieldValue
 	Status       *string
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *RackReservation) ConvertToProtoMessage() proto.Message {
@@ -7948,6 +8561,7 @@ func (e *RackReservation) ConvertToProtoMessage() proto.Message {
 		CustomFields: e.GetCustomFields(),
 		Status:       e.GetStatus(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -8046,6 +8660,14 @@ func (e *RackReservation) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *RackReservation) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type RackRole struct {
 	Name         *string
 	Slug         *string
@@ -8054,6 +8676,8 @@ type RackRole struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
+	Comments     *string
 }
 
 func (e *RackRole) ConvertToProtoMessage() proto.Message {
@@ -8065,6 +8689,8 @@ func (e *RackRole) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
 	}
 	return r
 }
@@ -8145,6 +8771,22 @@ func (e *RackRole) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *RackRole) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *RackRole) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
 type RackType struct {
 	Manufacturer  *Manufacturer
 	Model         *string
@@ -8167,6 +8809,7 @@ type RackType struct {
 	CustomFields  map[string]*CustomFieldValue
 	OuterHeight   *int64
 	Metadata      Metadata
+	Owner         *Owner
 }
 
 func (e *RackType) ConvertToProtoMessage() proto.Message {
@@ -8192,6 +8835,7 @@ func (e *RackType) ConvertToProtoMessage() proto.Message {
 		CustomFields:  e.GetCustomFields(),
 		OuterHeight:   e.GetOuterHeight(),
 		Metadata:      e.GetMetadata(),
+		Owner:         e.GetOwner(),
 	}
 	return r
 }
@@ -8384,6 +9028,14 @@ func (e *RackType) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *RackType) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type RearPort struct {
 	Device        *Device
 	Module        *Module
@@ -8397,6 +9049,7 @@ type RearPort struct {
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
 	Metadata      Metadata
+	Owner         *Owner
 }
 
 func (e *RearPort) ConvertToProtoMessage() proto.Message {
@@ -8413,6 +9066,7 @@ func (e *RearPort) ConvertToProtoMessage() proto.Message {
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
 		Metadata:      e.GetMetadata(),
+		Owner:         e.GetOwner(),
 	}
 	return r
 }
@@ -8533,6 +9187,14 @@ func (e *RearPort) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *RearPort) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type Region struct {
 	Name         *string
 	Slug         *string
@@ -8542,6 +9204,7 @@ type Region struct {
 	CustomFields map[string]*CustomFieldValue
 	Comments     *string
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *Region) ConvertToProtoMessage() proto.Message {
@@ -8554,6 +9217,7 @@ func (e *Region) ConvertToProtoMessage() proto.Message {
 		CustomFields: e.GetCustomFields(),
 		Comments:     e.GetComments(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -8642,6 +9306,14 @@ func (e *Region) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Region) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type Role struct {
 	Name         *string
 	Slug         *string
@@ -8650,6 +9322,8 @@ type Role struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
+	Comments     *string
 }
 
 func (e *Role) ConvertToProtoMessage() proto.Message {
@@ -8661,6 +9335,8 @@ func (e *Role) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
 	}
 	return r
 }
@@ -8741,6 +9417,22 @@ func (e *Role) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Role) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *Role) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
 type RouteTarget struct {
 	Name         *string
 	Tenant       *Tenant
@@ -8749,6 +9441,7 @@ type RouteTarget struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *RouteTarget) ConvertToProtoMessage() proto.Message {
@@ -8760,6 +9453,7 @@ func (e *RouteTarget) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -8840,6 +9534,14 @@ func (e *RouteTarget) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *RouteTarget) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type Service struct {
 	Device         *Device
 	VirtualMachine *VirtualMachine
@@ -8857,6 +9559,7 @@ type Service struct {
 	//  - VirtualMachine
 	ParentObject anyServiceParentObjectValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *Service) ConvertToProtoMessage() proto.Message {
@@ -8872,6 +9575,7 @@ func (e *Service) ConvertToProtoMessage() proto.Message {
 		CustomFields:   e.GetCustomFields(),
 		Ipaddresses:    e.GetIpaddresses(),
 		Metadata:       e.GetMetadata(),
+		Owner:          e.GetOwner(),
 	}
 	if e.ParentObject != nil {
 		e.ParentObject.anyServiceParentObjectValueApplyTo(r)
@@ -9001,6 +9705,14 @@ func (e *Service) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Service) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type Site struct {
 	Name            *string
 	Slug            *string
@@ -9020,6 +9732,7 @@ type Site struct {
 	CustomFields    map[string]*CustomFieldValue
 	Asns            []*ASN
 	Metadata        Metadata
+	Owner           *Owner
 }
 
 func (e *Site) ConvertToProtoMessage() proto.Message {
@@ -9042,6 +9755,7 @@ func (e *Site) ConvertToProtoMessage() proto.Message {
 		CustomFields:    e.GetCustomFields(),
 		Asns:            e.GetAsns(),
 		Metadata:        e.GetMetadata(),
+		Owner:           e.GetOwner(),
 	}
 	return r
 }
@@ -9212,6 +9926,14 @@ func (e *Site) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Site) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type SiteGroup struct {
 	Name         *string
 	Slug         *string
@@ -9221,6 +9943,7 @@ type SiteGroup struct {
 	CustomFields map[string]*CustomFieldValue
 	Comments     *string
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *SiteGroup) ConvertToProtoMessage() proto.Message {
@@ -9233,6 +9956,7 @@ func (e *SiteGroup) ConvertToProtoMessage() proto.Message {
 		CustomFields: e.GetCustomFields(),
 		Comments:     e.GetComments(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -9317,6 +10041,14 @@ func (e *SiteGroup) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
 		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
+func (e *SiteGroup) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
 	}
 	return r
 }
@@ -9419,6 +10151,7 @@ type Tenant struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *Tenant) ConvertToProtoMessage() proto.Message {
@@ -9431,6 +10164,7 @@ func (e *Tenant) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -9519,6 +10253,14 @@ func (e *Tenant) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Tenant) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type TenantGroup struct {
 	Name         *string
 	Slug         *string
@@ -9528,6 +10270,7 @@ type TenantGroup struct {
 	CustomFields map[string]*CustomFieldValue
 	Comments     *string
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *TenantGroup) ConvertToProtoMessage() proto.Message {
@@ -9540,6 +10283,7 @@ func (e *TenantGroup) ConvertToProtoMessage() proto.Message {
 		CustomFields: e.GetCustomFields(),
 		Comments:     e.GetComments(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -9628,6 +10372,14 @@ func (e *TenantGroup) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *TenantGroup) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type Tunnel struct {
 	Name          *string
 	Status        *string
@@ -9641,6 +10393,7 @@ type Tunnel struct {
 	Tags          []*Tag
 	CustomFields  map[string]*CustomFieldValue
 	Metadata      Metadata
+	Owner         *Owner
 }
 
 func (e *Tunnel) ConvertToProtoMessage() proto.Message {
@@ -9657,6 +10410,7 @@ func (e *Tunnel) ConvertToProtoMessage() proto.Message {
 		Tags:          e.GetTags(),
 		CustomFields:  e.GetCustomFields(),
 		Metadata:      e.GetMetadata(),
+		Owner:         e.GetOwner(),
 	}
 	return r
 }
@@ -9777,6 +10531,14 @@ func (e *Tunnel) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *Tunnel) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type TunnelGroup struct {
 	Name         *string
 	Slug         *string
@@ -9784,6 +10546,8 @@ type TunnelGroup struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
+	Comments     *string
 }
 
 func (e *TunnelGroup) ConvertToProtoMessage() proto.Message {
@@ -9794,6 +10558,8 @@ func (e *TunnelGroup) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
 	}
 	return r
 }
@@ -9862,6 +10628,22 @@ func (e *TunnelGroup) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
 		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
+func (e *TunnelGroup) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *TunnelGroup) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
 	}
 	return r
 }
@@ -9985,6 +10767,7 @@ type VLAN struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *VLAN) ConvertToProtoMessage() proto.Message {
@@ -10003,6 +10786,7 @@ func (e *VLAN) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -10139,6 +10923,14 @@ func (e *VLAN) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *VLAN) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type VLANGroup struct {
 	Name *string
 	Slug *string
@@ -10157,6 +10949,8 @@ type VLANGroup struct {
 	CustomFields map[string]*CustomFieldValue
 	Tenant       *Tenant
 	Metadata     Metadata
+	Owner        *Owner
+	Comments     *string
 }
 
 func (e *VLANGroup) ConvertToProtoMessage() proto.Message {
@@ -10169,6 +10963,8 @@ func (e *VLANGroup) ConvertToProtoMessage() proto.Message {
 		CustomFields: e.GetCustomFields(),
 		Tenant:       e.GetTenant(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
 	}
 	if e.Scope != nil {
 		e.Scope.anyVLANGroupScopeValueApplyTo(r)
@@ -10272,10 +11068,28 @@ func (e *VLANGroup) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *VLANGroup) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *VLANGroup) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
 type VLANTranslationPolicy struct {
 	Name        *string
 	Description *string
 	Metadata    Metadata
+	Owner       *Owner
+	Comments    *string
 }
 
 func (e *VLANTranslationPolicy) ConvertToProtoMessage() proto.Message {
@@ -10283,6 +11097,8 @@ func (e *VLANTranslationPolicy) ConvertToProtoMessage() proto.Message {
 		Name:        e.GetName(),
 		Description: e.GetDescription(),
 		Metadata:    e.GetMetadata(),
+		Owner:       e.GetOwner(),
+		Comments:    e.GetComments(),
 	}
 	return r
 }
@@ -10315,6 +11131,22 @@ func (e *VLANTranslationPolicy) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
 		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
+func (e *VLANTranslationPolicy) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *VLANTranslationPolicy) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
 	}
 	return r
 }
@@ -10404,6 +11236,7 @@ type VMInterface struct {
 	CustomFields          map[string]*CustomFieldValue
 	TaggedVlans           []*VLAN
 	Metadata              Metadata
+	Owner                 *Owner
 }
 
 func (e *VMInterface) ConvertToProtoMessage() proto.Message {
@@ -10425,6 +11258,7 @@ func (e *VMInterface) ConvertToProtoMessage() proto.Message {
 		CustomFields:          e.GetCustomFields(),
 		TaggedVlans:           e.GetTaggedVlans(),
 		Metadata:              e.GetMetadata(),
+		Owner:                 e.GetOwner(),
 	}
 	return r
 }
@@ -10587,6 +11421,14 @@ func (e *VMInterface) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *VMInterface) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type VRF struct {
 	Name          *string
 	Rd            *string
@@ -10599,6 +11441,7 @@ type VRF struct {
 	ImportTargets []*RouteTarget
 	ExportTargets []*RouteTarget
 	Metadata      Metadata
+	Owner         *Owner
 }
 
 func (e *VRF) ConvertToProtoMessage() proto.Message {
@@ -10614,6 +11457,7 @@ func (e *VRF) ConvertToProtoMessage() proto.Message {
 		ImportTargets: e.GetImportTargets(),
 		ExportTargets: e.GetExportTargets(),
 		Metadata:      e.GetMetadata(),
+		Owner:         e.GetOwner(),
 	}
 	return r
 }
@@ -10730,6 +11574,14 @@ func (e *VRF) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *VRF) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type VirtualChassis struct {
 	Name         *string
 	Domain       *string
@@ -10739,6 +11591,7 @@ type VirtualChassis struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *VirtualChassis) ConvertToProtoMessage() proto.Message {
@@ -10751,6 +11604,7 @@ func (e *VirtualChassis) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -10839,6 +11693,14 @@ func (e *VirtualChassis) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *VirtualChassis) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type VirtualCircuit struct {
 	Cid             *string
 	ProviderNetwork *ProviderNetwork
@@ -10851,6 +11713,7 @@ type VirtualCircuit struct {
 	Tags            []*Tag
 	CustomFields    map[string]*CustomFieldValue
 	Metadata        Metadata
+	Owner           *Owner
 }
 
 func (e *VirtualCircuit) ConvertToProtoMessage() proto.Message {
@@ -10866,6 +11729,7 @@ func (e *VirtualCircuit) ConvertToProtoMessage() proto.Message {
 		Tags:            e.GetTags(),
 		CustomFields:    e.GetCustomFields(),
 		Metadata:        e.GetMetadata(),
+		Owner:           e.GetOwner(),
 	}
 	return r
 }
@@ -10978,6 +11842,14 @@ func (e *VirtualCircuit) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *VirtualCircuit) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type VirtualCircuitTermination struct {
 	VirtualCircuit *VirtualCircuit
 	Role           *string
@@ -11085,6 +11957,8 @@ type VirtualCircuitType struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
+	Comments     *string
 }
 
 func (e *VirtualCircuitType) ConvertToProtoMessage() proto.Message {
@@ -11096,6 +11970,8 @@ func (e *VirtualCircuitType) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
 	}
 	return r
 }
@@ -11176,6 +12052,22 @@ func (e *VirtualCircuitType) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *VirtualCircuitType) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *VirtualCircuitType) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
 type VirtualDeviceContext struct {
 	Name         *string
 	Device       *Device
@@ -11189,6 +12081,7 @@ type VirtualDeviceContext struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *VirtualDeviceContext) ConvertToProtoMessage() proto.Message {
@@ -11205,6 +12098,7 @@ func (e *VirtualDeviceContext) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -11325,6 +12219,14 @@ func (e *VirtualDeviceContext) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *VirtualDeviceContext) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type VirtualDisk struct {
 	VirtualMachine *VirtualMachine
 	Name           *string
@@ -11333,6 +12235,7 @@ type VirtualDisk struct {
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
 	Metadata       Metadata
+	Owner          *Owner
 }
 
 func (e *VirtualDisk) ConvertToProtoMessage() proto.Message {
@@ -11344,6 +12247,7 @@ func (e *VirtualDisk) ConvertToProtoMessage() proto.Message {
 		Tags:           e.GetTags(),
 		CustomFields:   e.GetCustomFields(),
 		Metadata:       e.GetMetadata(),
+		Owner:          e.GetOwner(),
 	}
 	return r
 }
@@ -11424,6 +12328,14 @@ func (e *VirtualDisk) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *VirtualDisk) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type VirtualMachine struct {
 	Name         *string
 	Status       *string
@@ -11444,6 +12356,8 @@ type VirtualMachine struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	StartOnBoot  *string
+	Owner        *Owner
 }
 
 func (e *VirtualMachine) ConvertToProtoMessage() proto.Message {
@@ -11467,6 +12381,8 @@ func (e *VirtualMachine) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		StartOnBoot:  e.GetStartOnBoot(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -11643,6 +12559,22 @@ func (e *VirtualMachine) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *VirtualMachine) GetStartOnBoot() *string {
+	var r *string
+	if e != nil && e.StartOnBoot != nil {
+		r = e.StartOnBoot
+	}
+	return r
+}
+
+func (e *VirtualMachine) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type WirelessLAN struct {
 	Ssid        *string
 	Description *string
@@ -11663,6 +12595,7 @@ type WirelessLAN struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *WirelessLAN) ConvertToProtoMessage() proto.Message {
@@ -11680,6 +12613,7 @@ func (e *WirelessLAN) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	if e.Scope != nil {
 		e.Scope.anyWirelessLANScopeValueApplyTo(r)
@@ -11821,6 +12755,14 @@ func (e *WirelessLAN) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *WirelessLAN) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type WirelessLANGroup struct {
 	Name         *string
 	Slug         *string
@@ -11830,6 +12772,7 @@ type WirelessLANGroup struct {
 	CustomFields map[string]*CustomFieldValue
 	Comments     *string
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *WirelessLANGroup) ConvertToProtoMessage() proto.Message {
@@ -11842,6 +12785,7 @@ func (e *WirelessLANGroup) ConvertToProtoMessage() proto.Message {
 		CustomFields: e.GetCustomFields(),
 		Comments:     e.GetComments(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -11930,6 +12874,14 @@ func (e *WirelessLANGroup) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *WirelessLANGroup) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type WirelessLink struct {
 	InterfaceA   *Interface
 	InterfaceB   *Interface
@@ -11946,6 +12898,7 @@ type WirelessLink struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *WirelessLink) ConvertToProtoMessage() proto.Message {
@@ -11965,6 +12918,7 @@ func (e *WirelessLink) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -12109,6 +13063,14 @@ func (e *WirelessLink) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *WirelessLink) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type CustomField struct {
 	Type                *string
 	RelatedObjectType   *string
@@ -12133,6 +13095,7 @@ type CustomField struct {
 	Comments            *string
 	ObjectTypes         []string
 	Metadata            Metadata
+	Owner               *Owner
 }
 
 func (e *CustomField) ConvertToProtoMessage() proto.Message {
@@ -12160,6 +13123,7 @@ func (e *CustomField) ConvertToProtoMessage() proto.Message {
 		Comments:            e.GetComments(),
 		ObjectTypes:         e.GetObjectTypes(),
 		Metadata:            e.GetMetadata(),
+		Owner:               e.GetOwner(),
 	}
 	return r
 }
@@ -12358,6 +13322,14 @@ func (e *CustomField) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *CustomField) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type CustomFieldChoiceSet struct {
 	Name                *string
 	Description         *string
@@ -12365,6 +13337,7 @@ type CustomFieldChoiceSet struct {
 	OrderAlphabetically *bool
 	ExtraChoices        []string
 	Metadata            Metadata
+	Owner               *Owner
 }
 
 func (e *CustomFieldChoiceSet) ConvertToProtoMessage() proto.Message {
@@ -12375,6 +13348,7 @@ func (e *CustomFieldChoiceSet) ConvertToProtoMessage() proto.Message {
 		OrderAlphabetically: e.GetOrderAlphabetically(),
 		ExtraChoices:        e.GetExtraChoices(),
 		Metadata:            e.GetMetadata(),
+		Owner:               e.GetOwner(),
 	}
 	return r
 }
@@ -12433,6 +13407,14 @@ func (e *CustomFieldChoiceSet) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
 		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
+func (e *CustomFieldChoiceSet) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
 	}
 	return r
 }
@@ -12539,6 +13521,7 @@ type ModuleTypeProfile struct {
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
 	Metadata     Metadata
+	Owner        *Owner
 }
 
 func (e *ModuleTypeProfile) ConvertToProtoMessage() proto.Message {
@@ -12550,6 +13533,7 @@ func (e *ModuleTypeProfile) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		Owner:        e.GetOwner(),
 	}
 	return r
 }
@@ -12630,6 +13614,14 @@ func (e *ModuleTypeProfile) GetMetadata() *structpb.Struct {
 	return r
 }
 
+func (e *ModuleTypeProfile) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
 type CustomLink struct {
 	Name        *string
 	Enabled     *bool
@@ -12641,6 +13633,7 @@ type CustomLink struct {
 	NewWindow   *bool
 	ObjectTypes []string
 	Metadata    Metadata
+	Owner       *Owner
 }
 
 func (e *CustomLink) ConvertToProtoMessage() proto.Message {
@@ -12655,6 +13648,7 @@ func (e *CustomLink) ConvertToProtoMessage() proto.Message {
 		NewWindow:   e.GetNewWindow(),
 		ObjectTypes: e.GetObjectTypes(),
 		Metadata:    e.GetMetadata(),
+		Owner:       e.GetOwner(),
 	}
 	return r
 }
@@ -12742,6 +13736,118 @@ func (e *CustomLink) GetObjectTypes() []string {
 }
 
 func (e *CustomLink) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
+func (e *CustomLink) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+type Owner struct {
+	Name        *string
+	Group       *OwnerGroup
+	Description *string
+	Metadata    Metadata
+}
+
+func (e *Owner) ConvertToProtoMessage() proto.Message {
+	r := &pb.Owner{
+		Name:        e.GetName(),
+		Group:       e.GetGroup(),
+		Description: e.GetDescription(),
+		Metadata:    e.GetMetadata(),
+	}
+	return r
+}
+
+func (e *Owner) ConvertToProtoEntity() *pb.Entity {
+	return &pb.Entity{
+		Entity: &pb.Entity_Owner{
+			Owner: e.ConvertToProtoMessage().(*pb.Owner),
+		},
+	}
+}
+
+func (e *Owner) GetName() string {
+	var r string
+	if e != nil && e.Name != nil {
+		r = *e.Name
+	}
+	return r
+}
+
+func (e *Owner) GetGroup() *pb.OwnerGroup {
+	var r *pb.OwnerGroup
+	if e != nil && e.Group != nil {
+		r = e.Group.ConvertToProtoMessage().(*pb.OwnerGroup)
+	}
+	return r
+}
+
+func (e *Owner) GetDescription() *string {
+	var r *string
+	if e != nil && e.Description != nil {
+		r = e.Description
+	}
+	return r
+}
+
+func (e *Owner) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
+type OwnerGroup struct {
+	Name        *string
+	Description *string
+	Metadata    Metadata
+}
+
+func (e *OwnerGroup) ConvertToProtoMessage() proto.Message {
+	r := &pb.OwnerGroup{
+		Name:        e.GetName(),
+		Description: e.GetDescription(),
+		Metadata:    e.GetMetadata(),
+	}
+	return r
+}
+
+func (e *OwnerGroup) ConvertToProtoEntity() *pb.Entity {
+	return &pb.Entity{
+		Entity: &pb.Entity_OwnerGroup{
+			OwnerGroup: e.ConvertToProtoMessage().(*pb.OwnerGroup),
+		},
+	}
+}
+
+func (e *OwnerGroup) GetName() string {
+	var r string
+	if e != nil && e.Name != nil {
+		r = *e.Name
+	}
+	return r
+}
+
+func (e *OwnerGroup) GetDescription() *string {
+	var r *string
+	if e != nil && e.Description != nil {
+		r = e.Description
+	}
+	return r
+}
+
+func (e *OwnerGroup) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
 		r, _ = structpb.NewStruct(e.Metadata)
@@ -17218,6 +18324,94 @@ func (e *CustomLink) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTer
 func (e *CustomLink) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
 	p.AssignedObject = &pb.JournalEntry_AssignedObjectCustomLink{
 		AssignedObjectCustomLink: e.ConvertToProtoMessage().(*pb.CustomLink),
+	}
+}
+
+// implementation of oneof interfaces for Owner.
+
+func (e *Owner) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment) {
+	p.Object = &pb.ContactAssignment_ObjectOwner{
+		ObjectOwner: e.ConvertToProtoMessage().(*pb.Owner),
+	}
+}
+
+func (e *Owner) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference) {
+	p.Object = &pb.CustomFieldObjectReference_Owner{
+		Owner: e.ConvertToProtoMessage().(*pb.Owner),
+	}
+}
+
+func (e *Owner) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment) {
+	p.Interface = &pb.FHRPGroupAssignment_InterfaceOwner{
+		InterfaceOwner: e.ConvertToProtoMessage().(*pb.Owner),
+	}
+}
+
+func (e *Owner) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject) {
+	p.Object = &pb.GenericObject_ObjectOwner{
+		ObjectOwner: e.ConvertToProtoMessage().(*pb.Owner),
+	}
+}
+
+func (e *Owner) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination) {
+	p.AssignedObject = &pb.L2VPNTermination_AssignedObjectOwner{
+		AssignedObjectOwner: e.ConvertToProtoMessage().(*pb.Owner),
+	}
+}
+
+func (e *Owner) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination) {
+	p.Termination = &pb.TunnelTermination_TerminationOwner{
+		TerminationOwner: e.ConvertToProtoMessage().(*pb.Owner),
+	}
+}
+
+func (e *Owner) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
+	p.AssignedObject = &pb.JournalEntry_AssignedObjectOwner{
+		AssignedObjectOwner: e.ConvertToProtoMessage().(*pb.Owner),
+	}
+}
+
+// implementation of oneof interfaces for OwnerGroup.
+
+func (e *OwnerGroup) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment) {
+	p.Object = &pb.ContactAssignment_ObjectOwnerGroup{
+		ObjectOwnerGroup: e.ConvertToProtoMessage().(*pb.OwnerGroup),
+	}
+}
+
+func (e *OwnerGroup) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference) {
+	p.Object = &pb.CustomFieldObjectReference_OwnerGroup{
+		OwnerGroup: e.ConvertToProtoMessage().(*pb.OwnerGroup),
+	}
+}
+
+func (e *OwnerGroup) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment) {
+	p.Interface = &pb.FHRPGroupAssignment_InterfaceOwnerGroup{
+		InterfaceOwnerGroup: e.ConvertToProtoMessage().(*pb.OwnerGroup),
+	}
+}
+
+func (e *OwnerGroup) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject) {
+	p.Object = &pb.GenericObject_ObjectOwnerGroup{
+		ObjectOwnerGroup: e.ConvertToProtoMessage().(*pb.OwnerGroup),
+	}
+}
+
+func (e *OwnerGroup) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination) {
+	p.AssignedObject = &pb.L2VPNTermination_AssignedObjectOwnerGroup{
+		AssignedObjectOwnerGroup: e.ConvertToProtoMessage().(*pb.OwnerGroup),
+	}
+}
+
+func (e *OwnerGroup) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination) {
+	p.Termination = &pb.TunnelTermination_TerminationOwnerGroup{
+		TerminationOwnerGroup: e.ConvertToProtoMessage().(*pb.OwnerGroup),
+	}
+}
+
+func (e *OwnerGroup) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
+	p.AssignedObject = &pb.JournalEntry_AssignedObjectOwnerGroup{
+		AssignedObjectOwnerGroup: e.ConvertToProtoMessage().(*pb.OwnerGroup),
 	}
 }
 

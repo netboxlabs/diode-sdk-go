@@ -1986,3 +1986,123 @@ func TestMetadataConversionNestedEntities(t *testing.T) {
 		})
 	}
 }
+
+func TestOwnerGroupMethods(t *testing.T) {
+	tests := []struct {
+		name       string
+		ownerGroup *OwnerGroup
+		expected   interface{}
+		method     func(*OwnerGroup) interface{}
+	}{
+		{
+			name:       "GetName",
+			ownerGroup: &OwnerGroup{Name: String("owner-group-1")},
+			expected:   "owner-group-1",
+			method: func(o *OwnerGroup) interface{} {
+				return o.GetName()
+			},
+		},
+		{
+			name:       "GetDescription",
+			ownerGroup: &OwnerGroup{Description: String("Test description")},
+			expected:   String("Test description"),
+			method: func(o *OwnerGroup) interface{} {
+				return o.GetDescription()
+			},
+		},
+		{
+			name:       "ConvertToProtoMessage",
+			ownerGroup: &OwnerGroup{Name: String("owner-group-1")},
+			expected: &diodepb.OwnerGroup{
+				Name: "owner-group-1",
+			},
+			method: func(o *OwnerGroup) interface{} {
+				return o.ConvertToProtoMessage()
+			},
+		},
+		{
+			name:       "ConvertToProtoEntity",
+			ownerGroup: &OwnerGroup{Name: String("owner-group-1")},
+			expected: &diodepb.Entity{
+				Entity: &diodepb.Entity_OwnerGroup{
+					OwnerGroup: &diodepb.OwnerGroup{
+						Name: "owner-group-1",
+					},
+				},
+			},
+			method: func(o *OwnerGroup) interface{} {
+				return o.ConvertToProtoEntity()
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.expected, tt.method(tt.ownerGroup))
+		})
+	}
+}
+
+func TestOwnerMethods(t *testing.T) {
+	tests := []struct {
+		name     string
+		owner    *Owner
+		expected interface{}
+		method   func(*Owner) interface{}
+	}{
+		{
+			name:     "GetName",
+			owner:    &Owner{Name: String("owner-1")},
+			expected: "owner-1",
+			method: func(o *Owner) interface{} {
+				return o.GetName()
+			},
+		},
+		{
+			name:     "GetGroup",
+			owner:    &Owner{Group: &OwnerGroup{Name: String("owner-group-1")}},
+			expected: &diodepb.OwnerGroup{Name: "owner-group-1"},
+			method: func(o *Owner) interface{} {
+				return o.GetGroup()
+			},
+		},
+		{
+			name:     "GetDescription",
+			owner:    &Owner{Description: String("Test description")},
+			expected: String("Test description"),
+			method: func(o *Owner) interface{} {
+				return o.GetDescription()
+			},
+		},
+		{
+			name:  "ConvertToProtoMessage",
+			owner: &Owner{Name: String("owner-1")},
+			expected: &diodepb.Owner{
+				Name: "owner-1",
+			},
+			method: func(o *Owner) interface{} {
+				return o.ConvertToProtoMessage()
+			},
+		},
+		{
+			name:  "ConvertToProtoEntity",
+			owner: &Owner{Name: String("owner-1")},
+			expected: &diodepb.Entity{
+				Entity: &diodepb.Entity_Owner{
+					Owner: &diodepb.Owner{
+						Name: "owner-1",
+					},
+				},
+			},
+			method: func(o *Owner) interface{} {
+				return o.ConvertToProtoEntity()
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.expected, tt.method(tt.owner))
+		})
+	}
+}
