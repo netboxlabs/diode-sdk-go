@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"reflect"
 	"regexp"
 	"runtime"
 	"runtime/debug"
@@ -537,7 +538,11 @@ func (g *GRPCClient) Close() error {
 
 // Ingest sends an ingest request to the ingester service
 func (g *GRPCClient) Ingest(ctx context.Context, entities []Entity, opts ...IngestOption) (*diodepb.IngestResponse, error) {
-	return g.IngestProto(ctx, convertEntitiesToProto(entities), opts...)
+	protoEntities, err := convertEntitiesToProto(entities)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert entities: %w", err)
+	}
+	return g.IngestProto(ctx, protoEntities, opts...)
 }
 
 // IngestProto sends an ingest request to the ingester service with proto entities
@@ -593,14 +598,110 @@ func (g *GRPCClient) IngestProto(ctx context.Context, entities []*diodepb.Entity
 }
 
 // convertEntitiesToProto converts entities to proto entities
-func convertEntitiesToProto(entities []Entity) []*diodepb.Entity {
+func convertEntitiesToProto(entities []Entity) ([]*diodepb.Entity, error) {
+	// Detect cycles before conversion
+	if err := detectCycles(entities); err != nil {
+		return nil, fmt.Errorf("circular reference detected in entity graph: %w", err)
+	}
+
 	protoEntities := make([]*diodepb.Entity, 0)
 	for _, entity := range entities {
 		entityPb := entity.ConvertToProtoEntity()
 		entityPb.Timestamp = timestamppb.New(time.Now().UTC())
 		protoEntities = append(protoEntities, entityPb)
 	}
-	return protoEntities
+	return protoEntities, nil
+}
+
+// detectCycles checks if there are any circular references in the entity graph
+func detectCycles(entities []Entity) error {
+	visited := make(map[uintptr]bool)
+
+	for _, entity := range entities {
+		if err := detectCyclesInEntity(entity, visited, []string{}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// detectCyclesInEntity recursively walks an entity graph to detect cycles
+func detectCyclesInEntity(entity any, visited map[uintptr]bool, path []string) error {
+	if entity == nil {
+		return nil
+	}
+
+	// Get the pointer value of the entity using reflection
+	v := reflect.ValueOf(entity)
+	if v.Kind() != reflect.Ptr {
+		return nil
+	}
+	if v.IsNil() {
+		return nil
+	}
+
+	ptr := v.Pointer()
+
+	// Check if we've seen this entity in the current path (cycle detected)
+	if visited[ptr] {
+		return fmt.Errorf("circular reference detected: %s", strings.Join(path, " -> "))
+	}
+
+	// Mark as visited
+	visited[ptr] = true
+
+	// Get the entity type name for error messages
+	elem := v.Elem()
+
+	// Only walk through struct fields
+	if elem.Kind() != reflect.Struct {
+		// Still need to unmark before returning
+		delete(visited, ptr)
+		return nil
+	}
+
+	typeName := elem.Type().Name()
+	newPath := append(path, typeName)
+
+	// Walk through all fields of the entity struct
+	for i := 0; i < elem.NumField(); i++ {
+		field := elem.Field(i)
+
+		// Handle pointer fields
+		if field.Kind() == reflect.Ptr && !field.IsNil() {
+			// Check if this field implements Entity interface
+			if field.CanInterface() {
+				fieldValue := field.Interface()
+				if _, ok := fieldValue.(Entity); ok {
+					if err := detectCyclesInEntity(fieldValue, visited, newPath); err != nil {
+						return err
+					}
+				} else {
+					// For non-Entity types, still recurse to check nested entities
+					if err := detectCyclesInEntity(fieldValue, visited, newPath); err != nil {
+						return err
+					}
+				}
+			}
+		}
+
+		// Handle slice fields (e.g., []*Tag, []*VLAN)
+		if field.Kind() == reflect.Slice {
+			for j := 0; j < field.Len(); j++ {
+				item := field.Index(j)
+				if item.Kind() == reflect.Ptr && !item.IsNil() && item.CanInterface() {
+					if err := detectCyclesInEntity(item.Interface(), visited, newPath); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	}
+
+	// Unmark after visiting all children (allow same entity in different branches)
+	delete(visited, ptr)
+
+	return nil
 }
 
 // methodUnaryInterceptor returns a gRPC dial option with a unary interceptor

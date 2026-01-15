@@ -58,7 +58,11 @@ func (d *DryRunClient) Close() error {
 // Ingest writes the given entities to stdout or a file depending on the configuration.
 // This is a wrapper around IngestProto that converts the entities to protobuf first.
 func (d *DryRunClient) Ingest(ctx context.Context, entities []Entity, opts ...IngestOption) (*diodepb.IngestResponse, error) {
-	return d.IngestProto(ctx, convertEntitiesToProto(entities), opts...)
+	protoEntities, err := convertEntitiesToProto(entities)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert entities: %w", err)
+	}
+	return d.IngestProto(ctx, protoEntities, opts...)
 }
 
 // IngestProto serializes entities as JSON and writes them to stdout or a file.

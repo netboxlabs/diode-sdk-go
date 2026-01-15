@@ -172,7 +172,11 @@ func (c *OTLPClient) Close() error {
 
 // Ingest converts the provided entities to proto messages before exporting them.
 func (c *OTLPClient) Ingest(ctx context.Context, entities []Entity, opts ...IngestOption) (*diodepb.IngestResponse, error) {
-	return c.IngestProto(ctx, convertEntitiesToProto(entities), opts...)
+	protoEntities, err := convertEntitiesToProto(entities)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert entities: %w", err)
+	}
+	return c.IngestProto(ctx, protoEntities, opts...)
 }
 
 // IngestProto exports proto entities as OTLP log records.

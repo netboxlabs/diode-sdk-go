@@ -788,13 +788,96 @@ func TestConvertEntitiesToProto(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			protoEntities := convertEntitiesToProto(tt.entities)
+			protoEntities, err := convertEntitiesToProto(tt.entities)
+			require.NoError(t, err)
 			require.NotNil(t, protoEntities)
 			assert.Equal(t, len(tt.entities), len(protoEntities))
 			for _, entityPb := range protoEntities {
 				assert.NotNil(t, entityPb.Timestamp)
 				assert.NotZero(t, entityPb.Timestamp.Seconds)
 				assert.NotZero(t, entityPb.Timestamp.Nanos)
+			}
+		})
+	}
+}
+
+func TestCircularReferenceDetection(t *testing.T) {
+	tests := []struct {
+		name     string
+		entities []Entity
+		wantErr  bool
+		errMsg   string
+	}{
+		{
+			name: "Module and ModuleBay cycle",
+			entities: func() []Entity {
+				d := &Device{
+					Name: String("test-device"),
+					Site: &Site{Name: String("test-site")},
+				}
+				m := &Module{Device: d}
+				b := &ModuleBay{Device: d, Name: String("bay")}
+				m.ModuleBay = b
+				b.Module = m // creates a cycle
+				return []Entity{m}
+			}(),
+			wantErr: true,
+			errMsg:  "circular reference detected",
+		},
+		{
+			name: "Device and VirtualChassis cycle",
+			entities: func() []Entity {
+				d := &Device{
+					Name: String("test-device"),
+					Site: &Site{Name: String("test-site")},
+				}
+				vc := &VirtualChassis{Name: String("vc-1")}
+				d.VirtualChassis = vc
+				vc.Master = d // creates a cycle
+				return []Entity{d}
+			}(),
+			wantErr: true,
+			errMsg:  "circular reference detected",
+		},
+		{
+			name: "Valid entity without cycle",
+			entities: []Entity{
+				&Device{
+					Name: String("test-device"),
+					Site: &Site{Name: String("test-site")},
+					DeviceType: &DeviceType{
+						Model: String("model-1"),
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "Multiple entities with shared references (no cycle)",
+			entities: func() []Entity {
+				site := &Site{Name: String("shared-site")}
+				d1 := &Device{
+					Name: String("device-1"),
+					Site: site,
+				}
+				d2 := &Device{
+					Name: String("device-2"),
+					Site: site, // shared reference is OK
+				}
+				return []Entity{d1, d2}
+			}(),
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := convertEntitiesToProto(tt.entities)
+			if tt.wantErr {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.errMsg)
+			} else {
+				require.NoError(t, err)
 			}
 		})
 	}
