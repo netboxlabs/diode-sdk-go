@@ -3,8 +3,9 @@ package diode
 import (
 	"testing"
 
-	pb "github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 	"google.golang.org/protobuf/proto"
+
+	pb "github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
 
 // createTestEntity creates a test entity with a device name
