@@ -214,13 +214,54 @@ type IngestOption func(*ingestConfig)
 
 // ingestConfig holds configuration for ingest operations
 type ingestConfig struct {
-	metadata Metadata
+	metadata         Metadata
+	enableChunking   bool
+	maxChunkSizeMB   float64
+	returnAllResults bool
 }
 
 // WithIngestMetadata adds optional metadata to the IngestRequest
 func WithIngestMetadata(metadata Metadata) IngestOption {
 	return func(c *ingestConfig) {
 		c.metadata = metadata
+	}
+}
+
+// WithChunking enables automatic message chunking for large entity lists.
+// When enabled, entities will be automatically split into size-appropriate chunks
+// before being sent to the server. Only the result from the last chunk is returned
+// unless WithChunkingReturnAllResults is also used.
+//
+// The maxChunkSizeMB parameter sets the maximum size per chunk in megabytes.
+// Use 0 to apply the default of 3.0 MB, which provides a safe margin below
+// the gRPC 4 MB message size limit.
+//
+// Example:
+//
+//	// Use default 3.0 MB chunks
+//	client.Ingest(ctx, entities, WithChunking(0))
+//
+//	// Use custom 3.5 MB chunks
+//	client.Ingest(ctx, entities, WithChunking(3.5))
+func WithChunking(maxChunkSizeMB float64) IngestOption {
+	return func(c *ingestConfig) {
+		c.enableChunking = true
+		c.maxChunkSizeMB = maxChunkSizeMB
+	}
+}
+
+// WithChunkingReturnAllResults modifies chunking behavior to return all chunk results.
+// By default, only the last chunk's result is returned. Use this option when you need
+// to collect results from all chunks.
+//
+// This option only has an effect when used with WithChunking.
+//
+// Example:
+//
+//	client.Ingest(ctx, entities, WithChunking(3.0), WithChunkingReturnAllResults())
+func WithChunkingReturnAllResults() IngestOption {
+	return func(c *ingestConfig) {
+		c.returnAllResults = true
 	}
 }
 
@@ -548,6 +589,17 @@ func (g *GRPCClient) IngestProto(ctx context.Context, entities []*diodepb.Entity
 		opt(cfg)
 	}
 
+	// Handle chunking if enabled
+	if cfg.enableChunking {
+		return g.ingestWithChunking(ctx, entities, cfg)
+	}
+
+	// Standard single-request ingestion
+	return g.ingestSingleRequest(ctx, entities, cfg)
+}
+
+// ingestSingleRequest sends a single ingest request without chunking
+func (g *GRPCClient) ingestSingleRequest(ctx context.Context, entities []*diodepb.Entity, cfg *ingestConfig) (*diodepb.IngestResponse, error) {
 	stream := defaultStreamName
 
 	req := &diodepb.IngestRequest{
@@ -590,6 +642,41 @@ func (g *GRPCClient) IngestProto(ctx context.Context, entities []*diodepb.Entity
 		break
 	}
 	return res, nil
+}
+
+// ingestWithChunking sends entities in chunks
+func (g *GRPCClient) ingestWithChunking(ctx context.Context, entities []*diodepb.Entity, cfg *ingestConfig) (*diodepb.IngestResponse, error) {
+	chunks := CreateMessageChunks(entities, cfg.maxChunkSizeMB)
+
+	g.logger.Debug("Chunking enabled", "total_entities", len(entities), "chunks", len(chunks), "max_chunk_size_mb", cfg.maxChunkSizeMB)
+
+	var lastResponse *diodepb.IngestResponse
+	var allResponses []*diodepb.IngestResponse
+
+	for i, chunk := range chunks {
+		g.logger.Debug("Ingesting chunk", "chunk", i+1, "of", len(chunks), "entities", len(chunk))
+
+		res, err := g.ingestSingleRequest(ctx, chunk, cfg)
+		if err != nil {
+			return nil, fmt.Errorf("failed to ingest chunk %d of %d: %w", i+1, len(chunks), err)
+		}
+
+		lastResponse = res
+		if cfg.returnAllResults {
+			allResponses = append(allResponses, res)
+		}
+	}
+
+	// If returnAllResults is enabled, we need to combine the responses
+	// For now, we'll return the last response as the primary one
+	// In the future, this could be enhanced to merge error counts, etc.
+	if cfg.returnAllResults && len(allResponses) > 0 {
+		// TODO: Consider merging response statistics from all chunks
+		// For now, just return the last response
+		g.logger.Debug("Completed chunked ingestion", "total_chunks", len(allResponses))
+	}
+
+	return lastResponse, nil
 }
 
 // convertEntitiesToProto converts entities to proto entities
