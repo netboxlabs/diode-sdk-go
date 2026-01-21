@@ -1,6 +1,8 @@
 package diode
 
 import (
+	"bytes"
+	"fmt"
 	"testing"
 
 	"google.golang.org/protobuf/proto"
@@ -270,10 +272,7 @@ func TestCreateMessageChunksPreservesOrder(t *testing.T) {
 // TestCreateMessageChunksSingleLargeEntity tests with a single entity that exceeds chunk size
 func TestCreateMessageChunksSingleLargeEntity(t *testing.T) {
 	// Create a very large entity (5 MB) that exceeds 3 MB limit
-	largeString := make([]byte, 5*1024*1024) // 5 MB
-	for j := range largeString {
-		largeString[j] = 'E'
-	}
+	largeString := bytes.Repeat([]byte{'E'}, 5*1024*1024) // 5 MB
 	entity := &pb.Entity{
 		Entity: &pb.Entity_Device{
 			Device: &pb.Device{
@@ -322,12 +321,5 @@ func TestCreateMessageChunksDefaultChunkSize(t *testing.T) {
 
 // Helper function to format device names with leading zeros
 func formatDeviceName(index int) string {
-	if index < 10 {
-		return "device_00" + string(rune('0'+index))
-	} else if index < 100 {
-		tens := index / 10
-		ones := index % 10
-		return "device_0" + string(rune('0'+tens)) + string(rune('0'+ones))
-	}
-	return "device_" + string(rune('0'+index))
+	return fmt.Sprintf("device_%03d", index)
 }

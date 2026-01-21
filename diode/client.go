@@ -215,8 +215,8 @@ type IngestOption func(*ingestConfig)
 // ingestConfig holds configuration for ingest operations
 type ingestConfig struct {
 	metadata         Metadata
-	enableChunking   bool
 	maxChunkSizeMB   float64
+	enableChunking   bool
 	returnAllResults bool
 }
 
