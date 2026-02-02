@@ -1,5 +1,5 @@
 // Generated code. DO NOT EDIT.
-// Timestamp: 2026-01-12 17:44:14Z
+// Timestamp: 2026-02-02 16:59:00Z
 //
 
 package diode
@@ -2285,7 +2285,102 @@ func (e *Contact) GetOwner() *pb.Owner {
 }
 
 type ContactAssignment struct {
-	// Object can be any Entity type
+	// Object can be:
+	//  - ASN
+	//  - ASNRange
+	//  - Aggregate
+	//  - Cable
+	//  - CablePath
+	//  - CableTermination
+	//  - Circuit
+	//  - CircuitGroup
+	//  - CircuitGroupAssignment
+	//  - CircuitTermination
+	//  - CircuitType
+	//  - Cluster
+	//  - ClusterGroup
+	//  - ClusterType
+	//  - ConsolePort
+	//  - ConsoleServerPort
+	//  - Contact
+	//  - ContactAssignment
+	//  - ContactGroup
+	//  - ContactRole
+	//  - Device
+	//  - DeviceBay
+	//  - DeviceRole
+	//  - DeviceType
+	//  - FHRPGroup
+	//  - FHRPGroupAssignment
+	//  - FrontPort
+	//  - IKEPolicy
+	//  - IKEProposal
+	//  - IPAddress
+	//  - IPRange
+	//  - IPSecPolicy
+	//  - IPSecProfile
+	//  - IPSecProposal
+	//  - Interface
+	//  - InventoryItem
+	//  - InventoryItemRole
+	//  - L2VPN
+	//  - L2VPNTermination
+	//  - Location
+	//  - MACAddress
+	//  - Manufacturer
+	//  - Module
+	//  - ModuleBay
+	//  - ModuleType
+	//  - Platform
+	//  - PowerFeed
+	//  - PowerOutlet
+	//  - PowerPanel
+	//  - PowerPort
+	//  - Prefix
+	//  - Provider
+	//  - ProviderAccount
+	//  - ProviderNetwork
+	//  - RIR
+	//  - Rack
+	//  - RackReservation
+	//  - RackRole
+	//  - RackType
+	//  - RearPort
+	//  - Region
+	//  - Role
+	//  - RouteTarget
+	//  - Service
+	//  - Site
+	//  - SiteGroup
+	//  - Tag
+	//  - Tenant
+	//  - TenantGroup
+	//  - Tunnel
+	//  - TunnelGroup
+	//  - TunnelTermination
+	//  - VLAN
+	//  - VLANGroup
+	//  - VLANTranslationPolicy
+	//  - VLANTranslationRule
+	//  - VMInterface
+	//  - VRF
+	//  - VirtualChassis
+	//  - VirtualCircuit
+	//  - VirtualCircuitTermination
+	//  - VirtualCircuitType
+	//  - VirtualDeviceContext
+	//  - VirtualDisk
+	//  - VirtualMachine
+	//  - WirelessLAN
+	//  - WirelessLANGroup
+	//  - WirelessLink
+	//  - CustomField
+	//  - CustomFieldChoiceSet
+	//  - JournalEntry
+	//  - ModuleTypeProfile
+	//  - CustomLink
+	//  - Owner
+	//  - OwnerGroup
 	Object       anyContactAssignmentObjectValue
 	Contact      *Contact
 	Role         *ContactRole
@@ -2617,7 +2712,102 @@ func (e *ContactRole) GetComments() *string {
 }
 
 type CustomFieldObjectReference struct {
-	// Object can be any Entity type
+	// Object can be:
+	//  - ASN
+	//  - ASNRange
+	//  - Aggregate
+	//  - Cable
+	//  - CablePath
+	//  - CableTermination
+	//  - Circuit
+	//  - CircuitGroup
+	//  - CircuitGroupAssignment
+	//  - CircuitTermination
+	//  - CircuitType
+	//  - Cluster
+	//  - ClusterGroup
+	//  - ClusterType
+	//  - ConsolePort
+	//  - ConsoleServerPort
+	//  - Contact
+	//  - ContactAssignment
+	//  - ContactGroup
+	//  - ContactRole
+	//  - Device
+	//  - DeviceBay
+	//  - DeviceRole
+	//  - DeviceType
+	//  - FHRPGroup
+	//  - FHRPGroupAssignment
+	//  - FrontPort
+	//  - IKEPolicy
+	//  - IKEProposal
+	//  - IPAddress
+	//  - IPRange
+	//  - IPSecPolicy
+	//  - IPSecProfile
+	//  - IPSecProposal
+	//  - Interface
+	//  - InventoryItem
+	//  - InventoryItemRole
+	//  - L2VPN
+	//  - L2VPNTermination
+	//  - Location
+	//  - MACAddress
+	//  - Manufacturer
+	//  - Module
+	//  - ModuleBay
+	//  - ModuleType
+	//  - Platform
+	//  - PowerFeed
+	//  - PowerOutlet
+	//  - PowerPanel
+	//  - PowerPort
+	//  - Prefix
+	//  - Provider
+	//  - ProviderAccount
+	//  - ProviderNetwork
+	//  - RIR
+	//  - Rack
+	//  - RackReservation
+	//  - RackRole
+	//  - RackType
+	//  - RearPort
+	//  - Region
+	//  - Role
+	//  - RouteTarget
+	//  - Service
+	//  - Site
+	//  - SiteGroup
+	//  - Tag
+	//  - Tenant
+	//  - TenantGroup
+	//  - Tunnel
+	//  - TunnelGroup
+	//  - TunnelTermination
+	//  - VLAN
+	//  - VLANGroup
+	//  - VLANTranslationPolicy
+	//  - VLANTranslationRule
+	//  - VMInterface
+	//  - VRF
+	//  - VirtualChassis
+	//  - VirtualCircuit
+	//  - VirtualCircuitTermination
+	//  - VirtualCircuitType
+	//  - VirtualDeviceContext
+	//  - VirtualDisk
+	//  - VirtualMachine
+	//  - WirelessLAN
+	//  - WirelessLANGroup
+	//  - WirelessLink
+	//  - CustomField
+	//  - CustomFieldChoiceSet
+	//  - JournalEntry
+	//  - ModuleTypeProfile
+	//  - CustomLink
+	//  - Owner
+	//  - OwnerGroup
 	Object anyCustomFieldObjectReferenceObjectValue
 }
 
@@ -2728,6 +2918,7 @@ type Device struct {
 	CustomFields   map[string]*CustomFieldValue
 	Metadata       Metadata
 	Owner          *Owner
+	Config         *DeviceConfig
 }
 
 func (e *Device) ConvertToProtoMessage() proto.Message {
@@ -2761,6 +2952,7 @@ func (e *Device) ConvertToProtoMessage() proto.Message {
 		CustomFields:   e.GetCustomFields(),
 		Metadata:       e.GetMetadata(),
 		Owner:          e.GetOwner(),
+		Config:         e.GetConfig(),
 	}
 	return r
 }
@@ -3013,6 +3205,14 @@ func (e *Device) GetOwner() *pb.Owner {
 	var r *pb.Owner
 	if e != nil && e.Owner != nil {
 		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *Device) GetConfig() *pb.DeviceConfig {
+	var r *pb.DeviceConfig
+	if e != nil && e.Config != nil {
+		r = e.Config.ConvertToProtoMessage().(*pb.DeviceConfig)
 	}
 	return r
 }
@@ -3625,7 +3825,102 @@ func (e *FHRPGroup) GetOwner() *pb.Owner {
 
 type FHRPGroupAssignment struct {
 	Group *FHRPGroup
-	// Interface can be any Entity type
+	// Interface can be:
+	//  - ASN
+	//  - ASNRange
+	//  - Aggregate
+	//  - Cable
+	//  - CablePath
+	//  - CableTermination
+	//  - Circuit
+	//  - CircuitGroup
+	//  - CircuitGroupAssignment
+	//  - CircuitTermination
+	//  - CircuitType
+	//  - Cluster
+	//  - ClusterGroup
+	//  - ClusterType
+	//  - ConsolePort
+	//  - ConsoleServerPort
+	//  - Contact
+	//  - ContactAssignment
+	//  - ContactGroup
+	//  - ContactRole
+	//  - Device
+	//  - DeviceBay
+	//  - DeviceRole
+	//  - DeviceType
+	//  - FHRPGroup
+	//  - FHRPGroupAssignment
+	//  - FrontPort
+	//  - IKEPolicy
+	//  - IKEProposal
+	//  - IPAddress
+	//  - IPRange
+	//  - IPSecPolicy
+	//  - IPSecProfile
+	//  - IPSecProposal
+	//  - Interface
+	//  - InventoryItem
+	//  - InventoryItemRole
+	//  - L2VPN
+	//  - L2VPNTermination
+	//  - Location
+	//  - MACAddress
+	//  - Manufacturer
+	//  - Module
+	//  - ModuleBay
+	//  - ModuleType
+	//  - Platform
+	//  - PowerFeed
+	//  - PowerOutlet
+	//  - PowerPanel
+	//  - PowerPort
+	//  - Prefix
+	//  - Provider
+	//  - ProviderAccount
+	//  - ProviderNetwork
+	//  - RIR
+	//  - Rack
+	//  - RackReservation
+	//  - RackRole
+	//  - RackType
+	//  - RearPort
+	//  - Region
+	//  - Role
+	//  - RouteTarget
+	//  - Service
+	//  - Site
+	//  - SiteGroup
+	//  - Tag
+	//  - Tenant
+	//  - TenantGroup
+	//  - Tunnel
+	//  - TunnelGroup
+	//  - TunnelTermination
+	//  - VLAN
+	//  - VLANGroup
+	//  - VLANTranslationPolicy
+	//  - VLANTranslationRule
+	//  - VMInterface
+	//  - VRF
+	//  - VirtualChassis
+	//  - VirtualCircuit
+	//  - VirtualCircuitTermination
+	//  - VirtualCircuitType
+	//  - VirtualDeviceContext
+	//  - VirtualDisk
+	//  - VirtualMachine
+	//  - WirelessLAN
+	//  - WirelessLANGroup
+	//  - WirelessLink
+	//  - CustomField
+	//  - CustomFieldChoiceSet
+	//  - JournalEntry
+	//  - ModuleTypeProfile
+	//  - CustomLink
+	//  - Owner
+	//  - OwnerGroup
 	Interface anyFHRPGroupAssignmentInterfaceValue
 	Priority  *int64
 	Metadata  Metadata
@@ -3865,7 +4160,102 @@ func (e *FrontPort) GetOwner() *pb.Owner {
 }
 
 type GenericObject struct {
-	// Object can be any Entity type
+	// Object can be:
+	//  - ASN
+	//  - ASNRange
+	//  - Aggregate
+	//  - Cable
+	//  - CablePath
+	//  - CableTermination
+	//  - Circuit
+	//  - CircuitGroup
+	//  - CircuitGroupAssignment
+	//  - CircuitTermination
+	//  - CircuitType
+	//  - Cluster
+	//  - ClusterGroup
+	//  - ClusterType
+	//  - ConsolePort
+	//  - ConsoleServerPort
+	//  - Contact
+	//  - ContactAssignment
+	//  - ContactGroup
+	//  - ContactRole
+	//  - Device
+	//  - DeviceBay
+	//  - DeviceRole
+	//  - DeviceType
+	//  - FHRPGroup
+	//  - FHRPGroupAssignment
+	//  - FrontPort
+	//  - IKEPolicy
+	//  - IKEProposal
+	//  - IPAddress
+	//  - IPRange
+	//  - IPSecPolicy
+	//  - IPSecProfile
+	//  - IPSecProposal
+	//  - Interface
+	//  - InventoryItem
+	//  - InventoryItemRole
+	//  - L2VPN
+	//  - L2VPNTermination
+	//  - Location
+	//  - MACAddress
+	//  - Manufacturer
+	//  - Module
+	//  - ModuleBay
+	//  - ModuleType
+	//  - Platform
+	//  - PowerFeed
+	//  - PowerOutlet
+	//  - PowerPanel
+	//  - PowerPort
+	//  - Prefix
+	//  - Provider
+	//  - ProviderAccount
+	//  - ProviderNetwork
+	//  - RIR
+	//  - Rack
+	//  - RackReservation
+	//  - RackRole
+	//  - RackType
+	//  - RearPort
+	//  - Region
+	//  - Role
+	//  - RouteTarget
+	//  - Service
+	//  - Site
+	//  - SiteGroup
+	//  - Tag
+	//  - Tenant
+	//  - TenantGroup
+	//  - Tunnel
+	//  - TunnelGroup
+	//  - TunnelTermination
+	//  - VLAN
+	//  - VLANGroup
+	//  - VLANTranslationPolicy
+	//  - VLANTranslationRule
+	//  - VMInterface
+	//  - VRF
+	//  - VirtualChassis
+	//  - VirtualCircuit
+	//  - VirtualCircuitTermination
+	//  - VirtualCircuitType
+	//  - VirtualDeviceContext
+	//  - VirtualDisk
+	//  - VirtualMachine
+	//  - WirelessLAN
+	//  - WirelessLANGroup
+	//  - WirelessLink
+	//  - CustomField
+	//  - CustomFieldChoiceSet
+	//  - JournalEntry
+	//  - ModuleTypeProfile
+	//  - CustomLink
+	//  - Owner
+	//  - OwnerGroup
 	Object anyGenericObjectObjectValue
 }
 
@@ -5812,7 +6202,102 @@ func (e *L2VPN) GetOwner() *pb.Owner {
 
 type L2VPNTermination struct {
 	L2Vpn *L2VPN
-	// AssignedObject can be any Entity type
+	// AssignedObject can be:
+	//  - Interface
+	//  - VLAN
+	//  - VMInterface
+	//  - ASN
+	//  - ASNRange
+	//  - Aggregate
+	//  - Cable
+	//  - CablePath
+	//  - CableTermination
+	//  - Circuit
+	//  - CircuitGroup
+	//  - CircuitGroupAssignment
+	//  - CircuitTermination
+	//  - CircuitType
+	//  - Cluster
+	//  - ClusterGroup
+	//  - ClusterType
+	//  - ConsolePort
+	//  - ConsoleServerPort
+	//  - Contact
+	//  - ContactAssignment
+	//  - ContactGroup
+	//  - ContactRole
+	//  - CustomField
+	//  - CustomFieldChoiceSet
+	//  - Device
+	//  - DeviceBay
+	//  - DeviceRole
+	//  - DeviceType
+	//  - FHRPGroup
+	//  - FHRPGroupAssignment
+	//  - FrontPort
+	//  - IKEPolicy
+	//  - IKEProposal
+	//  - IPAddress
+	//  - IPRange
+	//  - IPSecPolicy
+	//  - IPSecProfile
+	//  - IPSecProposal
+	//  - InventoryItem
+	//  - InventoryItemRole
+	//  - JournalEntry
+	//  - L2VPN
+	//  - L2VPNTermination
+	//  - Location
+	//  - MACAddress
+	//  - Manufacturer
+	//  - Module
+	//  - ModuleBay
+	//  - ModuleType
+	//  - ModuleTypeProfile
+	//  - Platform
+	//  - PowerFeed
+	//  - PowerOutlet
+	//  - PowerPanel
+	//  - PowerPort
+	//  - Prefix
+	//  - Provider
+	//  - ProviderAccount
+	//  - ProviderNetwork
+	//  - RIR
+	//  - Rack
+	//  - RackReservation
+	//  - RackRole
+	//  - RackType
+	//  - RearPort
+	//  - Region
+	//  - Role
+	//  - RouteTarget
+	//  - Service
+	//  - Site
+	//  - SiteGroup
+	//  - Tag
+	//  - Tenant
+	//  - TenantGroup
+	//  - Tunnel
+	//  - TunnelGroup
+	//  - TunnelTermination
+	//  - VLANGroup
+	//  - VLANTranslationPolicy
+	//  - VLANTranslationRule
+	//  - VRF
+	//  - VirtualChassis
+	//  - VirtualCircuit
+	//  - VirtualCircuitTermination
+	//  - VirtualCircuitType
+	//  - VirtualDeviceContext
+	//  - VirtualDisk
+	//  - VirtualMachine
+	//  - WirelessLAN
+	//  - WirelessLANGroup
+	//  - WirelessLink
+	//  - CustomLink
+	//  - Owner
+	//  - OwnerGroup
 	AssignedObject anyL2VPNTerminationAssignedObjectValue
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
@@ -10651,7 +11136,102 @@ func (e *TunnelGroup) GetComments() *string {
 type TunnelTermination struct {
 	Tunnel *Tunnel
 	Role   *string
-	// Termination can be any Entity type
+	// Termination can be:
+	//  - ASN
+	//  - ASNRange
+	//  - Aggregate
+	//  - Cable
+	//  - CablePath
+	//  - CableTermination
+	//  - Circuit
+	//  - CircuitGroup
+	//  - CircuitGroupAssignment
+	//  - CircuitTermination
+	//  - CircuitType
+	//  - Cluster
+	//  - ClusterGroup
+	//  - ClusterType
+	//  - ConsolePort
+	//  - ConsoleServerPort
+	//  - Contact
+	//  - ContactAssignment
+	//  - ContactGroup
+	//  - ContactRole
+	//  - Device
+	//  - DeviceBay
+	//  - DeviceRole
+	//  - DeviceType
+	//  - FHRPGroup
+	//  - FHRPGroupAssignment
+	//  - FrontPort
+	//  - IKEPolicy
+	//  - IKEProposal
+	//  - IPAddress
+	//  - IPRange
+	//  - IPSecPolicy
+	//  - IPSecProfile
+	//  - IPSecProposal
+	//  - Interface
+	//  - InventoryItem
+	//  - InventoryItemRole
+	//  - L2VPN
+	//  - L2VPNTermination
+	//  - Location
+	//  - MACAddress
+	//  - Manufacturer
+	//  - Module
+	//  - ModuleBay
+	//  - ModuleType
+	//  - Platform
+	//  - PowerFeed
+	//  - PowerOutlet
+	//  - PowerPanel
+	//  - PowerPort
+	//  - Prefix
+	//  - Provider
+	//  - ProviderAccount
+	//  - ProviderNetwork
+	//  - RIR
+	//  - Rack
+	//  - RackReservation
+	//  - RackRole
+	//  - RackType
+	//  - RearPort
+	//  - Region
+	//  - Role
+	//  - RouteTarget
+	//  - Service
+	//  - Site
+	//  - SiteGroup
+	//  - Tag
+	//  - Tenant
+	//  - TenantGroup
+	//  - Tunnel
+	//  - TunnelGroup
+	//  - TunnelTermination
+	//  - VLAN
+	//  - VLANGroup
+	//  - VLANTranslationPolicy
+	//  - VLANTranslationRule
+	//  - VMInterface
+	//  - VRF
+	//  - VirtualChassis
+	//  - VirtualCircuit
+	//  - VirtualCircuitTermination
+	//  - VirtualCircuitType
+	//  - VirtualDeviceContext
+	//  - VirtualDisk
+	//  - VirtualMachine
+	//  - WirelessLAN
+	//  - WirelessLANGroup
+	//  - WirelessLink
+	//  - CustomField
+	//  - CustomFieldChoiceSet
+	//  - JournalEntry
+	//  - ModuleTypeProfile
+	//  - CustomLink
+	//  - Owner
+	//  - OwnerGroup
 	Termination  anyTunnelTerminationTerminationValue
 	OutsideIp    *IPAddress
 	Tags         []*Tag
@@ -13420,7 +14000,102 @@ func (e *CustomFieldChoiceSet) GetOwner() *pb.Owner {
 }
 
 type JournalEntry struct {
-	// AssignedObject can be any Entity type
+	// AssignedObject can be:
+	//  - ASN
+	//  - ASNRange
+	//  - Aggregate
+	//  - Cable
+	//  - CablePath
+	//  - CableTermination
+	//  - Circuit
+	//  - CircuitGroup
+	//  - CircuitGroupAssignment
+	//  - CircuitTermination
+	//  - CircuitType
+	//  - Cluster
+	//  - ClusterGroup
+	//  - ClusterType
+	//  - ConsolePort
+	//  - ConsoleServerPort
+	//  - Contact
+	//  - ContactAssignment
+	//  - ContactGroup
+	//  - ContactRole
+	//  - CustomField
+	//  - CustomFieldChoiceSet
+	//  - Device
+	//  - DeviceBay
+	//  - DeviceRole
+	//  - DeviceType
+	//  - FHRPGroup
+	//  - FHRPGroupAssignment
+	//  - FrontPort
+	//  - IKEPolicy
+	//  - IKEProposal
+	//  - IPAddress
+	//  - IPRange
+	//  - IPSecPolicy
+	//  - IPSecProfile
+	//  - IPSecProposal
+	//  - Interface
+	//  - InventoryItem
+	//  - InventoryItemRole
+	//  - JournalEntry
+	//  - L2VPN
+	//  - L2VPNTermination
+	//  - Location
+	//  - MACAddress
+	//  - Manufacturer
+	//  - Module
+	//  - ModuleBay
+	//  - ModuleType
+	//  - ModuleTypeProfile
+	//  - Platform
+	//  - PowerFeed
+	//  - PowerOutlet
+	//  - PowerPanel
+	//  - PowerPort
+	//  - Prefix
+	//  - Provider
+	//  - ProviderAccount
+	//  - ProviderNetwork
+	//  - RIR
+	//  - Rack
+	//  - RackReservation
+	//  - RackRole
+	//  - RackType
+	//  - RearPort
+	//  - Region
+	//  - Role
+	//  - RouteTarget
+	//  - Service
+	//  - Site
+	//  - SiteGroup
+	//  - Tag
+	//  - Tenant
+	//  - TenantGroup
+	//  - Tunnel
+	//  - TunnelGroup
+	//  - TunnelTermination
+	//  - VLAN
+	//  - VLANGroup
+	//  - VLANTranslationPolicy
+	//  - VLANTranslationRule
+	//  - VMInterface
+	//  - VRF
+	//  - VirtualChassis
+	//  - VirtualCircuit
+	//  - VirtualCircuitTermination
+	//  - VirtualCircuitType
+	//  - VirtualDeviceContext
+	//  - VirtualDisk
+	//  - VirtualMachine
+	//  - WirelessLAN
+	//  - WirelessLANGroup
+	//  - WirelessLink
+	//  - CustomLink
+	//  - Owner
+	//  - OwnerGroup
 	AssignedObject anyJournalEntryAssignedObjectValue
 	Kind           *string
 	Comments       *string
@@ -13848,6 +14523,60 @@ func (e *OwnerGroup) GetDescription() *string {
 }
 
 func (e *OwnerGroup) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(e.Metadata)
+	}
+	return r
+}
+
+type DeviceConfig struct {
+	Startup   []byte
+	Running   []byte
+	Candidate []byte
+	Metadata  Metadata
+}
+
+func (e *DeviceConfig) ConvertToProtoMessage() proto.Message {
+	r := &pb.DeviceConfig{
+		Startup:   e.GetStartup(),
+		Running:   e.GetRunning(),
+		Candidate: e.GetCandidate(),
+		Metadata:  e.GetMetadata(),
+	}
+	return r
+}
+
+func (e *DeviceConfig) ConvertToProtoEntity() *pb.Entity {
+	return &pb.Entity{
+		Entity: &pb.Entity_DeviceConfig{
+			DeviceConfig: e.ConvertToProtoMessage().(*pb.DeviceConfig),
+		},
+	}
+}
+
+func (e *DeviceConfig) GetStartup() []byte {
+	if e != nil {
+		return e.Startup
+	}
+	return nil
+}
+
+func (e *DeviceConfig) GetRunning() []byte {
+	if e != nil {
+		return e.Running
+	}
+	return nil
+}
+
+func (e *DeviceConfig) GetCandidate() []byte {
+	if e != nil {
+		return e.Candidate
+	}
+	return nil
+}
+
+func (e *DeviceConfig) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
 		r, _ = structpb.NewStruct(e.Metadata)
@@ -14859,8 +15588,6 @@ func (e *CustomFieldObjectReference) anyCustomFieldValueValueValueApplyTo(p *pb.
 	}
 }
 
-// implementation of oneof interfaces for CustomFieldValue.
-
 // implementation of oneof interfaces for Device.
 
 func (e *Device) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment) {
@@ -15198,8 +15925,6 @@ func (e *FrontPort) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry
 		AssignedObjectFrontPort: e.ConvertToProtoMessage().(*pb.FrontPort),
 	}
 }
-
-// implementation of oneof interfaces for GenericObject.
 
 // implementation of oneof interfaces for IKEPolicy.
 
