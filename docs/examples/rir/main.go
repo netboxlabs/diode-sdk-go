@@ -1,0 +1,70 @@
+// Package main demonstrates ingesting RIR entities using the Diode SDK.
+// This example includes three patterns: Minimal, Extended, and Explicit.
+package main
+
+import (
+	"context"
+	"log"
+
+	"github.com/netboxlabs/diode-sdk-go/diode"
+)
+
+const (
+	target     = "grpc://localhost:8080/diode"
+	appName    = "rir-example"
+	appVersion = "1.0.0"
+)
+
+func main() {
+	client, err := diode.NewClient(
+		target,
+		appName,
+		appVersion,
+	)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+
+	// Choose one of the three patterns by uncommenting:
+	rir := RIRMinimal()
+	// rir := RIRExtended()
+	// rir := RIRExplicit()
+
+	resp, err := client.Ingest(context.Background(), []diode.Entity{rir})
+	if err != nil {
+		log.Fatalf("Ingestion failed: %v", err)
+	}
+	if resp.Errors != nil {
+		log.Printf("Errors: %v", resp.Errors)
+	} else {
+		log.Println("RIR ingested successfully")
+	}
+}
+
+// RIRMinimal Creates a RIR with only required fields.
+func RIRMinimal() *diode.RIR {
+	return &diode.RIR{
+		Name: diode.String("Example Name"),
+		Slug: diode.String("example-slug"),
+	}
+}
+
+// RIRExtended Creates a RIR with common optional fields.
+func RIRExtended() *diode.RIR {
+	return &diode.RIR{
+		Name:        diode.String("Example Name"),
+		Slug:        diode.String("example-slug"),
+		Description: diode.String("Example description"),
+	}
+}
+
+// RIRExplicit Creates a RIR with fully nested objects and all common fields.
+func RIRExplicit() *diode.RIR {
+	return &diode.RIR{
+		Name:        diode.String("Example Name"),
+		Slug:        diode.String("example-slug"),
+		Description: diode.String("Example description"),
+		Comments:    diode.String("Example comments"),
+		Tags:        []*diode.Tag{{Name: diode.String("production")}},
+	}
+}

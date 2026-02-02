@@ -1,0 +1,76 @@
+// Package main demonstrates ingesting Site entities using the Diode SDK.
+// This example includes three patterns: Minimal, Extended, and Explicit.
+package main
+
+import (
+	"context"
+	"log"
+
+	"github.com/netboxlabs/diode-sdk-go/diode"
+)
+
+const (
+	target     = "grpc://localhost:8080/diode"
+	appName    = "site-example"
+	appVersion = "1.0.0"
+)
+
+func main() {
+	client, err := diode.NewClient(
+		target,
+		appName,
+		appVersion,
+	)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+
+	// Choose one of the three patterns by uncommenting:
+	site := SiteMinimal()
+	// site := SiteExtended()
+	// site := SiteExplicit()
+
+	resp, err := client.Ingest(context.Background(), []diode.Entity{site})
+	if err != nil {
+		log.Fatalf("Ingestion failed: %v", err)
+	}
+	if resp.Errors != nil {
+		log.Printf("Errors: %v", resp.Errors)
+	} else {
+		log.Println("Site ingested successfully")
+	}
+}
+
+// SiteMinimal Creates a Site with only required fields.
+func SiteMinimal() *diode.Site {
+	return &diode.Site{
+		Name: diode.String("Example Name"),
+		Slug: diode.String("example-slug"),
+	}
+}
+
+// SiteExtended Creates a Site with common optional fields.
+func SiteExtended() *diode.Site {
+	return &diode.Site{
+		Name:        diode.String("Example Name"),
+		Slug:        diode.String("example-slug"),
+		Status:      diode.String("active"),
+		Description: diode.String("Example description"),
+	}
+}
+
+// SiteExplicit Creates a Site with fully nested objects and all common fields.
+func SiteExplicit() *diode.Site {
+	return &diode.Site{
+		Name:        diode.String("Example Name"),
+		Slug:        diode.String("example-slug"),
+		Status:      diode.String("active"),
+		Description: diode.String("Example description"),
+		Comments:    diode.String("Example comments"),
+		Tenant: &diode.Tenant{
+			Name: diode.String("Example Name"),
+			Slug: diode.String("example-slug"),
+		},
+		Tags: []*diode.Tag{{Name: diode.String("production")}},
+	}
+}
