@@ -1,11 +1,11 @@
 # Diode Go SDK - Entity Examples
 
 Source: NetBox v4.5.0
-Generated: 2026-02-02 21:20:55Z
+Generated: 2026-02-04 16:45:30Z
 
 ## Prerequisites
 
-- Go 1.23 or later
+- Go 1.25 or later
 - Diode SDK for Go
 
 ## Installation
