@@ -1,5 +1,5 @@
 // Generated code. DO NOT EDIT.
-// Timestamp: 2026-02-02 16:59:00Z
+// Timestamp: 2026-02-04 18:00:20Z
 //
 
 package diode
@@ -24,6 +24,23 @@ type Entity interface {
 
 // Metadata is a map of arbitrary key-value pairs that can be attached to entities
 type Metadata map[string]any
+
+// convertMetadata recursively converts Metadata to map[string]any
+// so that nested Metadata values are properly handled by structpb.NewStruct
+func convertMetadata(m Metadata) map[string]any {
+	if m == nil {
+		return nil
+	}
+	result := make(map[string]any, len(m))
+	for k, v := range m {
+		if nested, ok := v.(Metadata); ok {
+			result[k] = convertMetadata(nested)
+		} else {
+			result[k] = v
+		}
+	}
+	return result
+}
 
 type ASN struct {
 	Asn          *int64
@@ -133,7 +150,7 @@ func (e *ASN) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *ASN) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -284,7 +301,7 @@ func (e *ASNRange) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *ASNRange) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -421,7 +438,7 @@ func (e *Aggregate) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *Aggregate) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -606,7 +623,7 @@ func (e *Cable) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *Cable) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -679,7 +696,7 @@ func (e *CablePath) GetIsSplit() *bool {
 func (e *CablePath) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -750,7 +767,7 @@ func (e *CableTermination) GetTermination() any {
 func (e *CableTermination) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -953,7 +970,7 @@ func (e *Circuit) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *Circuit) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -1064,7 +1081,7 @@ func (e *CircuitGroup) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *CircuitGroup) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -1156,7 +1173,7 @@ func (e *CircuitGroupAssignment) GetTags() []*pb.Tag {
 func (e *CircuitGroupAssignment) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -1315,7 +1332,7 @@ func (e *CircuitTermination) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *CircuitTermination) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -1418,7 +1435,7 @@ func (e *CircuitType) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *CircuitType) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -1584,7 +1601,7 @@ func (e *Cluster) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *Cluster) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -1685,7 +1702,7 @@ func (e *ClusterGroup) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *ClusterGroup) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -1794,7 +1811,7 @@ func (e *ClusterType) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *ClusterType) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -1951,7 +1968,7 @@ func (e *ConsolePort) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *ConsolePort) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -2100,7 +2117,7 @@ func (e *ConsoleServerPort) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *ConsoleServerPort) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -2271,7 +2288,7 @@ func (e *Contact) GetGroups() []*pb.ContactGroup {
 func (e *Contact) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -2478,7 +2495,7 @@ func (e *ContactAssignment) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *ContactAssignment) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -2589,7 +2606,7 @@ func (e *ContactGroup) GetComments() *string {
 func (e *ContactGroup) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -2690,7 +2707,7 @@ func (e *ContactRole) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *ContactRole) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -3196,7 +3213,7 @@ func (e *Device) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *Device) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -3323,7 +3340,7 @@ func (e *DeviceBay) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *DeviceBay) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -3462,7 +3479,7 @@ func (e *DeviceRole) GetComments() *string {
 func (e *DeviceRole) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -3671,7 +3688,7 @@ func (e *DeviceType) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *DeviceType) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -3810,7 +3827,7 @@ func (e *FHRPGroup) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *FHRPGroup) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -3975,7 +3992,7 @@ func (e *FHRPGroupAssignment) GetPriority() int64 {
 func (e *FHRPGroupAssignment) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -4138,7 +4155,7 @@ func (e *FrontPort) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *FrontPort) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -4405,7 +4422,7 @@ func (e *IKEPolicy) GetProposals() []*pb.IKEProposal {
 func (e *IKEPolicy) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -4554,7 +4571,7 @@ func (e *IKEProposal) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *IKEProposal) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -4731,7 +4748,7 @@ func (e *IPAddress) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *IPAddress) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -4900,7 +4917,7 @@ func (e *IPRange) GetMarkPopulated() *bool {
 func (e *IPRange) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -5021,7 +5038,7 @@ func (e *IPSecPolicy) GetProposals() []*pb.IPSecProposal {
 func (e *IPSecPolicy) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -5150,7 +5167,7 @@ func (e *IPSecProfile) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *IPSecProfile) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -5289,7 +5306,7 @@ func (e *IPSecProposal) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *IPSecProposal) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -5684,7 +5701,7 @@ func (e *Interface) GetWirelessLans() []*pb.WirelessLAN {
 func (e *Interface) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -5895,7 +5912,7 @@ func (e *InventoryItem) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *InventoryItem) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -6006,7 +6023,7 @@ func (e *InventoryItemRole) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *InventoryItemRole) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -6187,7 +6204,7 @@ func (e *L2VPN) GetStatus() *string {
 func (e *L2VPN) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -6374,7 +6391,7 @@ func (e *L2VPNTermination) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *L2VPNTermination) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -6525,7 +6542,7 @@ func (e *Location) GetComments() *string {
 func (e *Location) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -6641,7 +6658,7 @@ func (e *MACAddress) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *MACAddress) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -6742,7 +6759,7 @@ func (e *Manufacturer) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *Manufacturer) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -6899,7 +6916,7 @@ func (e *Module) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *Module) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -7038,7 +7055,7 @@ func (e *ModuleBay) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *ModuleBay) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -7207,7 +7224,7 @@ func (e *ModuleType) GetAttributes() *string {
 func (e *ModuleType) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -7336,7 +7353,7 @@ func (e *Platform) GetComments() *string {
 func (e *Platform) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -7545,7 +7562,7 @@ func (e *PowerFeed) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *PowerFeed) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -7724,7 +7741,7 @@ func (e *PowerOutlet) GetStatus() *string {
 func (e *PowerOutlet) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -7843,7 +7860,7 @@ func (e *PowerPanel) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *PowerPanel) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -8002,7 +8019,7 @@ func (e *PowerPort) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *PowerPort) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -8190,7 +8207,7 @@ func (e *Prefix) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *Prefix) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -8323,7 +8340,7 @@ func (e *Provider) GetAsns() []*pb.ASN {
 func (e *Provider) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -8442,7 +8459,7 @@ func (e *ProviderAccount) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *ProviderAccount) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -8561,7 +8578,7 @@ func (e *ProviderNetwork) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *ProviderNetwork) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -8672,7 +8689,7 @@ func (e *RIR) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *RIR) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -9009,7 +9026,7 @@ func (e *Rack) GetOuterHeight() *int64 {
 func (e *Rack) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -9140,7 +9157,7 @@ func (e *RackReservation) GetStatus() *string {
 func (e *RackReservation) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -9251,7 +9268,7 @@ func (e *RackRole) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *RackRole) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -9508,7 +9525,7 @@ func (e *RackType) GetOuterHeight() *int64 {
 func (e *RackType) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -9667,7 +9684,7 @@ func (e *RearPort) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *RearPort) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -9786,7 +9803,7 @@ func (e *Region) GetComments() *string {
 func (e *Region) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -9897,7 +9914,7 @@ func (e *Role) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *Role) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -10014,7 +10031,7 @@ func (e *RouteTarget) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *RouteTarget) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -10185,7 +10202,7 @@ func (e *Service) GetParentObject() any {
 func (e *Service) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -10406,7 +10423,7 @@ func (e *Site) GetAsns() []*pb.ASN {
 func (e *Site) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -10525,7 +10542,7 @@ func (e *SiteGroup) GetComments() *string {
 func (e *SiteGroup) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -10622,7 +10639,7 @@ func (e *Tag) GetObjectTypes() []string {
 func (e *Tag) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -10733,7 +10750,7 @@ func (e *Tenant) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *Tenant) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -10852,7 +10869,7 @@ func (e *TenantGroup) GetComments() *string {
 func (e *TenantGroup) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -11011,7 +11028,7 @@ func (e *Tunnel) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *Tunnel) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -11112,7 +11129,7 @@ func (e *TunnelGroup) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *TunnelGroup) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -11327,7 +11344,7 @@ func (e *TunnelTermination) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *TunnelTermination) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -11498,7 +11515,7 @@ func (e *VLAN) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *VLAN) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -11643,7 +11660,7 @@ func (e *VLANGroup) GetTenant() *pb.Tenant {
 func (e *VLANGroup) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -11710,7 +11727,7 @@ func (e *VLANTranslationPolicy) GetDescription() *string {
 func (e *VLANTranslationPolicy) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -11793,7 +11810,7 @@ func (e *VLANTranslationRule) GetDescription() *string {
 func (e *VLANTranslationRule) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -11996,7 +12013,7 @@ func (e *VMInterface) GetTaggedVlans() []*pb.VLAN {
 func (e *VMInterface) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -12149,7 +12166,7 @@ func (e *VRF) GetExportTargets() []*pb.RouteTarget {
 func (e *VRF) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -12268,7 +12285,7 @@ func (e *VirtualChassis) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *VirtualChassis) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -12417,7 +12434,7 @@ func (e *VirtualCircuit) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *VirtualCircuit) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -12524,7 +12541,7 @@ func (e *VirtualCircuitTermination) GetCustomFields() map[string]*pb.CustomField
 func (e *VirtualCircuitTermination) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -12627,7 +12644,7 @@ func (e *VirtualCircuitType) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *VirtualCircuitType) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -12794,7 +12811,7 @@ func (e *VirtualDeviceContext) GetCustomFields() map[string]*pb.CustomFieldValue
 func (e *VirtualDeviceContext) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -12903,7 +12920,7 @@ func (e *VirtualDisk) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *VirtualDisk) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -13134,7 +13151,7 @@ func (e *VirtualMachine) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *VirtualMachine) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -13330,7 +13347,7 @@ func (e *WirelessLAN) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *WirelessLAN) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -13449,7 +13466,7 @@ func (e *WirelessLANGroup) GetComments() *string {
 func (e *WirelessLANGroup) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -13638,7 +13655,7 @@ func (e *WirelessLink) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *WirelessLink) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -13897,7 +13914,7 @@ func (e *CustomField) GetObjectTypes() []string {
 func (e *CustomField) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -13986,7 +14003,7 @@ func (e *CustomFieldChoiceSet) GetExtraChoices() []string {
 func (e *CustomFieldChoiceSet) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -14183,7 +14200,7 @@ func (e *JournalEntry) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *JournalEntry) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -14284,7 +14301,7 @@ func (e *ModuleTypeProfile) GetCustomFields() map[string]*pb.CustomFieldValue {
 func (e *ModuleTypeProfile) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -14413,7 +14430,7 @@ func (e *CustomLink) GetObjectTypes() []string {
 func (e *CustomLink) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -14478,7 +14495,7 @@ func (e *Owner) GetDescription() *string {
 func (e *Owner) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -14525,7 +14542,7 @@ func (e *OwnerGroup) GetDescription() *string {
 func (e *OwnerGroup) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
@@ -14579,7 +14596,7 @@ func (e *DeviceConfig) GetCandidate() []byte {
 func (e *DeviceConfig) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
-		r, _ = structpb.NewStruct(e.Metadata)
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
 	}
 	return r
 }
