@@ -1987,6 +1987,123 @@ func TestMetadataConversionNestedEntities(t *testing.T) {
 	}
 }
 
+func TestConvertMetadata(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    Metadata
+		expected map[string]any
+	}{
+		{
+			name:     "nil metadata",
+			input:    nil,
+			expected: nil,
+		},
+		{
+			name:     "empty metadata",
+			input:    Metadata{},
+			expected: map[string]any{},
+		},
+		{
+			name: "flat metadata",
+			input: Metadata{
+				"key1": "value1",
+				"key2": 123,
+				"key3": true,
+			},
+			expected: map[string]any{
+				"key1": "value1",
+				"key2": 123,
+				"key3": true,
+			},
+		},
+		{
+			name: "nested Metadata type",
+			input: Metadata{
+				"foo": "bar",
+				"source": Metadata{
+					"netbox_id": 123,
+				},
+			},
+			expected: map[string]any{
+				"foo": "bar",
+				"source": map[string]any{
+					"netbox_id": 123,
+				},
+			},
+		},
+		{
+			name: "deeply nested Metadata types",
+			input: Metadata{
+				"level1": Metadata{
+					"level2": Metadata{
+						"level3": "deep_value",
+					},
+				},
+			},
+			expected: map[string]any{
+				"level1": map[string]any{
+					"level2": map[string]any{
+						"level3": "deep_value",
+					},
+				},
+			},
+		},
+		{
+			name: "mixed nested types",
+			input: Metadata{
+				"string_val": "test",
+				"nested_metadata": Metadata{
+					"inner_key": "inner_value",
+				},
+				"nested_map": map[string]any{
+					"map_key": "map_value",
+				},
+			},
+			expected: map[string]any{
+				"string_val": "test",
+				"nested_metadata": map[string]any{
+					"inner_key": "inner_value",
+				},
+				"nested_map": map[string]any{
+					"map_key": "map_value",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := convertMetadata(tt.input)
+			require.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func TestNestedMetadataConversion(t *testing.T) {
+	// Test that nested Metadata types are properly converted to structpb.Struct
+	device := &Device{
+		Name: String("device-1"),
+		Metadata: Metadata{
+			"foo": "bar",
+			"source_match": Metadata{
+				"netbox_id": 123,
+				"diode_id":  "xyz",
+			},
+		},
+	}
+
+	protoEntity := device.ConvertToProtoEntity()
+	metadata := protoEntity.GetDevice().GetMetadata()
+
+	require.NotNil(t, metadata, "metadata should not be nil")
+	require.Equal(t, "bar", metadata.Fields["foo"].GetStringValue())
+
+	sourceMatch := metadata.Fields["source_match"].GetStructValue()
+	require.NotNil(t, sourceMatch, "nested source_match should be a struct")
+	require.Equal(t, float64(123), sourceMatch.Fields["netbox_id"].GetNumberValue())
+	require.Equal(t, "xyz", sourceMatch.Fields["diode_id"].GetStringValue())
+}
+
 func TestOwnerGroupMethods(t *testing.T) {
 	tests := []struct {
 		name       string
