@@ -1,7 +1,7 @@
 # Diode Go SDK - Entity Examples
 
 Source: NetBox v4.5.0
-Generated: 2026-02-04 16:45:30Z
+Generated: 2026-02-10 03:24:52Z
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@ Generated: 2026-02-04 16:45:30Z
 ## Installation
 
 ```bash
-go get github.com/netboxlabs/diode-sdk-go@v0.1.0
+go get github.com/netboxlabs/diode-sdk-go@latest
 ```
 
 ## Configuration

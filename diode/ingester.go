@@ -1,6 +1,6 @@
 // Generated code. DO NOT EDIT.
 // Source: NetBox v4.5.0
-// Timestamp: 2026-02-04 16:45:27Z
+// Timestamp: 2026-02-10 03:24:51Z
 //
 
 package diode
