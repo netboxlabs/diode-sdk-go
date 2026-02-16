@@ -286,6 +286,170 @@ Request-level metadata is included in the `IngestRequest` and can be useful for:
 - Debugging and auditing data imports
 - Adding contextual information for downstream processing
 
+### Message chunking
+
+When ingesting large datasets, you may encounter gRPC message size limits (typically 4 MB). The SDK provides automatic message chunking to split large entity lists into size-appropriate chunks that stay within these limits.
+
+#### Automatic chunking
+
+Enable chunking by using `WithChunking()` when calling `Ingest`:
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/netboxlabs/diode-sdk-go/diode"
+)
+
+func main() {
+	client, err := diode.NewClient(
+		"grpc://localhost:8080/diode",
+		"example-app",
+		"0.1.0",
+		diode.WithClientID("YOUR_CLIENT_ID"),
+		diode.WithClientSecret("YOUR_CLIENT_SECRET"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create a large number of entities
+	entities := make([]diode.Entity, 0)
+	for i := 0; i < 10000; i++ {
+		entities = append(entities, &diode.Device{
+			Name: diode.String(fmt.Sprintf("Device %d", i)),
+			Site: &diode.Site{
+				Name: diode.String("Site ABC"),
+			},
+			DeviceType: &diode.DeviceType{
+				Model: diode.String("Device Type A"),
+			},
+			Role: &diode.DeviceRole{
+				Name: diode.String("Role ABC"),
+			},
+		})
+	}
+
+	// Use chunking with default 3.0 MB chunk size
+	resp, err := client.Ingest(
+		context.Background(),
+		entities,
+		diode.WithChunking(0), // 0 = use default
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Success\n")
+}
+```
+
+#### Custom chunk size
+
+You can specify a custom chunk size in megabytes:
+
+```go
+// Use 3.5 MB chunks instead of the default 3.0 MB
+resp, err := client.Ingest(
+	context.Background(),
+	entities,
+	diode.WithChunking(3.5),
+)
+```
+
+#### Manual chunking
+
+For more control, you can manually chunk entities using the `CreateMessageChunks` function:
+
+```go
+package main
+
+import (
+	"context"
+	"log"
+
+	"github.com/netboxlabs/diode-sdk-go/diode"
+	pb "github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
+)
+
+func main() {
+	client, err := diode.NewClient(
+		"grpc://localhost:8080/diode",
+		"example-app",
+		"0.1.0",
+		diode.WithClientID("YOUR_CLIENT_ID"),
+		diode.WithClientSecret("YOUR_CLIENT_SECRET"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create entities
+	entities := []diode.Entity{
+		// ... many entities
+	}
+
+	// Convert to proto entities
+	protoEntities := make([]*pb.Entity, 0)
+	for _, entity := range entities {
+		protoEntities = append(protoEntities, entity.ConvertToProtoEntity())
+	}
+
+	// Manually chunk with custom size (3.5 MB)
+	chunks := diode.CreateMessageChunks(protoEntities, 3.5)
+
+	log.Printf("Split %d entities into %d chunks\n", len(protoEntities), len(chunks))
+
+	// Ingest each chunk
+	for i, chunk := range chunks {
+		log.Printf("Ingesting chunk %d of %d (%d entities)\n", i+1, len(chunks), len(chunk))
+		resp, err := client.IngestProto(context.Background(), chunk)
+		if err != nil {
+			log.Fatalf("Failed to ingest chunk %d: %v\n", i+1, err)
+		}
+		if resp != nil && resp.Errors != nil {
+			log.Printf("Chunk %d errors: %v\n", i+1, resp.Errors)
+		}
+	}
+	log.Printf("Successfully ingested all chunks\n")
+}
+```
+
+#### Estimating message size
+
+You can estimate the size of your entities before chunking:
+
+```go
+import pb "github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
+
+protoEntities := make([]*pb.Entity, 0)
+for _, entity := range entities {
+	protoEntities = append(protoEntities, entity.ConvertToProtoEntity())
+}
+
+sizeBytes := diode.EstimateMessageSize(protoEntities)
+sizeMB := float64(sizeBytes) / (1024 * 1024)
+log.Printf("Estimated message size: %.2f MB\n", sizeMB)
+
+if sizeMB > 3.0 {
+	log.Printf("Message exceeds 3 MB, chunking recommended\n")
+}
+```
+
+#### How chunking works
+
+The chunking algorithm uses greedy bin-packing to efficiently group entities:
+
+1. It accumulates entities until adding the next one would exceed the size limit
+2. When the limit would be exceeded, it starts a new chunk
+3. Each chunk includes the base overhead of an `IngestRequest` protobuf message
+4. Entity order is preserved across chunks
+
+The default chunk size of 3.0 MB provides a safe margin below the gRPC 4 MB message size limit, accounting for protobuf serialization overhead and network protocol overhead.
+
 ### TLS verification and certificates
 
 TLS verification is controlled by the target URL scheme:
