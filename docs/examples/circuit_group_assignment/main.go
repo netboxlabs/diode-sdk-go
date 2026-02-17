@@ -45,9 +45,11 @@ func main() {
 func CircuitGroupAssignmentMinimal() *diode.CircuitGroupAssignment {
 	return &diode.CircuitGroupAssignment{
 		Group: &diode.CircuitGroup{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -55,9 +57,11 @@ func CircuitGroupAssignmentMinimal() *diode.CircuitGroupAssignment {
 func CircuitGroupAssignmentExtended() *diode.CircuitGroupAssignment {
 	return &diode.CircuitGroupAssignment{
 		Group: &diode.CircuitGroup{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -65,9 +69,11 @@ func CircuitGroupAssignmentExtended() *diode.CircuitGroupAssignment {
 func CircuitGroupAssignmentExplicit() *diode.CircuitGroupAssignment {
 	return &diode.CircuitGroupAssignment{
 		Group: &diode.CircuitGroup{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
-		Tags: []*diode.Tag{{Name: diode.String("production")}},
+		Metadata: diode.Metadata{"source": "example"},
+		Tags:     []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

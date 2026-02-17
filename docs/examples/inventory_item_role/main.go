@@ -44,8 +44,9 @@ func main() {
 // InventoryItemRoleMinimal Creates a InventoryItemRole with only required fields.
 func InventoryItemRoleMinimal() *diode.InventoryItemRole {
 	return &diode.InventoryItemRole{
-		Name: diode.String("Example Name"),
-		Slug: diode.String("example-slug"),
+		Name:     diode.String("Example Name"),
+		Slug:     diode.String("example-slug"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,6 +55,7 @@ func InventoryItemRoleExtended() *diode.InventoryItemRole {
 	return &diode.InventoryItemRole{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Color:       diode.String("0000ff"),
 		Description: diode.String("Example description"),
 	}
@@ -64,6 +66,7 @@ func InventoryItemRoleExplicit() *diode.InventoryItemRole {
 	return &diode.InventoryItemRole{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Color:       diode.String("0000ff"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),

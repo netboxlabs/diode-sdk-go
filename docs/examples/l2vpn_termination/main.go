@@ -45,9 +45,11 @@ func main() {
 func L2VPNTerminationMinimal() *diode.L2VPNTermination {
 	return &diode.L2VPNTermination{
 		L2Vpn: &diode.L2VPN{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -55,9 +57,11 @@ func L2VPNTerminationMinimal() *diode.L2VPNTermination {
 func L2VPNTerminationExtended() *diode.L2VPNTermination {
 	return &diode.L2VPNTermination{
 		L2Vpn: &diode.L2VPN{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -65,10 +69,12 @@ func L2VPNTerminationExtended() *diode.L2VPNTermination {
 func L2VPNTerminationExplicit() *diode.L2VPNTermination {
 	return &diode.L2VPNTermination{
 		L2Vpn: &diode.L2VPN{
-			Name:   diode.String("Example Name"),
-			Slug:   diode.String("example-slug"),
-			Status: diode.String("active"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
-		Tags: []*diode.Tag{{Name: diode.String("production")}},
+		Metadata: diode.Metadata{"source": "example"},
+		Tags:     []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

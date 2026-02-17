@@ -44,8 +44,9 @@ func main() {
 // RIRMinimal Creates a RIR with only required fields.
 func RIRMinimal() *diode.RIR {
 	return &diode.RIR{
-		Name: diode.String("Example Name"),
-		Slug: diode.String("example-slug"),
+		Name:     diode.String("Example Name"),
+		Slug:     diode.String("example-slug"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,6 +55,7 @@ func RIRExtended() *diode.RIR {
 	return &diode.RIR{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -63,6 +65,7 @@ func RIRExplicit() *diode.RIR {
 	return &diode.RIR{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

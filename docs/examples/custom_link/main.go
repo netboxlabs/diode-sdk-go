@@ -47,6 +47,7 @@ func CustomLinkMinimal() *diode.CustomLink {
 		Name:     diode.String("Example Name"),
 		LinkText: diode.String("Example LinkText"),
 		LinkUrl:  diode.String("Example LinkUrl"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -56,6 +57,7 @@ func CustomLinkExtended() *diode.CustomLink {
 		Name:     diode.String("Example Name"),
 		LinkText: diode.String("Example LinkText"),
 		LinkUrl:  diode.String("Example LinkUrl"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -65,5 +67,6 @@ func CustomLinkExplicit() *diode.CustomLink {
 		Name:     diode.String("Example Name"),
 		LinkText: diode.String("Example LinkText"),
 		LinkUrl:  diode.String("Example LinkUrl"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }

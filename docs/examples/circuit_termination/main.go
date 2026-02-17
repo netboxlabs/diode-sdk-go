@@ -47,15 +47,19 @@ func CircuitTerminationMinimal() *diode.CircuitTermination {
 		Circuit: &diode.Circuit{
 			Cid: diode.String("CID-001"),
 			Provider: &diode.Provider{
-				Name: diode.String("Example Name"),
-				Slug: diode.String("example-slug"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
 			Type: &diode.CircuitType{
-				Name: diode.String("Example Name"),
-				Slug: diode.String("example-slug"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		TermSide: diode.String("A"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -65,15 +69,19 @@ func CircuitTerminationExtended() *diode.CircuitTermination {
 		Circuit: &diode.Circuit{
 			Cid: diode.String("CID-001"),
 			Provider: &diode.Provider{
-				Name: diode.String("Example Name"),
-				Slug: diode.String("example-slug"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
 			Type: &diode.CircuitType{
-				Name: diode.String("Example Name"),
-				Slug: diode.String("example-slug"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		TermSide:    diode.String("A"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -84,17 +92,21 @@ func CircuitTerminationExplicit() *diode.CircuitTermination {
 		Circuit: &diode.Circuit{
 			Cid: diode.String("CID-001"),
 			Provider: &diode.Provider{
-				Name: diode.String("Example Name"),
-				Slug: diode.String("example-slug"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
 			Type: &diode.CircuitType{
-				Name:  diode.String("Example Name"),
-				Slug:  diode.String("example-slug"),
-				Color: diode.String("0000ff"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Color:    diode.String("0000ff"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
-			Status: diode.String("active"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		TermSide:    diode.String("A"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},
 	}

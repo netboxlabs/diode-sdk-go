@@ -47,6 +47,7 @@ func TunnelMinimal() *diode.Tunnel {
 		Name:          diode.String("Example Name"),
 		Status:        diode.String("active"),
 		Encapsulation: diode.String("gre"),
+		Metadata:      diode.Metadata{"source": "example"},
 	}
 }
 
@@ -56,6 +57,7 @@ func TunnelExtended() *diode.Tunnel {
 		Name:          diode.String("Example Name"),
 		Status:        diode.String("active"),
 		Encapsulation: diode.String("gre"),
+		Metadata:      diode.Metadata{"source": "example"},
 		Description:   diode.String("Example description"),
 	}
 }
@@ -66,11 +68,13 @@ func TunnelExplicit() *diode.Tunnel {
 		Name:          diode.String("Example Name"),
 		Status:        diode.String("active"),
 		Encapsulation: diode.String("gre"),
+		Metadata:      diode.Metadata{"source": "example"},
 		Description:   diode.String("Example description"),
 		Comments:      diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

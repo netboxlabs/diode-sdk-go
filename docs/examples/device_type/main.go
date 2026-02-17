@@ -45,11 +45,13 @@ func main() {
 func DeviceTypeMinimal() *diode.DeviceType {
 	return &diode.DeviceType{
 		Manufacturer: &diode.Manufacturer{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
-		Model: diode.String("Model X"),
-		Slug:  diode.String("example-slug"),
+		Model:    diode.String("Model X"),
+		Slug:     diode.String("example-slug"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -57,11 +59,13 @@ func DeviceTypeMinimal() *diode.DeviceType {
 func DeviceTypeExtended() *diode.DeviceType {
 	return &diode.DeviceType{
 		Manufacturer: &diode.Manufacturer{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Model:       diode.String("Model X"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -70,11 +74,13 @@ func DeviceTypeExtended() *diode.DeviceType {
 func DeviceTypeExplicit() *diode.DeviceType {
 	return &diode.DeviceType{
 		Manufacturer: &diode.Manufacturer{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Model:       diode.String("Model X"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

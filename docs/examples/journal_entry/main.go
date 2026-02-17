@@ -45,6 +45,7 @@ func main() {
 func JournalEntryMinimal() *diode.JournalEntry {
 	return &diode.JournalEntry{
 		Comments: diode.String("Example comments"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func JournalEntryMinimal() *diode.JournalEntry {
 func JournalEntryExtended() *diode.JournalEntry {
 	return &diode.JournalEntry{
 		Comments: diode.String("Example comments"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -59,6 +61,7 @@ func JournalEntryExtended() *diode.JournalEntry {
 func JournalEntryExplicit() *diode.JournalEntry {
 	return &diode.JournalEntry{
 		Comments: diode.String("Example comments"),
+		Metadata: diode.Metadata{"source": "example"},
 		Tags:     []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

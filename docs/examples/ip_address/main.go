@@ -44,7 +44,8 @@ func main() {
 // IPAddressMinimal Creates a IPAddress with only required fields.
 func IPAddressMinimal() *diode.IPAddress {
 	return &diode.IPAddress{
-		Address: diode.String("192.0.2.1/32"),
+		Address:  diode.String("192.0.2.1/32"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func IPAddressMinimal() *diode.IPAddress {
 func IPAddressExtended() *diode.IPAddress {
 	return &diode.IPAddress{
 		Address:     diode.String("192.0.2.1/32"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 	}
@@ -61,12 +63,14 @@ func IPAddressExtended() *diode.IPAddress {
 func IPAddressExplicit() *diode.IPAddress {
 	return &diode.IPAddress{
 		Address:     diode.String("192.0.2.1/32"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

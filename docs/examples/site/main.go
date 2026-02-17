@@ -44,8 +44,9 @@ func main() {
 // SiteMinimal Creates a Site with only required fields.
 func SiteMinimal() *diode.Site {
 	return &diode.Site{
-		Name: diode.String("Example Name"),
-		Slug: diode.String("example-slug"),
+		Name:     diode.String("Example Name"),
+		Slug:     diode.String("example-slug"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,6 +55,7 @@ func SiteExtended() *diode.Site {
 	return &diode.Site{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 	}
@@ -64,12 +66,14 @@ func SiteExplicit() *diode.Site {
 	return &diode.Site{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

@@ -45,10 +45,12 @@ func main() {
 func ModuleTypeMinimal() *diode.ModuleType {
 	return &diode.ModuleType{
 		Manufacturer: &diode.Manufacturer{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
-		Model: diode.String("Model X"),
+		Model:    diode.String("Model X"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -56,10 +58,12 @@ func ModuleTypeMinimal() *diode.ModuleType {
 func ModuleTypeExtended() *diode.ModuleType {
 	return &diode.ModuleType{
 		Manufacturer: &diode.Manufacturer{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Model:       diode.String("Model X"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -68,10 +72,12 @@ func ModuleTypeExtended() *diode.ModuleType {
 func ModuleTypeExplicit() *diode.ModuleType {
 	return &diode.ModuleType{
 		Manufacturer: &diode.Manufacturer{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Model:       diode.String("Model X"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

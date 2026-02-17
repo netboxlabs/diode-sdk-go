@@ -43,12 +43,15 @@ func main() {
 
 // CableMinimal Creates a Cable with only required fields.
 func CableMinimal() *diode.Cable {
-	return &diode.Cable{}
+	return &diode.Cable{
+		Metadata: diode.Metadata{"source": "example"},
+	}
 }
 
 // CableExtended Creates a Cable with common optional fields.
 func CableExtended() *diode.Cable {
 	return &diode.Cable{
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("connected"),
 		Color:       diode.String("0000ff"),
 		Description: diode.String("Example description"),
@@ -58,13 +61,15 @@ func CableExtended() *diode.Cable {
 // CableExplicit Creates a Cable with fully nested objects and all common fields.
 func CableExplicit() *diode.Cable {
 	return &diode.Cable{
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("connected"),
 		Color:       diode.String("0000ff"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

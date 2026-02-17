@@ -44,8 +44,9 @@ func main() {
 // DeviceRoleMinimal Creates a DeviceRole with only required fields.
 func DeviceRoleMinimal() *diode.DeviceRole {
 	return &diode.DeviceRole{
-		Name: diode.String("Example Name"),
-		Slug: diode.String("example-slug"),
+		Name:     diode.String("Example Name"),
+		Slug:     diode.String("example-slug"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,6 +55,7 @@ func DeviceRoleExtended() *diode.DeviceRole {
 	return &diode.DeviceRole{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Color:       diode.String("0000ff"),
 		Description: diode.String("Example description"),
 	}
@@ -64,6 +66,7 @@ func DeviceRoleExplicit() *diode.DeviceRole {
 	return &diode.DeviceRole{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Color:       diode.String("0000ff"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),

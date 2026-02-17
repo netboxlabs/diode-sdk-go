@@ -44,7 +44,8 @@ func main() {
 // ASNMinimal Creates a ASN with only required fields.
 func ASNMinimal() *diode.ASN {
 	return &diode.ASN{
-		Asn: diode.Int64(64512),
+		Asn:      diode.Int64(64512),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func ASNMinimal() *diode.ASN {
 func ASNExtended() *diode.ASN {
 	return &diode.ASN{
 		Asn:         diode.Int64(64512),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -60,11 +62,13 @@ func ASNExtended() *diode.ASN {
 func ASNExplicit() *diode.ASN {
 	return &diode.ASN{
 		Asn:         diode.Int64(64512),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

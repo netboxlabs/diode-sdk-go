@@ -47,15 +47,19 @@ func VirtualCircuitMinimal() *diode.VirtualCircuit {
 		Cid: diode.String("CID-001"),
 		ProviderNetwork: &diode.ProviderNetwork{
 			Provider: &diode.Provider{
-				Name: diode.String("Example Name"),
-				Slug: diode.String("example-slug"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Type: &diode.VirtualCircuitType{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -65,15 +69,19 @@ func VirtualCircuitExtended() *diode.VirtualCircuit {
 		Cid: diode.String("CID-001"),
 		ProviderNetwork: &diode.ProviderNetwork{
 			Provider: &diode.Provider{
-				Name: diode.String("Example Name"),
-				Slug: diode.String("example-slug"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Type: &diode.VirtualCircuitType{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 	}
@@ -85,22 +93,27 @@ func VirtualCircuitExplicit() *diode.VirtualCircuit {
 		Cid: diode.String("CID-001"),
 		ProviderNetwork: &diode.ProviderNetwork{
 			Provider: &diode.Provider{
-				Name: diode.String("Example Name"),
-				Slug: diode.String("example-slug"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Type: &diode.VirtualCircuitType{
-			Name:  diode.String("Example Name"),
-			Slug:  diode.String("example-slug"),
-			Color: diode.String("0000ff"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Color:    diode.String("0000ff"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

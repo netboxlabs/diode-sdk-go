@@ -45,10 +45,12 @@ func main() {
 func VirtualDiskMinimal() *diode.VirtualDisk {
 	return &diode.VirtualDisk{
 		VirtualMachine: &diode.VirtualMachine{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
-		Name: diode.String("Example Name"),
-		Size: diode.Int64(1),
+		Name:     diode.String("Example Name"),
+		Size:     diode.Int64(1),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -56,10 +58,12 @@ func VirtualDiskMinimal() *diode.VirtualDisk {
 func VirtualDiskExtended() *diode.VirtualDisk {
 	return &diode.VirtualDisk{
 		VirtualMachine: &diode.VirtualMachine{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:        diode.String("Example Name"),
 		Size:        diode.Int64(1),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -68,11 +72,13 @@ func VirtualDiskExtended() *diode.VirtualDisk {
 func VirtualDiskExplicit() *diode.VirtualDisk {
 	return &diode.VirtualDisk{
 		VirtualMachine: &diode.VirtualMachine{
-			Name:   diode.String("Example Name"),
-			Status: diode.String("active"),
+			Name:     diode.String("Example Name"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:        diode.String("Example Name"),
 		Size:        diode.Int64(1),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},
 	}

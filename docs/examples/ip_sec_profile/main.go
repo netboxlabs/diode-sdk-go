@@ -47,12 +47,15 @@ func IPSecProfileMinimal() *diode.IPSecProfile {
 		Name: diode.String("Example Name"),
 		Mode: diode.String("ah"),
 		IkePolicy: &diode.IKEPolicy{
-			Name:    diode.String("Example Name"),
-			Version: diode.Int64(1),
+			Name:     diode.String("Example Name"),
+			Version:  diode.Int64(1),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		IpsecPolicy: &diode.IPSecPolicy{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -62,12 +65,15 @@ func IPSecProfileExtended() *diode.IPSecProfile {
 		Name: diode.String("Example Name"),
 		Mode: diode.String("ah"),
 		IkePolicy: &diode.IKEPolicy{
-			Name:    diode.String("Example Name"),
-			Version: diode.Int64(1),
+			Name:     diode.String("Example Name"),
+			Version:  diode.Int64(1),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		IpsecPolicy: &diode.IPSecPolicy{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -78,12 +84,15 @@ func IPSecProfileExplicit() *diode.IPSecProfile {
 		Name: diode.String("Example Name"),
 		Mode: diode.String("ah"),
 		IkePolicy: &diode.IKEPolicy{
-			Name:    diode.String("Example Name"),
-			Version: diode.Int64(1),
+			Name:     diode.String("Example Name"),
+			Version:  diode.Int64(1),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		IpsecPolicy: &diode.IPSecPolicy{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

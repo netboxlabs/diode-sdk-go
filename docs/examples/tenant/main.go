@@ -44,8 +44,9 @@ func main() {
 // TenantMinimal Creates a Tenant with only required fields.
 func TenantMinimal() *diode.Tenant {
 	return &diode.Tenant{
-		Name: diode.String("Example Name"),
-		Slug: diode.String("example-slug"),
+		Name:     diode.String("Example Name"),
+		Slug:     diode.String("example-slug"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,6 +55,7 @@ func TenantExtended() *diode.Tenant {
 	return &diode.Tenant{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -63,6 +65,7 @@ func TenantExplicit() *diode.Tenant {
 	return &diode.Tenant{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

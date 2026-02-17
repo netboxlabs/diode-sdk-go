@@ -48,6 +48,7 @@ func IKEProposalMinimal() *diode.IKEProposal {
 		AuthenticationMethod: diode.String("certificates"),
 		EncryptionAlgorithm:  diode.String("3des-cbc"),
 		Group:                diode.Int64(1),
+		Metadata:             diode.Metadata{"source": "example"},
 	}
 }
 
@@ -58,6 +59,7 @@ func IKEProposalExtended() *diode.IKEProposal {
 		AuthenticationMethod: diode.String("certificates"),
 		EncryptionAlgorithm:  diode.String("3des-cbc"),
 		Group:                diode.Int64(1),
+		Metadata:             diode.Metadata{"source": "example"},
 		Description:          diode.String("Example description"),
 	}
 }
@@ -69,6 +71,7 @@ func IKEProposalExplicit() *diode.IKEProposal {
 		AuthenticationMethod: diode.String("certificates"),
 		EncryptionAlgorithm:  diode.String("3des-cbc"),
 		Group:                diode.Int64(1),
+		Metadata:             diode.Metadata{"source": "example"},
 		Description:          diode.String("Example description"),
 		Comments:             diode.String("Example comments"),
 		Tags:                 []*diode.Tag{{Name: diode.String("production")}},

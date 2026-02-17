@@ -44,7 +44,8 @@ func main() {
 // VirtualMachineMinimal Creates a VirtualMachine with only required fields.
 func VirtualMachineMinimal() *diode.VirtualMachine {
 	return &diode.VirtualMachine{
-		Name: diode.String("Example Name"),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func VirtualMachineMinimal() *diode.VirtualMachine {
 func VirtualMachineExtended() *diode.VirtualMachine {
 	return &diode.VirtualMachine{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Serial:      diode.String("SN-001234"),
 		Description: diode.String("Example description"),
@@ -62,17 +64,20 @@ func VirtualMachineExtended() *diode.VirtualMachine {
 func VirtualMachineExplicit() *diode.VirtualMachine {
 	return &diode.VirtualMachine{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Serial:      diode.String("SN-001234"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Platform: &diode.Platform{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

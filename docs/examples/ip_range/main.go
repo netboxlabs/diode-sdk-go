@@ -46,6 +46,7 @@ func IPRangeMinimal() *diode.IPRange {
 	return &diode.IPRange{
 		StartAddress: diode.String("Example StartAddress"),
 		EndAddress:   diode.String("Example EndAddress"),
+		Metadata:     diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,6 +55,7 @@ func IPRangeExtended() *diode.IPRange {
 	return &diode.IPRange{
 		StartAddress: diode.String("Example StartAddress"),
 		EndAddress:   diode.String("Example EndAddress"),
+		Metadata:     diode.Metadata{"source": "example"},
 		Status:       diode.String("active"),
 		Description:  diode.String("Example description"),
 	}
@@ -64,12 +66,14 @@ func IPRangeExplicit() *diode.IPRange {
 	return &diode.IPRange{
 		StartAddress: diode.String("Example StartAddress"),
 		EndAddress:   diode.String("Example EndAddress"),
+		Metadata:     diode.Metadata{"source": "example"},
 		Status:       diode.String("active"),
 		Description:  diode.String("Example description"),
 		Comments:     diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

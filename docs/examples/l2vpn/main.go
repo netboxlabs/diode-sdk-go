@@ -44,8 +44,9 @@ func main() {
 // L2VPNMinimal Creates a L2VPN with only required fields.
 func L2VPNMinimal() *diode.L2VPN {
 	return &diode.L2VPN{
-		Name: diode.String("Example Name"),
-		Slug: diode.String("example-slug"),
+		Name:     diode.String("Example Name"),
+		Slug:     diode.String("example-slug"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,8 +55,9 @@ func L2VPNExtended() *diode.L2VPN {
 	return &diode.L2VPN{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
-		Status:      diode.String("active"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
+		Status:      diode.String("active"),
 	}
 }
 
@@ -64,12 +66,14 @@ func L2VPNExplicit() *diode.L2VPN {
 	return &diode.L2VPN{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
-		Status:      diode.String("active"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
+		Status:      diode.String("active"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

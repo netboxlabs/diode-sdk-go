@@ -44,8 +44,9 @@ func main() {
 // TagMinimal Creates a Tag with only required fields.
 func TagMinimal() *diode.Tag {
 	return &diode.Tag{
-		Name: diode.String("Example Name"),
-		Slug: diode.String("example-slug"),
+		Name:     diode.String("Example Name"),
+		Slug:     diode.String("example-slug"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,6 +55,7 @@ func TagExtended() *diode.Tag {
 	return &diode.Tag{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Color:       diode.String("0000ff"),
 		Description: diode.String("Example description"),
 	}
@@ -64,6 +66,7 @@ func TagExplicit() *diode.Tag {
 	return &diode.Tag{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Color:       diode.String("0000ff"),
 		Description: diode.String("Example description"),
 	}

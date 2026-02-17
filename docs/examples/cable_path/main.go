@@ -43,15 +43,21 @@ func main() {
 
 // CablePathMinimal Creates a CablePath with only required fields.
 func CablePathMinimal() *diode.CablePath {
-	return &diode.CablePath{}
+	return &diode.CablePath{
+		Metadata: diode.Metadata{"source": "example"},
+	}
 }
 
 // CablePathExtended Creates a CablePath with common optional fields.
 func CablePathExtended() *diode.CablePath {
-	return &diode.CablePath{}
+	return &diode.CablePath{
+		Metadata: diode.Metadata{"source": "example"},
+	}
 }
 
 // CablePathExplicit Creates a CablePath with fully nested objects and all common fields.
 func CablePathExplicit() *diode.CablePath {
-	return &diode.CablePath{}
+	return &diode.CablePath{
+		Metadata: diode.Metadata{"source": "example"},
+	}
 }

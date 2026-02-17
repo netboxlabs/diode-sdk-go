@@ -46,8 +46,10 @@ func OwnerMinimal() *diode.Owner {
 	return &diode.Owner{
 		Name: diode.String("Example Name"),
 		Group: &diode.OwnerGroup{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -56,8 +58,10 @@ func OwnerExtended() *diode.Owner {
 	return &diode.Owner{
 		Name: diode.String("Example Name"),
 		Group: &diode.OwnerGroup{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -67,8 +71,10 @@ func OwnerExplicit() *diode.Owner {
 	return &diode.Owner{
 		Name: diode.String("Example Name"),
 		Group: &diode.OwnerGroup{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }

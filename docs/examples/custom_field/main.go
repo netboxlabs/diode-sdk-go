@@ -44,8 +44,9 @@ func main() {
 // CustomFieldMinimal Creates a CustomField with only required fields.
 func CustomFieldMinimal() *diode.CustomField {
 	return &diode.CustomField{
-		Type: diode.String("boolean"),
-		Name: diode.String("Example Name"),
+		Type:     diode.String("boolean"),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,6 +55,7 @@ func CustomFieldExtended() *diode.CustomField {
 	return &diode.CustomField{
 		Type:        diode.String("boolean"),
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -63,6 +65,7 @@ func CustomFieldExplicit() *diode.CustomField {
 	return &diode.CustomField{
 		Type:        diode.String("boolean"),
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 	}

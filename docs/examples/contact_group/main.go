@@ -44,8 +44,9 @@ func main() {
 // ContactGroupMinimal Creates a ContactGroup with only required fields.
 func ContactGroupMinimal() *diode.ContactGroup {
 	return &diode.ContactGroup{
-		Name: diode.String("Example Name"),
-		Slug: diode.String("example-slug"),
+		Name:     diode.String("Example Name"),
+		Slug:     diode.String("example-slug"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,6 +55,7 @@ func ContactGroupExtended() *diode.ContactGroup {
 	return &diode.ContactGroup{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -63,6 +65,7 @@ func ContactGroupExplicit() *diode.ContactGroup {
 	return &diode.ContactGroup{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

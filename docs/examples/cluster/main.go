@@ -46,9 +46,11 @@ func ClusterMinimal() *diode.Cluster {
 	return &diode.Cluster{
 		Name: diode.String("Example Name"),
 		Type: &diode.ClusterType{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -57,9 +59,11 @@ func ClusterExtended() *diode.Cluster {
 	return &diode.Cluster{
 		Name: diode.String("Example Name"),
 		Type: &diode.ClusterType{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 	}
@@ -70,15 +74,18 @@ func ClusterExplicit() *diode.Cluster {
 	return &diode.Cluster{
 		Name: diode.String("Example Name"),
 		Type: &diode.ClusterType{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

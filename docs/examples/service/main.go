@@ -44,7 +44,8 @@ func main() {
 // ServiceMinimal Creates a Service with only required fields.
 func ServiceMinimal() *diode.Service {
 	return &diode.Service{
-		Name: diode.String("Example Name"),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func ServiceMinimal() *diode.Service {
 func ServiceExtended() *diode.Service {
 	return &diode.Service{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -60,6 +62,7 @@ func ServiceExtended() *diode.Service {
 func ServiceExplicit() *diode.Service {
 	return &diode.Service{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

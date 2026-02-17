@@ -48,22 +48,28 @@ func VirtualDeviceContextMinimal() *diode.VirtualDeviceContext {
 		Device: &diode.Device{
 			DeviceType: &diode.DeviceType{
 				Manufacturer: &diode.Manufacturer{
-					Name: diode.String("Example Name"),
-					Slug: diode.String("example-slug"),
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Metadata: diode.Metadata{"source": "example"},
 				},
-				Model: diode.String("Model X"),
-				Slug:  diode.String("example-slug"),
+				Model:    diode.String("Model X"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
 			Role: &diode.DeviceRole{
-				Name: diode.String("Example Name"),
-				Slug: diode.String("example-slug"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
 			Site: &diode.Site{
-				Name: diode.String("Example Name"),
-				Slug: diode.String("example-slug"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
+			Metadata: diode.Metadata{"source": "example"},
 		},
-		Status: diode.String("active"),
+		Status:   diode.String("active"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -74,22 +80,28 @@ func VirtualDeviceContextExtended() *diode.VirtualDeviceContext {
 		Device: &diode.Device{
 			DeviceType: &diode.DeviceType{
 				Manufacturer: &diode.Manufacturer{
-					Name: diode.String("Example Name"),
-					Slug: diode.String("example-slug"),
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Metadata: diode.Metadata{"source": "example"},
 				},
-				Model: diode.String("Model X"),
-				Slug:  diode.String("example-slug"),
+				Model:    diode.String("Model X"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
 			Role: &diode.DeviceRole{
-				Name: diode.String("Example Name"),
-				Slug: diode.String("example-slug"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
 			Site: &diode.Site{
-				Name: diode.String("Example Name"),
-				Slug: diode.String("example-slug"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Status:      diode.String("active"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -101,30 +113,37 @@ func VirtualDeviceContextExplicit() *diode.VirtualDeviceContext {
 		Device: &diode.Device{
 			DeviceType: &diode.DeviceType{
 				Manufacturer: &diode.Manufacturer{
-					Name: diode.String("Example Name"),
-					Slug: diode.String("example-slug"),
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Metadata: diode.Metadata{"source": "example"},
 				},
-				Model: diode.String("Model X"),
-				Slug:  diode.String("example-slug"),
+				Model:    diode.String("Model X"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
 			Role: &diode.DeviceRole{
-				Name:  diode.String("Example Name"),
-				Slug:  diode.String("example-slug"),
-				Color: diode.String("0000ff"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Color:    diode.String("0000ff"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
 			Site: &diode.Site{
-				Name:   diode.String("Example Name"),
-				Slug:   diode.String("example-slug"),
-				Status: diode.String("active"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Status:   diode.String("active"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
-			Status: diode.String("active"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Status:      diode.String("active"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

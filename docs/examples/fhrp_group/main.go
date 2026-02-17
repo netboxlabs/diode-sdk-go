@@ -46,6 +46,7 @@ func FHRPGroupMinimal() *diode.FHRPGroup {
 	return &diode.FHRPGroup{
 		Protocol: diode.String("carp"),
 		GroupId:  diode.Int64(1),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,6 +55,7 @@ func FHRPGroupExtended() *diode.FHRPGroup {
 	return &diode.FHRPGroup{
 		Protocol:    diode.String("carp"),
 		GroupId:     diode.Int64(1),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -63,6 +65,7 @@ func FHRPGroupExplicit() *diode.FHRPGroup {
 	return &diode.FHRPGroup{
 		Protocol:    diode.String("carp"),
 		GroupId:     diode.Int64(1),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

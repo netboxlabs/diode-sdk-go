@@ -44,7 +44,8 @@ func main() {
 // VRFMinimal Creates a VRF with only required fields.
 func VRFMinimal() *diode.VRF {
 	return &diode.VRF{
-		Name: diode.String("Example Name"),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func VRFMinimal() *diode.VRF {
 func VRFExtended() *diode.VRF {
 	return &diode.VRF{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -60,11 +62,13 @@ func VRFExtended() *diode.VRF {
 func VRFExplicit() *diode.VRF {
 	return &diode.VRF{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

@@ -46,9 +46,11 @@ func RackMinimal() *diode.Rack {
 	return &diode.Rack{
 		Name: diode.String("Example Name"),
 		Site: &diode.Site{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -57,9 +59,11 @@ func RackExtended() *diode.Rack {
 	return &diode.Rack{
 		Name: diode.String("Example Name"),
 		Site: &diode.Site{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Serial:      diode.String("SN-001234"),
 		Description: diode.String("Example description"),
@@ -71,18 +75,21 @@ func RackExplicit() *diode.Rack {
 	return &diode.Rack{
 		Name: diode.String("Example Name"),
 		Site: &diode.Site{
-			Name:   diode.String("Example Name"),
-			Slug:   diode.String("example-slug"),
-			Status: diode.String("active"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Serial:      diode.String("SN-001234"),
 		AssetTag:    diode.String("ASSET-001"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

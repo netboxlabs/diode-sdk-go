@@ -44,7 +44,8 @@ func main() {
 // IPSecProposalMinimal Creates a IPSecProposal with only required fields.
 func IPSecProposalMinimal() *diode.IPSecProposal {
 	return &diode.IPSecProposal{
-		Name: diode.String("Example Name"),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func IPSecProposalMinimal() *diode.IPSecProposal {
 func IPSecProposalExtended() *diode.IPSecProposal {
 	return &diode.IPSecProposal{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -60,6 +62,7 @@ func IPSecProposalExtended() *diode.IPSecProposal {
 func IPSecProposalExplicit() *diode.IPSecProposal {
 	return &diode.IPSecProposal{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

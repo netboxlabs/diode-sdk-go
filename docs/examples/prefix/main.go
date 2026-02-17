@@ -44,7 +44,8 @@ func main() {
 // PrefixMinimal Creates a Prefix with only required fields.
 func PrefixMinimal() *diode.Prefix {
 	return &diode.Prefix{
-		Prefix: diode.String("192.0.2.0/24"),
+		Prefix:   diode.String("192.0.2.0/24"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func PrefixMinimal() *diode.Prefix {
 func PrefixExtended() *diode.Prefix {
 	return &diode.Prefix{
 		Prefix:      diode.String("192.0.2.0/24"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 	}
@@ -61,12 +63,14 @@ func PrefixExtended() *diode.Prefix {
 func PrefixExplicit() *diode.Prefix {
 	return &diode.Prefix{
 		Prefix:      diode.String("192.0.2.0/24"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

@@ -47,11 +47,13 @@ func ASNRangeMinimal() *diode.ASNRange {
 		Name: diode.String("Example Name"),
 		Slug: diode.String("example-slug"),
 		Rir: &diode.RIR{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
-		Start: diode.Int64(1),
-		End:   diode.Int64(1),
+		Start:    diode.Int64(1),
+		End:      diode.Int64(1),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -61,11 +63,13 @@ func ASNRangeExtended() *diode.ASNRange {
 		Name: diode.String("Example Name"),
 		Slug: diode.String("example-slug"),
 		Rir: &diode.RIR{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Start:       diode.Int64(1),
 		End:         diode.Int64(1),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -76,16 +80,19 @@ func ASNRangeExplicit() *diode.ASNRange {
 		Name: diode.String("Example Name"),
 		Slug: diode.String("example-slug"),
 		Rir: &diode.RIR{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Start:       diode.Int64(1),
 		End:         diode.Int64(1),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

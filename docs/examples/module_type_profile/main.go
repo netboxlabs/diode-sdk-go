@@ -44,7 +44,8 @@ func main() {
 // ModuleTypeProfileMinimal Creates a ModuleTypeProfile with only required fields.
 func ModuleTypeProfileMinimal() *diode.ModuleTypeProfile {
 	return &diode.ModuleTypeProfile{
-		Name: diode.String("Example Name"),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func ModuleTypeProfileMinimal() *diode.ModuleTypeProfile {
 func ModuleTypeProfileExtended() *diode.ModuleTypeProfile {
 	return &diode.ModuleTypeProfile{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -60,6 +62,7 @@ func ModuleTypeProfileExtended() *diode.ModuleTypeProfile {
 func ModuleTypeProfileExplicit() *diode.ModuleTypeProfile {
 	return &diode.ModuleTypeProfile{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

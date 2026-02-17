@@ -44,7 +44,8 @@ func main() {
 // ContactMinimal Creates a Contact with only required fields.
 func ContactMinimal() *diode.Contact {
 	return &diode.Contact{
-		Name: diode.String("Example Name"),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func ContactMinimal() *diode.Contact {
 func ContactExtended() *diode.Contact {
 	return &diode.Contact{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -60,6 +62,7 @@ func ContactExtended() *diode.Contact {
 func ContactExplicit() *diode.Contact {
 	return &diode.Contact{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

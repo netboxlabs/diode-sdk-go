@@ -44,7 +44,8 @@ func main() {
 // WirelessLANMinimal Creates a WirelessLAN with only required fields.
 func WirelessLANMinimal() *diode.WirelessLAN {
 	return &diode.WirelessLAN{
-		Ssid: diode.String("ExampleSSID"),
+		Ssid:     diode.String("ExampleSSID"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func WirelessLANMinimal() *diode.WirelessLAN {
 func WirelessLANExtended() *diode.WirelessLAN {
 	return &diode.WirelessLAN{
 		Ssid:        diode.String("ExampleSSID"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Status:      diode.String("active"),
 	}
@@ -61,12 +63,14 @@ func WirelessLANExtended() *diode.WirelessLAN {
 func WirelessLANExplicit() *diode.WirelessLAN {
 	return &diode.WirelessLAN{
 		Ssid:        diode.String("ExampleSSID"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Status:      diode.String("active"),
 		Comments:    diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

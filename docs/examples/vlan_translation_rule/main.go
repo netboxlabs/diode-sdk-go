@@ -45,10 +45,12 @@ func main() {
 func VLANTranslationRuleMinimal() *diode.VLANTranslationRule {
 	return &diode.VLANTranslationRule{
 		Policy: &diode.VLANTranslationPolicy{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		LocalVid:  diode.Int64(1),
 		RemoteVid: diode.Int64(1),
+		Metadata:  diode.Metadata{"source": "example"},
 	}
 }
 
@@ -56,10 +58,12 @@ func VLANTranslationRuleMinimal() *diode.VLANTranslationRule {
 func VLANTranslationRuleExtended() *diode.VLANTranslationRule {
 	return &diode.VLANTranslationRule{
 		Policy: &diode.VLANTranslationPolicy{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		LocalVid:    diode.Int64(1),
 		RemoteVid:   diode.Int64(1),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -68,10 +72,12 @@ func VLANTranslationRuleExtended() *diode.VLANTranslationRule {
 func VLANTranslationRuleExplicit() *diode.VLANTranslationRule {
 	return &diode.VLANTranslationRule{
 		Policy: &diode.VLANTranslationPolicy{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		LocalVid:    diode.Int64(1),
 		RemoteVid:   diode.Int64(1),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }

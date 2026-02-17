@@ -44,8 +44,9 @@ func main() {
 // RackRoleMinimal Creates a RackRole with only required fields.
 func RackRoleMinimal() *diode.RackRole {
 	return &diode.RackRole{
-		Name: diode.String("Example Name"),
-		Slug: diode.String("example-slug"),
+		Name:     diode.String("Example Name"),
+		Slug:     diode.String("example-slug"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,6 +55,7 @@ func RackRoleExtended() *diode.RackRole {
 	return &diode.RackRole{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Color:       diode.String("0000ff"),
 		Description: diode.String("Example description"),
 	}
@@ -64,6 +66,7 @@ func RackRoleExplicit() *diode.RackRole {
 	return &diode.RackRole{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Color:       diode.String("0000ff"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),

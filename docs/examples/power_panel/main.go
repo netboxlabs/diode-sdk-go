@@ -45,10 +45,12 @@ func main() {
 func PowerPanelMinimal() *diode.PowerPanel {
 	return &diode.PowerPanel{
 		Site: &diode.Site{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
-		Name: diode.String("Example Name"),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -56,10 +58,12 @@ func PowerPanelMinimal() *diode.PowerPanel {
 func PowerPanelExtended() *diode.PowerPanel {
 	return &diode.PowerPanel{
 		Site: &diode.Site{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -68,11 +72,13 @@ func PowerPanelExtended() *diode.PowerPanel {
 func PowerPanelExplicit() *diode.PowerPanel {
 	return &diode.PowerPanel{
 		Site: &diode.Site{
-			Name:   diode.String("Example Name"),
-			Slug:   diode.String("example-slug"),
-			Status: diode.String("active"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

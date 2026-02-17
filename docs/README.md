@@ -1,7 +1,7 @@
 # Diode Go SDK - Entity Examples
 
 Source: NetBox v4.5.0
-Generated: 2026-02-10 03:24:52Z
+Generated: 2026-02-13 17:55:35Z
 
 ## Prerequisites
 
@@ -63,6 +63,7 @@ Switch between patterns by uncommenting the desired function call in `main()`.
 
 - [Cable](examples/cable/)
 - [CablePath](examples/cable_path/)
+- [CableTermination](examples/cable_termination/)
 - [ConsolePort](examples/console_port/)
 - [ConsoleServerPort](examples/console_server_port/)
 - [Device](examples/device/)
@@ -123,6 +124,10 @@ Switch between patterns by uncommenting the desired function call in `main()`.
 - [VLANTranslationPolicy](examples/vlan_translation_policy/)
 - [VLANTranslationRule](examples/vlan_translation_rule/)
 - [VRF](examples/vrf/)
+
+### Other
+
+- [DeviceConfig](examples/device_config/)
 
 ### Tenancy
 

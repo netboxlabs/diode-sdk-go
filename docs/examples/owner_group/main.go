@@ -44,7 +44,8 @@ func main() {
 // OwnerGroupMinimal Creates a OwnerGroup with only required fields.
 func OwnerGroupMinimal() *diode.OwnerGroup {
 	return &diode.OwnerGroup{
-		Name: diode.String("Example Name"),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func OwnerGroupMinimal() *diode.OwnerGroup {
 func OwnerGroupExtended() *diode.OwnerGroup {
 	return &diode.OwnerGroup{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -60,6 +62,7 @@ func OwnerGroupExtended() *diode.OwnerGroup {
 func OwnerGroupExplicit() *diode.OwnerGroup {
 	return &diode.OwnerGroup{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }

@@ -44,8 +44,9 @@ func main() {
 // VLANMinimal Creates a VLAN with only required fields.
 func VLANMinimal() *diode.VLAN {
 	return &diode.VLAN{
-		Vid:  diode.Int64(1),
-		Name: diode.String("Example Name"),
+		Vid:      diode.Int64(1),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,6 +55,7 @@ func VLANExtended() *diode.VLAN {
 	return &diode.VLAN{
 		Vid:         diode.Int64(1),
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 	}
@@ -64,12 +66,14 @@ func VLANExplicit() *diode.VLAN {
 	return &diode.VLAN{
 		Vid:         diode.Int64(1),
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

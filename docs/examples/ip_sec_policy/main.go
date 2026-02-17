@@ -44,7 +44,8 @@ func main() {
 // IPSecPolicyMinimal Creates a IPSecPolicy with only required fields.
 func IPSecPolicyMinimal() *diode.IPSecPolicy {
 	return &diode.IPSecPolicy{
-		Name: diode.String("Example Name"),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func IPSecPolicyMinimal() *diode.IPSecPolicy {
 func IPSecPolicyExtended() *diode.IPSecPolicy {
 	return &diode.IPSecPolicy{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -60,6 +62,7 @@ func IPSecPolicyExtended() *diode.IPSecPolicy {
 func IPSecPolicyExplicit() *diode.IPSecPolicy {
 	return &diode.IPSecPolicy{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

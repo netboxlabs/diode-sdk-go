@@ -47,11 +47,14 @@ func RackReservationMinimal() *diode.RackReservation {
 		Rack: &diode.Rack{
 			Name: diode.String("Example Name"),
 			Site: &diode.Site{
-				Name: diode.String("Example Name"),
-				Slug: diode.String("example-slug"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Description: diode.String("Example description"),
+		Metadata:    diode.Metadata{"source": "example"},
 	}
 }
 
@@ -61,11 +64,14 @@ func RackReservationExtended() *diode.RackReservation {
 		Rack: &diode.Rack{
 			Name: diode.String("Example Name"),
 			Site: &diode.Site{
-				Name: diode.String("Example Name"),
-				Slug: diode.String("example-slug"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Description: diode.String("Example description"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Status:      diode.String("active"),
 	}
 }
@@ -76,18 +82,22 @@ func RackReservationExplicit() *diode.RackReservation {
 		Rack: &diode.Rack{
 			Name: diode.String("Example Name"),
 			Site: &diode.Site{
-				Name:   diode.String("Example Name"),
-				Slug:   diode.String("example-slug"),
-				Status: diode.String("active"),
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Status:   diode.String("active"),
+				Metadata: diode.Metadata{"source": "example"},
 			},
-			Status: diode.String("active"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Description: diode.String("Example description"),
-		Status:      diode.String("active"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Comments:    diode.String("Example comments"),
+		Status:      diode.String("active"),
 		Tenant: &diode.Tenant{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}

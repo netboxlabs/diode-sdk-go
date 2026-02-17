@@ -44,7 +44,8 @@ func main() {
 // VLANTranslationPolicyMinimal Creates a VLANTranslationPolicy with only required fields.
 func VLANTranslationPolicyMinimal() *diode.VLANTranslationPolicy {
 	return &diode.VLANTranslationPolicy{
-		Name: diode.String("Example Name"),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func VLANTranslationPolicyMinimal() *diode.VLANTranslationPolicy {
 func VLANTranslationPolicyExtended() *diode.VLANTranslationPolicy {
 	return &diode.VLANTranslationPolicy{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -60,6 +62,7 @@ func VLANTranslationPolicyExtended() *diode.VLANTranslationPolicy {
 func VLANTranslationPolicyExplicit() *diode.VLANTranslationPolicy {
 	return &diode.VLANTranslationPolicy{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 	}

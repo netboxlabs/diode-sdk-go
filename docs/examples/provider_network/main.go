@@ -45,10 +45,12 @@ func main() {
 func ProviderNetworkMinimal() *diode.ProviderNetwork {
 	return &diode.ProviderNetwork{
 		Provider: &diode.Provider{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
-		Name: diode.String("Example Name"),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -56,10 +58,12 @@ func ProviderNetworkMinimal() *diode.ProviderNetwork {
 func ProviderNetworkExtended() *diode.ProviderNetwork {
 	return &diode.ProviderNetwork{
 		Provider: &diode.Provider{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -68,10 +72,12 @@ func ProviderNetworkExtended() *diode.ProviderNetwork {
 func ProviderNetworkExplicit() *diode.ProviderNetwork {
 	return &diode.ProviderNetwork{
 		Provider: &diode.Provider{
-			Name: diode.String("Example Name"),
-			Slug: diode.String("example-slug"),
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

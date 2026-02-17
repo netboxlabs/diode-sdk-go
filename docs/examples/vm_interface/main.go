@@ -45,9 +45,11 @@ func main() {
 func VMInterfaceMinimal() *diode.VMInterface {
 	return &diode.VMInterface{
 		VirtualMachine: &diode.VirtualMachine{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
-		Name: diode.String("Example Name"),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -55,9 +57,11 @@ func VMInterfaceMinimal() *diode.VMInterface {
 func VMInterfaceExtended() *diode.VMInterface {
 	return &diode.VMInterface{
 		VirtualMachine: &diode.VirtualMachine{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -66,10 +70,12 @@ func VMInterfaceExtended() *diode.VMInterface {
 func VMInterfaceExplicit() *diode.VMInterface {
 	return &diode.VMInterface{
 		VirtualMachine: &diode.VirtualMachine{
-			Name:   diode.String("Example Name"),
-			Status: diode.String("active"),
+			Name:     diode.String("Example Name"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},
 	}

@@ -44,7 +44,8 @@ func main() {
 // CustomFieldChoiceSetMinimal Creates a CustomFieldChoiceSet with only required fields.
 func CustomFieldChoiceSetMinimal() *diode.CustomFieldChoiceSet {
 	return &diode.CustomFieldChoiceSet{
-		Name: diode.String("Example Name"),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func CustomFieldChoiceSetMinimal() *diode.CustomFieldChoiceSet {
 func CustomFieldChoiceSetExtended() *diode.CustomFieldChoiceSet {
 	return &diode.CustomFieldChoiceSet{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -60,6 +62,7 @@ func CustomFieldChoiceSetExtended() *diode.CustomFieldChoiceSet {
 func CustomFieldChoiceSetExplicit() *diode.CustomFieldChoiceSet {
 	return &diode.CustomFieldChoiceSet{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }

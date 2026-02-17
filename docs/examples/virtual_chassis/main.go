@@ -44,7 +44,8 @@ func main() {
 // VirtualChassisMinimal Creates a VirtualChassis with only required fields.
 func VirtualChassisMinimal() *diode.VirtualChassis {
 	return &diode.VirtualChassis{
-		Name: diode.String("Example Name"),
+		Name:     diode.String("Example Name"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func VirtualChassisMinimal() *diode.VirtualChassis {
 func VirtualChassisExtended() *diode.VirtualChassis {
 	return &diode.VirtualChassis{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -60,6 +62,7 @@ func VirtualChassisExtended() *diode.VirtualChassis {
 func VirtualChassisExplicit() *diode.VirtualChassis {
 	return &diode.VirtualChassis{
 		Name:        diode.String("Example Name"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

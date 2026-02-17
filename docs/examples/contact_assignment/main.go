@@ -45,8 +45,10 @@ func main() {
 func ContactAssignmentMinimal() *diode.ContactAssignment {
 	return &diode.ContactAssignment{
 		Contact: &diode.Contact{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,8 +56,10 @@ func ContactAssignmentMinimal() *diode.ContactAssignment {
 func ContactAssignmentExtended() *diode.ContactAssignment {
 	return &diode.ContactAssignment{
 		Contact: &diode.Contact{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -63,8 +67,10 @@ func ContactAssignmentExtended() *diode.ContactAssignment {
 func ContactAssignmentExplicit() *diode.ContactAssignment {
 	return &diode.ContactAssignment{
 		Contact: &diode.Contact{
-			Name: diode.String("Example Name"),
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
 		},
-		Tags: []*diode.Tag{{Name: diode.String("production")}},
+		Metadata: diode.Metadata{"source": "example"},
+		Tags:     []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

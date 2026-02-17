@@ -44,8 +44,9 @@ func main() {
 // IKEPolicyMinimal Creates a IKEPolicy with only required fields.
 func IKEPolicyMinimal() *diode.IKEPolicy {
 	return &diode.IKEPolicy{
-		Name:    diode.String("Example Name"),
-		Version: diode.Int64(1),
+		Name:     diode.String("Example Name"),
+		Version:  diode.Int64(1),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,6 +55,7 @@ func IKEPolicyExtended() *diode.IKEPolicy {
 	return &diode.IKEPolicy{
 		Name:        diode.String("Example Name"),
 		Version:     diode.Int64(1),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -63,6 +65,7 @@ func IKEPolicyExplicit() *diode.IKEPolicy {
 	return &diode.IKEPolicy{
 		Name:        diode.String("Example Name"),
 		Version:     diode.Int64(1),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},

@@ -44,8 +44,9 @@ func main() {
 // CircuitTypeMinimal Creates a CircuitType with only required fields.
 func CircuitTypeMinimal() *diode.CircuitType {
 	return &diode.CircuitType{
-		Name: diode.String("Example Name"),
-		Slug: diode.String("example-slug"),
+		Name:     diode.String("Example Name"),
+		Slug:     diode.String("example-slug"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
@@ -54,6 +55,7 @@ func CircuitTypeExtended() *diode.CircuitType {
 	return &diode.CircuitType{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Color:       diode.String("0000ff"),
 		Description: diode.String("Example description"),
 	}
@@ -64,6 +66,7 @@ func CircuitTypeExplicit() *diode.CircuitType {
 	return &diode.CircuitType{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Color:       diode.String("0000ff"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),

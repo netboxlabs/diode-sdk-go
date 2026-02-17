@@ -45,6 +45,7 @@ func main() {
 func MACAddressMinimal() *diode.MACAddress {
 	return &diode.MACAddress{
 		MacAddress: diode.String("00:11:22:33:44:55"),
+		Metadata:   diode.Metadata{"source": "example"},
 	}
 }
 
@@ -52,6 +53,7 @@ func MACAddressMinimal() *diode.MACAddress {
 func MACAddressExtended() *diode.MACAddress {
 	return &diode.MACAddress{
 		MacAddress:  diode.String("00:11:22:33:44:55"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -60,6 +62,7 @@ func MACAddressExtended() *diode.MACAddress {
 func MACAddressExplicit() *diode.MACAddress {
 	return &diode.MACAddress{
 		MacAddress:  diode.String("00:11:22:33:44:55"),
+		Metadata:    diode.Metadata{"source": "example"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},
