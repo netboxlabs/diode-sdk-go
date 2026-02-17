@@ -44,29 +44,26 @@ func main() {
 // DeviceConfigMinimal Creates a DeviceConfig with only required fields.
 func DeviceConfigMinimal() *diode.DeviceConfig {
 	return &diode.DeviceConfig{
-		Startup:   []byte("example data"),
-		Running:   []byte("example data"),
-		Candidate: []byte("example data"),
-		Metadata:  diode.Metadata{"source": "example"},
+		Running:  []byte("hostname router-01\ninterface eth0\n ip address 192.0.2.1/24"),
+		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
 // DeviceConfigExtended Creates a DeviceConfig with common optional fields.
 func DeviceConfigExtended() *diode.DeviceConfig {
 	return &diode.DeviceConfig{
-		Startup:   []byte("example data"),
-		Running:   []byte("example data"),
-		Candidate: []byte("example data"),
-		Metadata:  diode.Metadata{"source": "example"},
+		Running:  []byte("hostname router-01\ninterface eth0\n ip address 192.0.2.1/24"),
+		Startup:  []byte("hostname router-01\nboot system flash:image.bin"),
+		Metadata: diode.Metadata{"source": "network-discovery", "device": "router-01"},
 	}
 }
 
 // DeviceConfigExplicit Creates a DeviceConfig with fully nested objects and all common fields.
 func DeviceConfigExplicit() *diode.DeviceConfig {
 	return &diode.DeviceConfig{
-		Startup:   []byte("example data"),
-		Running:   []byte("example data"),
-		Candidate: []byte("example data"),
-		Metadata:  diode.Metadata{"source": "example"},
+		Running:   []byte("hostname router-01\ninterface eth0\n ip address 192.0.2.1/24"),
+		Startup:   []byte("hostname router-01\nboot system flash:image.bin"),
+		Candidate: []byte("interface eth0\n description WAN uplink\n ip address 192.0.2.1/24"),
+		Metadata:  diode.Metadata{"source": "network-discovery", "device": "router-01", "collected_at": "2024-01-15T10:30:00Z"},
 	}
 }
