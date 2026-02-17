@@ -63,7 +63,7 @@ func VirtualDiskExtended() *diode.VirtualDisk {
 		},
 		Name:        diode.String("Example Name"),
 		Size:        diode.Int64(1),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -78,8 +78,16 @@ func VirtualDiskExplicit() *diode.VirtualDisk {
 		},
 		Name:        diode.String("Example Name"),
 		Size:        diode.Int64(1),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Description: diode.String("Example description"),
-		Tags:        []*diode.Tag{{Name: diode.String("production")}},
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

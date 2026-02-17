@@ -52,19 +52,36 @@ func IPSecProposalMinimal() *diode.IPSecProposal {
 // IPSecProposalExtended Creates a IPSecProposal with common optional fields.
 func IPSecProposalExtended() *diode.IPSecProposal {
 	return &diode.IPSecProposal{
-		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
-		Description: diode.String("Example description"),
+		Name:                    diode.String("Example Name"),
+		Metadata:                diode.Metadata{"source": "example", "custom_key": "custom_value"},
+		Description:             diode.String("Example description"),
+		EncryptionAlgorithm:     diode.String("3des-cbc"),
+		AuthenticationAlgorithm: diode.String("hmac-md5"),
+		SaLifetimeSeconds:       diode.Int64(1),
+		SaLifetimeData:          diode.Int64(1),
+		Comments:                diode.String("Example comments"),
 	}
 }
 
 // IPSecProposalExplicit Creates a IPSecProposal with fully nested objects and all common fields.
 func IPSecProposalExplicit() *diode.IPSecProposal {
 	return &diode.IPSecProposal{
-		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
-		Description: diode.String("Example description"),
-		Comments:    diode.String("Example comments"),
-		Tags:        []*diode.Tag{{Name: diode.String("production")}},
+		Name:                    diode.String("Example Name"),
+		Metadata:                diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
+		Description:             diode.String("Example description"),
+		Comments:                diode.String("Example comments"),
+		EncryptionAlgorithm:     diode.String("3des-cbc"),
+		AuthenticationAlgorithm: diode.String("hmac-md5"),
+		SaLifetimeSeconds:       diode.Int64(1),
+		SaLifetimeData:          diode.Int64(1),
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

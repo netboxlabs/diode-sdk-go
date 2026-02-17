@@ -57,8 +57,10 @@ func TunnelExtended() *diode.Tunnel {
 		Name:          diode.String("Example Name"),
 		Status:        diode.String("active"),
 		Encapsulation: diode.String("gre"),
-		Metadata:      diode.Metadata{"source": "example"},
+		Metadata:      diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Description:   diode.String("Example description"),
+		TunnelId:      diode.Int64(1),
+		Comments:      diode.String("Example comments"),
 	}
 }
 
@@ -68,12 +70,40 @@ func TunnelExplicit() *diode.Tunnel {
 		Name:          diode.String("Example Name"),
 		Status:        diode.String("active"),
 		Encapsulation: diode.String("gre"),
-		Metadata:      diode.Metadata{"source": "example"},
+		Metadata:      diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Description:   diode.String("Example description"),
 		Comments:      diode.String("Example comments"),
+		TunnelId:      diode.Int64(1),
+		Group: &diode.TunnelGroup{
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		IpsecProfile: &diode.IPSecProfile{
+			Name: diode.String("Example Name"),
+			Mode: diode.String("Example Mode"),
+			IkePolicy: &diode.IKEPolicy{
+				Name:     diode.String("Example Name"),
+				Version:  diode.Int64(1),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			IpsecPolicy: &diode.IPSecPolicy{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Metadata: diode.Metadata{"source": "example"},
+		},
 		Tenant: &diode.Tenant{
 			Name:     diode.String("Example Name"),
 			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},

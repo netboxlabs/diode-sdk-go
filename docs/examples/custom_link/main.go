@@ -54,19 +54,37 @@ func CustomLinkMinimal() *diode.CustomLink {
 // CustomLinkExtended Creates a CustomLink with common optional fields.
 func CustomLinkExtended() *diode.CustomLink {
 	return &diode.CustomLink{
-		Name:     diode.String("Example Name"),
-		LinkText: diode.String("Example LinkText"),
-		LinkUrl:  diode.String("Example LinkUrl"),
-		Metadata: diode.Metadata{"source": "example"},
+		Name:        diode.String("Example Name"),
+		LinkText:    diode.String("Example LinkText"),
+		LinkUrl:     diode.String("Example LinkUrl"),
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
+		Enabled:     diode.Bool(true),
+		Weight:      diode.Int64(1),
+		GroupName:   diode.String("Example GroupName"),
+		ButtonClass: diode.String("black"),
+		NewWindow:   diode.Bool(true),
 	}
 }
 
 // CustomLinkExplicit Creates a CustomLink with fully nested objects and all common fields.
 func CustomLinkExplicit() *diode.CustomLink {
 	return &diode.CustomLink{
-		Name:     diode.String("Example Name"),
-		LinkText: diode.String("Example LinkText"),
-		LinkUrl:  diode.String("Example LinkUrl"),
-		Metadata: diode.Metadata{"source": "example"},
+		Name:        diode.String("Example Name"),
+		LinkText:    diode.String("Example LinkText"),
+		LinkUrl:     diode.String("Example LinkUrl"),
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
+		Enabled:     diode.Bool(true),
+		Weight:      diode.Int64(1),
+		GroupName:   diode.String("Example GroupName"),
+		ButtonClass: diode.String("black"),
+		NewWindow:   diode.Bool(true),
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Metadata: diode.Metadata{"source": "example"},
+		},
 	}
 }

@@ -61,8 +61,11 @@ func VMInterfaceExtended() *diode.VMInterface {
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Description: diode.String("Example description"),
+		Enabled:     diode.Bool(true),
+		Mtu:         diode.Int64(1),
+		Mode:        diode.String("access"),
 	}
 }
 
@@ -75,8 +78,61 @@ func VMInterfaceExplicit() *diode.VMInterface {
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Description: diode.String("Example description"),
-		Tags:        []*diode.Tag{{Name: diode.String("production")}},
+		Enabled:     diode.Bool(true),
+		Mtu:         diode.Int64(1),
+		Mode:        diode.String("access"),
+		Parent: &diode.VMInterface{
+			VirtualMachine: &diode.VirtualMachine{
+				Name:     diode.String("Example Name"),
+				Status:   diode.String("active"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Bridge: &diode.VMInterface{
+			VirtualMachine: &diode.VirtualMachine{
+				Name:     diode.String("Example Name"),
+				Status:   diode.String("active"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		PrimaryMacAddress: &diode.MACAddress{
+			MacAddress: diode.String("00:11:22:33:44:55"),
+			Metadata:   diode.Metadata{"source": "example"},
+		},
+		UntaggedVlan: &diode.VLAN{
+			Vid:      diode.Int64(1),
+			Name:     diode.String("Example Name"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		QinqSvlan: &diode.VLAN{
+			Vid:      diode.Int64(1),
+			Name:     diode.String("Example Name"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		VlanTranslationPolicy: &diode.VLANTranslationPolicy{
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Vrf: &diode.VRF{
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

@@ -53,21 +53,34 @@ func IKEPolicyMinimal() *diode.IKEPolicy {
 // IKEPolicyExtended Creates a IKEPolicy with common optional fields.
 func IKEPolicyExtended() *diode.IKEPolicy {
 	return &diode.IKEPolicy{
-		Name:        diode.String("Example Name"),
-		Version:     diode.Int64(1),
-		Metadata:    diode.Metadata{"source": "example"},
-		Description: diode.String("Example description"),
+		Name:         diode.String("Example Name"),
+		Version:      diode.Int64(1),
+		Metadata:     diode.Metadata{"source": "example", "custom_key": "custom_value"},
+		Description:  diode.String("Example description"),
+		Mode:         diode.String("aggressive"),
+		PresharedKey: diode.String("Example PresharedKey"),
+		Comments:     diode.String("Example comments"),
 	}
 }
 
 // IKEPolicyExplicit Creates a IKEPolicy with fully nested objects and all common fields.
 func IKEPolicyExplicit() *diode.IKEPolicy {
 	return &diode.IKEPolicy{
-		Name:        diode.String("Example Name"),
-		Version:     diode.Int64(1),
-		Metadata:    diode.Metadata{"source": "example"},
-		Description: diode.String("Example description"),
-		Comments:    diode.String("Example comments"),
-		Tags:        []*diode.Tag{{Name: diode.String("production")}},
+		Name:         diode.String("Example Name"),
+		Version:      diode.Int64(1),
+		Metadata:     diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
+		Description:  diode.String("Example description"),
+		Comments:     diode.String("Example comments"),
+		Mode:         diode.String("aggressive"),
+		PresharedKey: diode.String("Example PresharedKey"),
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

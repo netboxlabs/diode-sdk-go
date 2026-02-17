@@ -51,24 +51,43 @@ func CableMinimal() *diode.Cable {
 // CableExtended Creates a Cable with common optional fields.
 func CableExtended() *diode.Cable {
 	return &diode.Cable{
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Status:      diode.String("connected"),
-		Color:       diode.String("0000ff"),
 		Description: diode.String("Example description"),
+		Color:       diode.String("0000ff"),
+		Type:        diode.String("aoc"),
+		Label:       diode.String("Example Label"),
+		Length:      diode.Float64(1.0),
+		LengthUnit:  diode.String("cm"),
+		Comments:    diode.String("Example comments"),
+		Profile:     diode.String("breakout-1c4p-4c1p"),
 	}
 }
 
 // CableExplicit Creates a Cable with fully nested objects and all common fields.
 func CableExplicit() *diode.Cable {
 	return &diode.Cable{
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Status:      diode.String("connected"),
-		Color:       diode.String("0000ff"),
 		Description: diode.String("Example description"),
+		Color:       diode.String("0000ff"),
 		Comments:    diode.String("Example comments"),
+		Type:        diode.String("aoc"),
+		Label:       diode.String("Example Label"),
+		Length:      diode.Float64(1.0),
+		LengthUnit:  diode.String("cm"),
+		Profile:     diode.String("breakout-1c4p-4c1p"),
 		Tenant: &diode.Tenant{
 			Name:     diode.String("Example Name"),
 			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},

@@ -55,9 +55,12 @@ func L2VPNExtended() *diode.L2VPN {
 	return &diode.L2VPN{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
-		Metadata:    diode.Metadata{"source": "example"},
-		Description: diode.String("Example description"),
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Status:      diode.String("active"),
+		Description: diode.String("Example description"),
+		Identifier:  diode.Int64(1),
+		Type:        diode.String("ep-lan"),
+		Comments:    diode.String("Example comments"),
 	}
 }
 
@@ -66,13 +69,23 @@ func L2VPNExplicit() *diode.L2VPN {
 	return &diode.L2VPN{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
+		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
-		Status:      diode.String("active"),
+		Identifier:  diode.Int64(1),
+		Type:        diode.String("ep-lan"),
 		Tenant: &diode.Tenant{
 			Name:     diode.String("Example Name"),
 			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},

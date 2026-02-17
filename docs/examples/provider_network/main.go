@@ -63,8 +63,10 @@ func ProviderNetworkExtended() *diode.ProviderNetwork {
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Description: diode.String("Example description"),
+		ServiceId:   diode.String("Example ServiceId"),
+		Comments:    diode.String("Example comments"),
 	}
 }
 
@@ -77,9 +79,18 @@ func ProviderNetworkExplicit() *diode.ProviderNetwork {
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
-		Tags:        []*diode.Tag{{Name: diode.String("production")}},
+		ServiceId:   diode.String("Example ServiceId"),
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

@@ -53,20 +53,65 @@ func CustomFieldMinimal() *diode.CustomField {
 // CustomFieldExtended Creates a CustomField with common optional fields.
 func CustomFieldExtended() *diode.CustomField {
 	return &diode.CustomField{
-		Type:        diode.String("boolean"),
-		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
-		Description: diode.String("Example description"),
+		Type:                diode.String("boolean"),
+		Name:                diode.String("Example Name"),
+		Metadata:            diode.Metadata{"source": "example", "custom_key": "custom_value"},
+		Description:         diode.String("Example description"),
+		RelatedObjectType:   diode.String("circuits.circuit"),
+		Label:               diode.String("Example Label"),
+		GroupName:           diode.String("Example GroupName"),
+		Required:            diode.Bool(true),
+		Unique:              diode.Bool(true),
+		SearchWeight:        diode.Int64(1),
+		FilterLogic:         diode.String("disabled"),
+		UiVisible:           diode.String("always"),
+		UiEditable:          diode.String("hidden"),
+		IsCloneable:         diode.Bool(true),
+		Default:             diode.String("Example Default"),
+		RelatedObjectFilter: diode.String("Example RelatedObjectFilter"),
+		Weight:              diode.Int64(1),
+		ValidationMinimum:   diode.Float64(1.0),
+		ValidationMaximum:   diode.Float64(1.0),
+		ValidationRegex:     diode.String("Example ValidationRegex"),
+		Comments:            diode.String("Example comments"),
 	}
 }
 
 // CustomFieldExplicit Creates a CustomField with fully nested objects and all common fields.
 func CustomFieldExplicit() *diode.CustomField {
 	return &diode.CustomField{
-		Type:        diode.String("boolean"),
-		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
-		Description: diode.String("Example description"),
-		Comments:    diode.String("Example comments"),
+		Type:                diode.String("boolean"),
+		Name:                diode.String("Example Name"),
+		Metadata:            diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
+		Description:         diode.String("Example description"),
+		Comments:            diode.String("Example comments"),
+		RelatedObjectType:   diode.String("circuits.circuit"),
+		Label:               diode.String("Example Label"),
+		GroupName:           diode.String("Example GroupName"),
+		Required:            diode.Bool(true),
+		Unique:              diode.Bool(true),
+		SearchWeight:        diode.Int64(1),
+		FilterLogic:         diode.String("disabled"),
+		UiVisible:           diode.String("always"),
+		UiEditable:          diode.String("hidden"),
+		IsCloneable:         diode.Bool(true),
+		Default:             diode.String("Example Default"),
+		RelatedObjectFilter: diode.String("Example RelatedObjectFilter"),
+		Weight:              diode.Int64(1),
+		ValidationMinimum:   diode.Float64(1.0),
+		ValidationMaximum:   diode.Float64(1.0),
+		ValidationRegex:     diode.String("Example ValidationRegex"),
+		ChoiceSet: &diode.CustomFieldChoiceSet{
+			Name:     diode.String("Example Name"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Metadata: diode.Metadata{"source": "example"},
+		},
 	}
 }

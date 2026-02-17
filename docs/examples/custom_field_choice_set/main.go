@@ -52,17 +52,29 @@ func CustomFieldChoiceSetMinimal() *diode.CustomFieldChoiceSet {
 // CustomFieldChoiceSetExtended Creates a CustomFieldChoiceSet with common optional fields.
 func CustomFieldChoiceSetExtended() *diode.CustomFieldChoiceSet {
 	return &diode.CustomFieldChoiceSet{
-		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
-		Description: diode.String("Example description"),
+		Name:                diode.String("Example Name"),
+		Metadata:            diode.Metadata{"source": "example", "custom_key": "custom_value"},
+		Description:         diode.String("Example description"),
+		BaseChoices:         diode.String("IATA"),
+		OrderAlphabetically: diode.Bool(true),
 	}
 }
 
 // CustomFieldChoiceSetExplicit Creates a CustomFieldChoiceSet with fully nested objects and all common fields.
 func CustomFieldChoiceSetExplicit() *diode.CustomFieldChoiceSet {
 	return &diode.CustomFieldChoiceSet{
-		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
-		Description: diode.String("Example description"),
+		Name:                diode.String("Example Name"),
+		Metadata:            diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
+		Description:         diode.String("Example description"),
+		BaseChoices:         diode.String("IATA"),
+		OrderAlphabetically: diode.Bool(true),
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Metadata: diode.Metadata{"source": "example"},
+		},
 	}
 }

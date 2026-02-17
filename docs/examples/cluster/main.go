@@ -63,9 +63,10 @@ func ClusterExtended() *diode.Cluster {
 			Slug:     diode.String("example-slug"),
 			Metadata: diode.Metadata{"source": "example"},
 		},
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
+		Comments:    diode.String("Example comments"),
 	}
 }
 
@@ -78,13 +79,26 @@ func ClusterExplicit() *diode.Cluster {
 			Slug:     diode.String("example-slug"),
 			Metadata: diode.Metadata{"source": "example"},
 		},
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
+		Group: &diode.ClusterGroup{
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
 		Tenant: &diode.Tenant{
 			Name:     diode.String("Example Name"),
 			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},

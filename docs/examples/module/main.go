@@ -169,10 +169,12 @@ func ModuleExtended() *diode.Module {
 			Model:    diode.String("Model X"),
 			Metadata: diode.Metadata{"source": "example"},
 		},
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Status:      diode.String("active"),
 		Serial:      diode.String("SN-001234"),
 		Description: diode.String("Example description"),
+		AssetTag:    diode.String("ASSET-001"),
+		Comments:    diode.String("Example comments"),
 	}
 }
 
@@ -244,12 +246,20 @@ func ModuleExplicit() *diode.Module {
 			Model:    diode.String("Model X"),
 			Metadata: diode.Metadata{"source": "example"},
 		},
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Status:      diode.String("active"),
 		Serial:      diode.String("SN-001234"),
-		AssetTag:    diode.String("ASSET-001"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
-		Tags:        []*diode.Tag{{Name: diode.String("production")}},
+		AssetTag:    diode.String("ASSET-001"),
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

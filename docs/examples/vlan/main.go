@@ -55,9 +55,11 @@ func VLANExtended() *diode.VLAN {
 	return &diode.VLAN{
 		Vid:         diode.Int64(1),
 		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
+		QinqRole:    diode.String("cvlan"),
+		Comments:    diode.String("Example comments"),
 	}
 }
 
@@ -66,13 +68,44 @@ func VLANExplicit() *diode.VLAN {
 	return &diode.VLAN{
 		Vid:         diode.Int64(1),
 		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
+		QinqRole:    diode.String("cvlan"),
+		Site: &diode.Site{
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Group: &diode.VLANGroup{
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
 		Tenant: &diode.Tenant{
 			Name:     diode.String("Example Name"),
 			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Role: &diode.Role{
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		QinqSvlan: &diode.VLAN{
+			Vid:      diode.Int64(1),
+			Name:     diode.String("Example Name"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},

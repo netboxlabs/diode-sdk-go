@@ -101,8 +101,10 @@ func VirtualDeviceContextExtended() *diode.VirtualDeviceContext {
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Status:      diode.String("active"),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Description: diode.String("Example description"),
+		Identifier:  diode.Int64(1),
+		Comments:    diode.String("Example comments"),
 	}
 }
 
@@ -137,12 +139,31 @@ func VirtualDeviceContextExplicit() *diode.VirtualDeviceContext {
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Status:      diode.String("active"),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
+		Identifier:  diode.Int64(1),
 		Tenant: &diode.Tenant{
 			Name:     diode.String("Example Name"),
 			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		PrimaryIp4: &diode.IPAddress{
+			Address:  diode.String("192.0.2.1/32"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		PrimaryIp6: &diode.IPAddress{
+			Address:  diode.String("192.0.2.1/32"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},

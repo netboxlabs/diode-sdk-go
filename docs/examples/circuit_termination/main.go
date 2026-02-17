@@ -80,9 +80,14 @@ func CircuitTerminationExtended() *diode.CircuitTermination {
 			},
 			Metadata: diode.Metadata{"source": "example"},
 		},
-		TermSide:    diode.String("A"),
-		Metadata:    diode.Metadata{"source": "example"},
-		Description: diode.String("Example description"),
+		TermSide:      diode.String("A"),
+		Metadata:      diode.Metadata{"source": "example", "custom_key": "custom_value"},
+		Description:   diode.String("Example description"),
+		PortSpeed:     diode.Int64(1),
+		UpstreamSpeed: diode.Int64(1),
+		XconnectId:    diode.String("Example XconnectId"),
+		PpInfo:        diode.String("Example PpInfo"),
+		MarkConnected: diode.Bool(true),
 	}
 }
 
@@ -105,9 +110,14 @@ func CircuitTerminationExplicit() *diode.CircuitTermination {
 			Status:   diode.String("active"),
 			Metadata: diode.Metadata{"source": "example"},
 		},
-		TermSide:    diode.String("A"),
-		Metadata:    diode.Metadata{"source": "example"},
-		Description: diode.String("Example description"),
-		Tags:        []*diode.Tag{{Name: diode.String("production")}},
+		TermSide:      diode.String("A"),
+		Metadata:      diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
+		Description:   diode.String("Example description"),
+		PortSpeed:     diode.Int64(1),
+		UpstreamSpeed: diode.Int64(1),
+		XconnectId:    diode.String("Example XconnectId"),
+		PpInfo:        diode.String("Example PpInfo"),
+		MarkConnected: diode.Bool(true),
+		Tags:          []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

@@ -99,10 +99,14 @@ func InventoryItemExtended() *diode.InventoryItem {
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Status:      diode.String("active"),
 		Serial:      diode.String("SN-001234"),
 		Description: diode.String("Example description"),
+		Label:       diode.String("Example Label"),
+		PartId:      diode.String("Example PartId"),
+		AssetTag:    diode.String("ASSET-001"),
+		Discovered:  diode.Bool(true),
 	}
 }
 
@@ -136,11 +140,64 @@ func InventoryItemExplicit() *diode.InventoryItem {
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Status:      diode.String("active"),
 		Serial:      diode.String("SN-001234"),
-		AssetTag:    diode.String("ASSET-001"),
 		Description: diode.String("Example description"),
-		Tags:        []*diode.Tag{{Name: diode.String("production")}},
+		AssetTag:    diode.String("ASSET-001"),
+		Label:       diode.String("Example Label"),
+		PartId:      diode.String("Example PartId"),
+		Discovered:  diode.Bool(true),
+		Parent: &diode.InventoryItem{
+			Device: &diode.Device{
+				DeviceType: &diode.DeviceType{
+					Manufacturer: &diode.Manufacturer{
+						Name:     diode.String("Example Name"),
+						Slug:     diode.String("example-slug"),
+						Metadata: diode.Metadata{"source": "example"},
+					},
+					Model:    diode.String("Model X"),
+					Slug:     diode.String("example-slug"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Role: &diode.DeviceRole{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Color:    diode.String("0000ff"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Site: &diode.Site{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Status:   diode.String("active"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Status:   diode.String("active"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Name:     diode.String("Example Name"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Role: &diode.InventoryItemRole{
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Color:    diode.String("0000ff"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Manufacturer: &diode.Manufacturer{
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

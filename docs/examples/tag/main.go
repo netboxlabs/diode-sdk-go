@@ -55,9 +55,10 @@ func TagExtended() *diode.Tag {
 	return &diode.Tag{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
-		Metadata:    diode.Metadata{"source": "example"},
-		Color:       diode.String("0000ff"),
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Description: diode.String("Example description"),
+		Color:       diode.String("0000ff"),
+		Weight:      diode.Int64(1),
 	}
 }
 
@@ -66,8 +67,9 @@ func TagExplicit() *diode.Tag {
 	return &diode.Tag{
 		Name:        diode.String("Example Name"),
 		Slug:        diode.String("example-slug"),
-		Metadata:    diode.Metadata{"source": "example"},
-		Color:       diode.String("0000ff"),
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Description: diode.String("Example description"),
+		Color:       diode.String("0000ff"),
+		Weight:      diode.Int64(1),
 	}
 }

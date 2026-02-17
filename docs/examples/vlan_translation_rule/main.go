@@ -63,7 +63,7 @@ func VLANTranslationRuleExtended() *diode.VLANTranslationRule {
 		},
 		LocalVid:    diode.Int64(1),
 		RemoteVid:   diode.Int64(1),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Description: diode.String("Example description"),
 	}
 }
@@ -77,7 +77,7 @@ func VLANTranslationRuleExplicit() *diode.VLANTranslationRule {
 		},
 		LocalVid:    diode.Int64(1),
 		RemoteVid:   diode.Int64(1),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Description: diode.String("Example description"),
 	}
 }

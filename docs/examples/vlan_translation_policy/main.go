@@ -53,8 +53,9 @@ func VLANTranslationPolicyMinimal() *diode.VLANTranslationPolicy {
 func VLANTranslationPolicyExtended() *diode.VLANTranslationPolicy {
 	return &diode.VLANTranslationPolicy{
 		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Description: diode.String("Example description"),
+		Comments:    diode.String("Example comments"),
 	}
 }
 
@@ -62,8 +63,16 @@ func VLANTranslationPolicyExtended() *diode.VLANTranslationPolicy {
 func VLANTranslationPolicyExplicit() *diode.VLANTranslationPolicy {
 	return &diode.VLANTranslationPolicy{
 		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
+		Owner: &diode.Owner{
+			Name: diode.String("Example Name"),
+			Group: &diode.OwnerGroup{
+				Name:     diode.String("Example Name"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Metadata: diode.Metadata{"source": "example"},
+		},
 	}
 }

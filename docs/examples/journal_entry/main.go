@@ -53,7 +53,8 @@ func JournalEntryMinimal() *diode.JournalEntry {
 func JournalEntryExtended() *diode.JournalEntry {
 	return &diode.JournalEntry{
 		Comments: diode.String("Example comments"),
-		Metadata: diode.Metadata{"source": "example"},
+		Metadata: diode.Metadata{"source": "example", "custom_key": "custom_value"},
+		Kind:     diode.String("danger"),
 	}
 }
 
@@ -61,7 +62,8 @@ func JournalEntryExtended() *diode.JournalEntry {
 func JournalEntryExplicit() *diode.JournalEntry {
 	return &diode.JournalEntry{
 		Comments: diode.String("Example comments"),
-		Metadata: diode.Metadata{"source": "example"},
+		Metadata: diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
+		Kind:     diode.String("danger"),
 		Tags:     []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

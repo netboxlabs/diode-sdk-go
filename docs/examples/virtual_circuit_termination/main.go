@@ -143,8 +143,9 @@ func VirtualCircuitTerminationExtended() *diode.VirtualCircuitTermination {
 			Type:     diode.String("Example Type"),
 			Metadata: diode.Metadata{"source": "example"},
 		},
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Description: diode.String("Example description"),
+		Role:        diode.String("hub"),
 	}
 }
 
@@ -202,8 +203,9 @@ func VirtualCircuitTerminationExplicit() *diode.VirtualCircuitTermination {
 			Type:     diode.String("Example Type"),
 			Metadata: diode.Metadata{"source": "example"},
 		},
-		Metadata:    diode.Metadata{"source": "example"},
+		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Description: diode.String("Example description"),
+		Role:        diode.String("hub"),
 		Tags:        []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

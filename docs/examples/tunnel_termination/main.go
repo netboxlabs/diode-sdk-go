@@ -65,7 +65,7 @@ func TunnelTerminationExtended() *diode.TunnelTermination {
 			Metadata:      diode.Metadata{"source": "example"},
 		},
 		Role:     diode.String("hub"),
-		Metadata: diode.Metadata{"source": "example"},
+		Metadata: diode.Metadata{"source": "example", "custom_key": "custom_value"},
 	}
 }
 
@@ -79,7 +79,12 @@ func TunnelTerminationExplicit() *diode.TunnelTermination {
 			Metadata:      diode.Metadata{"source": "example"},
 		},
 		Role:     diode.String("hub"),
-		Metadata: diode.Metadata{"source": "example"},
-		Tags:     []*diode.Tag{{Name: diode.String("production")}},
+		Metadata: diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
+		OutsideIp: &diode.IPAddress{
+			Address:  diode.String("192.0.2.1/32"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

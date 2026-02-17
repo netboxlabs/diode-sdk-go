@@ -59,7 +59,8 @@ func ContactAssignmentExtended() *diode.ContactAssignment {
 			Name:     diode.String("Example Name"),
 			Metadata: diode.Metadata{"source": "example"},
 		},
-		Metadata: diode.Metadata{"source": "example"},
+		Metadata: diode.Metadata{"source": "example", "custom_key": "custom_value"},
+		Priority: diode.String("inactive"),
 	}
 }
 
@@ -70,7 +71,13 @@ func ContactAssignmentExplicit() *diode.ContactAssignment {
 			Name:     diode.String("Example Name"),
 			Metadata: diode.Metadata{"source": "example"},
 		},
-		Metadata: diode.Metadata{"source": "example"},
-		Tags:     []*diode.Tag{{Name: diode.String("production")}},
+		Metadata: diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
+		Priority: diode.String("inactive"),
+		Role: &diode.ContactRole{
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }
