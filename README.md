@@ -117,7 +117,7 @@ func main() {
 }
 ```
 
-See all [examples](./examples/main.go) for reference.
+See all [entities examples](./docs/README.md).
 
 ### Using Metadata
 
@@ -664,95 +664,6 @@ The flags `-file`, `-target`, `-app-name`, and `-app-version` are required. You 
 repeat `-file` to specify multiple files. OAuth2
 credentials can be supplied using `-client-id` and `-client-secret` or the
 `DIODE_CLIENT_ID` and `DIODE_CLIENT_SECRET` environment variables.
-
-## Supported entities (object types)
-
-* ASN
-* ASN Range
-* Aggregate
-* Circuit
-* Circuit Group
-* Circuit Group Assignment
-* Circuit Termination
-* Circuit Type
-* Cluster
-* Cluster Group
-* Cluster Type
-* Console Port
-* Console Server Port
-* Contact
-* Contact Assignment
-* Contact Group
-* Contact Role
-* Device
-* Device Bay
-* Device Role
-* Device Type
-* FHRP Group
-* FHRP Group Assignment
-* Front Port
-* IKE Policy
-* IKE Proposal
-* IP Address
-* IP Range
-* IP Sec Policy
-* IP Sec Profile
-* IP Sec Proposal
-* Interface
-* Inventory Item
-* Inventory Item Role
-* L2VPN
-* L2VPN Termination
-* Location
-* MAC Address
-* Manufacturer
-* Module
-* Module Bay
-* Module Type
-* Owner
-* Owner Group
-* Platform
-* Power Feed
-* Power Outlet
-* Power Panel
-* Power Port
-* Prefix
-* Provider
-* Provider Account
-* Provider Network
-* RIR
-* Rack
-* Rack Role
-* Rack Type
-* Rear Port
-* Region
-* Role
-* Route Target
-* Service
-* Site
-* Site Group
-* Tag
-* Tenant
-* Tenant Group
-* Tunnel
-* Tunnel Group
-* Tunnel Termination
-* VLAN
-* VLAN Group
-* VLAN Translation Policy
-* VLAN Translation Rule
-* VM Interface
-* VRF
-* Virtual Chassis
-* Virtual Circuit
-* Virtual Circuit Termination
-* Virtual Circuit Type
-* Virtual Device Context
-* Virtual Disk
-* Virtual Machine
-* Wireless Lan
-* Wireless Lan Group
-* Wireless Link
 
 #### Linting
 
