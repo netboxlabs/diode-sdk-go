@@ -131,6 +131,7 @@ func (c *OTLPClient) dial(authority, path string, isPlaintext bool, tlsVerify bo
 
 	userAgent := fmt.Sprintf("%s/%s %s/%s", c.sdkName, c.sdkVersion, c.appName, c.appVersion)
 	dialOpts = append(dialOpts, grpc.WithUserAgent(userAgent))
+	dialOpts = append(dialOpts, defaultClientKeepaliveDialOption())
 
 	if path != "" {
 		dialOpts = append(dialOpts, methodUnaryInterceptor(path))
