@@ -131,7 +131,8 @@ func (c *OTLPClient) dial(authority, path string, isPlaintext bool, tlsVerify bo
 
 	userAgent := fmt.Sprintf("%s/%s %s/%s", c.sdkName, c.sdkVersion, c.appName, c.appVersion)
 	dialOpts = append(dialOpts, grpc.WithUserAgent(userAgent))
-	dialOpts = append(dialOpts, defaultClientKeepaliveDialOption())
+	// Intentionally no grpc keepalive dial option: OTLP collectors vary widely and many
+	// disallow pings without active streams / enforce long min intervals (Codex/OBS-2873).
 
 	if path != "" {
 		dialOpts = append(dialOpts, methodUnaryInterceptor(path))
