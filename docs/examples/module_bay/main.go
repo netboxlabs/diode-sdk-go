@@ -103,6 +103,7 @@ func ModuleBayExtended() *diode.ModuleBay {
 		Description: diode.String("Example description"),
 		Label:       diode.String("Example Label"),
 		Position:    diode.String("Example Position"),
+		Enabled:     diode.Bool(true),
 	}
 }
 
@@ -140,6 +141,7 @@ func ModuleBayExplicit() *diode.ModuleBay {
 		Description: diode.String("Example description"),
 		Label:       diode.String("Example Label"),
 		Position:    diode.String("Example Position"),
+		Enabled:     diode.Bool(true),
 		Module: &diode.Module{
 			Device: &diode.Device{
 				DeviceType: &diode.DeviceType{

@@ -154,6 +154,11 @@ func VirtualMachineExplicit() *diode.VirtualMachine {
 			},
 			Metadata: diode.Metadata{"source": "example"},
 		},
+		VirtualMachineType: &diode.VirtualMachineType{
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

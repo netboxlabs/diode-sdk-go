@@ -57,6 +57,7 @@ func CustomFieldChoiceSetExtended() *diode.CustomFieldChoiceSet {
 		Description:         diode.String("Example description"),
 		BaseChoices:         diode.String("IATA"),
 		OrderAlphabetically: diode.Bool(true),
+		ChoiceColors:        diode.String("Example ChoiceColors"),
 	}
 }
 
@@ -68,6 +69,7 @@ func CustomFieldChoiceSetExplicit() *diode.CustomFieldChoiceSet {
 		Description:         diode.String("Example description"),
 		BaseChoices:         diode.String("IATA"),
 		OrderAlphabetically: diode.Bool(true),
+		ChoiceColors:        diode.String("Example ChoiceColors"),
 		Owner: &diode.Owner{
 			Name: diode.String("Example Name"),
 			Group: &diode.OwnerGroup{
