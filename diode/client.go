@@ -513,6 +513,7 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 
 	dialOpts := []grpc.DialOption{
 		grpc.WithUserAgent(fmt.Sprintf("%s/%s", c.sdkName, c.sdkVersion)),
+		defaultClientKeepaliveDialOption(),
 	}
 
 	if path != "" {
