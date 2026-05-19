@@ -68,7 +68,7 @@ func InterfaceMinimal() *diode.Interface {
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:     diode.String("Example Name"),
-		Type:     diode.String("1000base-bx10-d"),
+		Type:     diode.String("1.6tbase-cr8"),
 		Metadata: diode.Metadata{"source": "example"},
 	}
 }
@@ -100,7 +100,7 @@ func InterfaceExtended() *diode.Interface {
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:               diode.String("Example Name"),
-		Type:               diode.String("1000base-bx10-d"),
+		Type:               diode.String("1.6tbase-cr8"),
 		Metadata:           diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Description:        diode.String("Example description"),
 		Label:              diode.String("Example Label"),
@@ -152,7 +152,7 @@ func InterfaceExplicit() *diode.Interface {
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Name:               diode.String("Example Name"),
-		Type:               diode.String("1000base-bx10-d"),
+		Type:               diode.String("1.6tbase-cr8"),
 		Metadata:           diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Description:        diode.String("Example description"),
 		Label:              diode.String("Example Label"),

@@ -1,5 +1,5 @@
 // Generated code. DO NOT EDIT.
-// Timestamp: 2026-02-04 18:00:20Z
+// Timestamp: 2026-05-14 20:30:14Z
 //
 
 package diode
@@ -53,6 +53,7 @@ type ASN struct {
 	Metadata     Metadata
 	Owner        *Owner
 	Sites        []*Site
+	Role         *Role
 }
 
 func (e *ASN) ConvertToProtoMessage() proto.Message {
@@ -67,6 +68,7 @@ func (e *ASN) ConvertToProtoMessage() proto.Message {
 		Metadata:     e.GetMetadata(),
 		Owner:        e.GetOwner(),
 		Sites:        e.GetSites(),
+		Role:         e.GetRole(),
 	}
 	return r
 }
@@ -169,6 +171,14 @@ func (e *ASN) GetSites() []*pb.Site {
 		for _, v := range e.Sites {
 			r = append(r, v.ConvertToProtoMessage().(*pb.Site))
 		}
+	}
+	return r
+}
+
+func (e *ASN) GetRole() *pb.Role {
+	var r *pb.Role
+	if e != nil && e.Role != nil {
+		r = e.Role.ConvertToProtoMessage().(*pb.Role)
 	}
 	return r
 }
@@ -468,6 +478,7 @@ type Cable struct {
 	Metadata      Metadata
 	Profile       *string
 	Owner         *Owner
+	Bundle        *CableBundle
 }
 
 func (e *Cable) ConvertToProtoMessage() proto.Message {
@@ -488,6 +499,7 @@ func (e *Cable) ConvertToProtoMessage() proto.Message {
 		Metadata:      e.GetMetadata(),
 		Profile:       e.GetProfile(),
 		Owner:         e.GetOwner(),
+		Bundle:        e.GetBundle(),
 	}
 	return r
 }
@@ -640,6 +652,14 @@ func (e *Cable) GetOwner() *pb.Owner {
 	var r *pb.Owner
 	if e != nil && e.Owner != nil {
 		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *Cable) GetBundle() *pb.CableBundle {
+	var r *pb.CableBundle
+	if e != nil && e.Bundle != nil {
+		r = e.Bundle.ConvertToProtoMessage().(*pb.CableBundle)
 	}
 	return r
 }
@@ -2398,6 +2418,10 @@ type ContactAssignment struct {
 	//  - CustomLink
 	//  - Owner
 	//  - OwnerGroup
+	//  - CableBundle
+	//  - RackGroup
+	//  - ScriptModule
+	//  - VirtualMachineType
 	Object       anyContactAssignmentObjectValue
 	Contact      *Contact
 	Role         *ContactRole
@@ -2825,6 +2849,10 @@ type CustomFieldObjectReference struct {
 	//  - CustomLink
 	//  - Owner
 	//  - OwnerGroup
+	//  - CableBundle
+	//  - RackGroup
+	//  - ScriptModule
+	//  - VirtualMachineType
 	Object anyCustomFieldObjectReferenceObjectValue
 }
 
@@ -3244,6 +3272,7 @@ type DeviceBay struct {
 	CustomFields    map[string]*CustomFieldValue
 	Metadata        Metadata
 	Owner           *Owner
+	Enabled         *bool
 }
 
 func (e *DeviceBay) ConvertToProtoMessage() proto.Message {
@@ -3257,6 +3286,7 @@ func (e *DeviceBay) ConvertToProtoMessage() proto.Message {
 		CustomFields:    e.GetCustomFields(),
 		Metadata:        e.GetMetadata(),
 		Owner:           e.GetOwner(),
+		Enabled:         e.GetEnabled(),
 	}
 	return r
 }
@@ -3349,6 +3379,14 @@ func (e *DeviceBay) GetOwner() *pb.Owner {
 	var r *pb.Owner
 	if e != nil && e.Owner != nil {
 		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *DeviceBay) GetEnabled() *bool {
+	var r *bool
+	if e != nil && e.Enabled != nil {
+		r = e.Enabled
 	}
 	return r
 }
@@ -3938,6 +3976,10 @@ type FHRPGroupAssignment struct {
 	//  - CustomLink
 	//  - Owner
 	//  - OwnerGroup
+	//  - CableBundle
+	//  - RackGroup
+	//  - ScriptModule
+	//  - VirtualMachineType
 	Interface anyFHRPGroupAssignmentInterfaceValue
 	Priority  *int64
 	Metadata  Metadata
@@ -4273,6 +4315,10 @@ type GenericObject struct {
 	//  - CustomLink
 	//  - Owner
 	//  - OwnerGroup
+	//  - CableBundle
+	//  - RackGroup
+	//  - ScriptModule
+	//  - VirtualMachineType
 	Object anyGenericObjectObjectValue
 }
 
@@ -6315,6 +6361,10 @@ type L2VPNTermination struct {
 	//  - CustomLink
 	//  - Owner
 	//  - OwnerGroup
+	//  - CableBundle
+	//  - RackGroup
+	//  - ScriptModule
+	//  - VirtualMachineType
 	AssignedObject anyL2VPNTerminationAssignedObjectValue
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
@@ -6781,34 +6831,38 @@ func (e *Manufacturer) GetComments() *string {
 }
 
 type Module struct {
-	Device       *Device
-	ModuleBay    *ModuleBay
-	ModuleType   *ModuleType
-	Status       *string
-	Serial       *string
-	AssetTag     *string
-	Description  *string
-	Comments     *string
-	Tags         []*Tag
-	CustomFields map[string]*CustomFieldValue
-	Metadata     Metadata
-	Owner        *Owner
+	Device              *Device
+	ModuleBay           *ModuleBay
+	ModuleType          *ModuleType
+	Status              *string
+	Serial              *string
+	AssetTag            *string
+	Description         *string
+	Comments            *string
+	Tags                []*Tag
+	CustomFields        map[string]*CustomFieldValue
+	Metadata            Metadata
+	Owner               *Owner
+	ReplicateComponents *bool
+	AdoptComponents     *bool
 }
 
 func (e *Module) ConvertToProtoMessage() proto.Message {
 	r := &pb.Module{
-		Device:       e.GetDevice(),
-		ModuleBay:    e.GetModuleBay(),
-		ModuleType:   e.GetModuleType(),
-		Status:       e.GetStatus(),
-		Serial:       e.GetSerial(),
-		AssetTag:     e.GetAssetTag(),
-		Description:  e.GetDescription(),
-		Comments:     e.GetComments(),
-		Tags:         e.GetTags(),
-		CustomFields: e.GetCustomFields(),
-		Metadata:     e.GetMetadata(),
-		Owner:        e.GetOwner(),
+		Device:              e.GetDevice(),
+		ModuleBay:           e.GetModuleBay(),
+		ModuleType:          e.GetModuleType(),
+		Status:              e.GetStatus(),
+		Serial:              e.GetSerial(),
+		AssetTag:            e.GetAssetTag(),
+		Description:         e.GetDescription(),
+		Comments:            e.GetComments(),
+		Tags:                e.GetTags(),
+		CustomFields:        e.GetCustomFields(),
+		Metadata:            e.GetMetadata(),
+		Owner:               e.GetOwner(),
+		ReplicateComponents: e.GetReplicateComponents(),
+		AdoptComponents:     e.GetAdoptComponents(),
 	}
 	return r
 }
@@ -6929,6 +6983,22 @@ func (e *Module) GetOwner() *pb.Owner {
 	return r
 }
 
+func (e *Module) GetReplicateComponents() *bool {
+	var r *bool
+	if e != nil && e.ReplicateComponents != nil {
+		r = e.ReplicateComponents
+	}
+	return r
+}
+
+func (e *Module) GetAdoptComponents() *bool {
+	var r *bool
+	if e != nil && e.AdoptComponents != nil {
+		r = e.AdoptComponents
+	}
+	return r
+}
+
 type ModuleBay struct {
 	Device          *Device
 	Module          *Module
@@ -6941,6 +7011,7 @@ type ModuleBay struct {
 	CustomFields    map[string]*CustomFieldValue
 	Metadata        Metadata
 	Owner           *Owner
+	Enabled         *bool
 }
 
 func (e *ModuleBay) ConvertToProtoMessage() proto.Message {
@@ -6956,6 +7027,7 @@ func (e *ModuleBay) ConvertToProtoMessage() proto.Message {
 		CustomFields:    e.GetCustomFields(),
 		Metadata:        e.GetMetadata(),
 		Owner:           e.GetOwner(),
+		Enabled:         e.GetEnabled(),
 	}
 	return r
 }
@@ -7064,6 +7136,14 @@ func (e *ModuleBay) GetOwner() *pb.Owner {
 	var r *pb.Owner
 	if e != nil && e.Owner != nil {
 		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *ModuleBay) GetEnabled() *bool {
+	var r *bool
+	if e != nil && e.Enabled != nil {
+		r = e.Enabled
 	}
 	return r
 }
@@ -8741,6 +8821,7 @@ type Rack struct {
 	OuterHeight   *int64
 	Metadata      Metadata
 	Owner         *Owner
+	Group         *RackGroup
 }
 
 func (e *Rack) ConvertToProtoMessage() proto.Message {
@@ -8775,6 +8856,7 @@ func (e *Rack) ConvertToProtoMessage() proto.Message {
 		OuterHeight:   e.GetOuterHeight(),
 		Metadata:      e.GetMetadata(),
 		Owner:         e.GetOwner(),
+		Group:         e.GetGroup(),
 	}
 	return r
 }
@@ -9035,6 +9117,14 @@ func (e *Rack) GetOwner() *pb.Owner {
 	var r *pb.Owner
 	if e != nil && e.Owner != nil {
 		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *Rack) GetGroup() *pb.RackGroup {
+	var r *pb.RackGroup
+	if e != nil && e.Group != nil {
+		r = e.Group.ConvertToProtoMessage().(*pb.RackGroup)
 	}
 	return r
 }
@@ -11249,6 +11339,10 @@ type TunnelTermination struct {
 	//  - CustomLink
 	//  - Owner
 	//  - OwnerGroup
+	//  - CableBundle
+	//  - RackGroup
+	//  - ScriptModule
+	//  - VirtualMachineType
 	Termination  anyTunnelTerminationTerminationValue
 	OutsideIp    *IPAddress
 	Tags         []*Tag
@@ -11539,6 +11633,7 @@ type VLANGroup struct {
 	//  - Region
 	//  - Site
 	//  - SiteGroup
+	//  - RackGroup
 	Scope        anyVLANGroupScopeValue
 	VidRanges    []int64
 	Description  *string
@@ -12934,52 +13029,54 @@ func (e *VirtualDisk) GetOwner() *pb.Owner {
 }
 
 type VirtualMachine struct {
-	Name         *string
-	Status       *string
-	Site         *Site
-	Cluster      *Cluster
-	Device       *Device
-	Serial       *string
-	Role         *DeviceRole
-	Tenant       *Tenant
-	Platform     *Platform
-	PrimaryIp4   *IPAddress
-	PrimaryIp6   *IPAddress
-	Vcpus        *float64
-	Memory       *int64
-	Disk         *int64
-	Description  *string
-	Comments     *string
-	Tags         []*Tag
-	CustomFields map[string]*CustomFieldValue
-	Metadata     Metadata
-	StartOnBoot  *string
-	Owner        *Owner
+	Name               *string
+	Status             *string
+	Site               *Site
+	Cluster            *Cluster
+	Device             *Device
+	Serial             *string
+	Role               *DeviceRole
+	Tenant             *Tenant
+	Platform           *Platform
+	PrimaryIp4         *IPAddress
+	PrimaryIp6         *IPAddress
+	Vcpus              *float64
+	Memory             *int64
+	Disk               *int64
+	Description        *string
+	Comments           *string
+	Tags               []*Tag
+	CustomFields       map[string]*CustomFieldValue
+	Metadata           Metadata
+	StartOnBoot        *string
+	Owner              *Owner
+	VirtualMachineType *VirtualMachineType
 }
 
 func (e *VirtualMachine) ConvertToProtoMessage() proto.Message {
 	r := &pb.VirtualMachine{
-		Name:         e.GetName(),
-		Status:       e.GetStatus(),
-		Site:         e.GetSite(),
-		Cluster:      e.GetCluster(),
-		Device:       e.GetDevice(),
-		Serial:       e.GetSerial(),
-		Role:         e.GetRole(),
-		Tenant:       e.GetTenant(),
-		Platform:     e.GetPlatform(),
-		PrimaryIp4:   e.GetPrimaryIp4(),
-		PrimaryIp6:   e.GetPrimaryIp6(),
-		Vcpus:        e.GetVcpus(),
-		Memory:       e.GetMemory(),
-		Disk:         e.GetDisk(),
-		Description:  e.GetDescription(),
-		Comments:     e.GetComments(),
-		Tags:         e.GetTags(),
-		CustomFields: e.GetCustomFields(),
-		Metadata:     e.GetMetadata(),
-		StartOnBoot:  e.GetStartOnBoot(),
-		Owner:        e.GetOwner(),
+		Name:               e.GetName(),
+		Status:             e.GetStatus(),
+		Site:               e.GetSite(),
+		Cluster:            e.GetCluster(),
+		Device:             e.GetDevice(),
+		Serial:             e.GetSerial(),
+		Role:               e.GetRole(),
+		Tenant:             e.GetTenant(),
+		Platform:           e.GetPlatform(),
+		PrimaryIp4:         e.GetPrimaryIp4(),
+		PrimaryIp6:         e.GetPrimaryIp6(),
+		Vcpus:              e.GetVcpus(),
+		Memory:             e.GetMemory(),
+		Disk:               e.GetDisk(),
+		Description:        e.GetDescription(),
+		Comments:           e.GetComments(),
+		Tags:               e.GetTags(),
+		CustomFields:       e.GetCustomFields(),
+		Metadata:           e.GetMetadata(),
+		StartOnBoot:        e.GetStartOnBoot(),
+		Owner:              e.GetOwner(),
+		VirtualMachineType: e.GetVirtualMachineType(),
 	}
 	return r
 }
@@ -13168,6 +13265,14 @@ func (e *VirtualMachine) GetOwner() *pb.Owner {
 	var r *pb.Owner
 	if e != nil && e.Owner != nil {
 		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *VirtualMachine) GetVirtualMachineType() *pb.VirtualMachineType {
+	var r *pb.VirtualMachineType
+	if e != nil && e.VirtualMachineType != nil {
+		r = e.VirtualMachineType.ConvertToProtoMessage().(*pb.VirtualMachineType)
 	}
 	return r
 }
@@ -13693,6 +13798,7 @@ type CustomField struct {
 	ObjectTypes         []string
 	Metadata            Metadata
 	Owner               *Owner
+	ValidationSchema    *string
 }
 
 func (e *CustomField) ConvertToProtoMessage() proto.Message {
@@ -13721,6 +13827,7 @@ func (e *CustomField) ConvertToProtoMessage() proto.Message {
 		ObjectTypes:         e.GetObjectTypes(),
 		Metadata:            e.GetMetadata(),
 		Owner:               e.GetOwner(),
+		ValidationSchema:    e.GetValidationSchema(),
 	}
 	return r
 }
@@ -13927,6 +14034,14 @@ func (e *CustomField) GetOwner() *pb.Owner {
 	return r
 }
 
+func (e *CustomField) GetValidationSchema() *string {
+	var r *string
+	if e != nil && e.ValidationSchema != nil {
+		r = e.ValidationSchema
+	}
+	return r
+}
+
 type CustomFieldChoiceSet struct {
 	Name                *string
 	Description         *string
@@ -13935,6 +14050,7 @@ type CustomFieldChoiceSet struct {
 	ExtraChoices        []string
 	Metadata            Metadata
 	Owner               *Owner
+	ChoiceColors        *string
 }
 
 func (e *CustomFieldChoiceSet) ConvertToProtoMessage() proto.Message {
@@ -13946,6 +14062,7 @@ func (e *CustomFieldChoiceSet) ConvertToProtoMessage() proto.Message {
 		ExtraChoices:        e.GetExtraChoices(),
 		Metadata:            e.GetMetadata(),
 		Owner:               e.GetOwner(),
+		ChoiceColors:        e.GetChoiceColors(),
 	}
 	return r
 }
@@ -14012,6 +14129,14 @@ func (e *CustomFieldChoiceSet) GetOwner() *pb.Owner {
 	var r *pb.Owner
 	if e != nil && e.Owner != nil {
 		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *CustomFieldChoiceSet) GetChoiceColors() *string {
+	var r *string
+	if e != nil && e.ChoiceColors != nil {
+		r = e.ChoiceColors
 	}
 	return r
 }
@@ -14113,6 +14238,10 @@ type JournalEntry struct {
 	//  - CustomLink
 	//  - Owner
 	//  - OwnerGroup
+	//  - CableBundle
+	//  - RackGroup
+	//  - ScriptModule
+	//  - VirtualMachineType
 	AssignedObject anyJournalEntryAssignedObjectValue
 	Kind           *string
 	Comments       *string
@@ -14594,6 +14723,390 @@ func (e *DeviceConfig) GetCandidate() []byte {
 }
 
 func (e *DeviceConfig) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
+	}
+	return r
+}
+
+type CableBundle struct {
+	Name         *string
+	Description  *string
+	Owner        *Owner
+	Comments     *string
+	Tags         []*Tag
+	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
+}
+
+func (e *CableBundle) ConvertToProtoMessage() proto.Message {
+	r := &pb.CableBundle{
+		Name:         e.GetName(),
+		Description:  e.GetDescription(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
+		Tags:         e.GetTags(),
+		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
+	}
+	return r
+}
+
+func (e *CableBundle) ConvertToProtoEntity() *pb.Entity {
+	return &pb.Entity{
+		Entity: &pb.Entity_CableBundle{
+			CableBundle: e.ConvertToProtoMessage().(*pb.CableBundle),
+		},
+	}
+}
+
+func (e *CableBundle) SetCustomField(key string, value any) error {
+	if e.CustomFields == nil {
+		e.CustomFields = make(map[string]*CustomFieldValue)
+	}
+	return setCustomField(e.CustomFields, key, value)
+}
+
+func (e *CableBundle) GetName() string {
+	var r string
+	if e != nil && e.Name != nil {
+		r = *e.Name
+	}
+	return r
+}
+
+func (e *CableBundle) GetDescription() *string {
+	var r *string
+	if e != nil && e.Description != nil {
+		r = e.Description
+	}
+	return r
+}
+
+func (e *CableBundle) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *CableBundle) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
+func (e *CableBundle) GetTags() []*pb.Tag {
+	var r []*pb.Tag
+	if e != nil && e.Tags != nil {
+		for _, v := range e.Tags {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Tag))
+		}
+	}
+	return r
+}
+
+func (e *CableBundle) GetCustomFields() map[string]*pb.CustomFieldValue {
+	var r map[string]*pb.CustomFieldValue
+	if e != nil && e.CustomFields != nil {
+		r = make(map[string]*pb.CustomFieldValue)
+		for k, v := range e.CustomFields {
+			r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+		}
+	}
+	return r
+}
+
+func (e *CableBundle) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
+	}
+	return r
+}
+
+type RackGroup struct {
+	Name         *string
+	Slug         *string
+	Description  *string
+	Owner        *Owner
+	Comments     *string
+	Tags         []*Tag
+	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
+}
+
+func (e *RackGroup) ConvertToProtoMessage() proto.Message {
+	r := &pb.RackGroup{
+		Name:         e.GetName(),
+		Slug:         e.GetSlug(),
+		Description:  e.GetDescription(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
+		Tags:         e.GetTags(),
+		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
+	}
+	return r
+}
+
+func (e *RackGroup) ConvertToProtoEntity() *pb.Entity {
+	return &pb.Entity{
+		Entity: &pb.Entity_RackGroup{
+			RackGroup: e.ConvertToProtoMessage().(*pb.RackGroup),
+		},
+	}
+}
+
+func (e *RackGroup) SetCustomField(key string, value any) error {
+	if e.CustomFields == nil {
+		e.CustomFields = make(map[string]*CustomFieldValue)
+	}
+	return setCustomField(e.CustomFields, key, value)
+}
+
+func (e *RackGroup) GetName() string {
+	var r string
+	if e != nil && e.Name != nil {
+		r = *e.Name
+	}
+	return r
+}
+
+func (e *RackGroup) GetSlug() string {
+	var r string
+	if e != nil && e.Slug != nil {
+		r = *e.Slug
+	}
+	return r
+}
+
+func (e *RackGroup) GetDescription() *string {
+	var r *string
+	if e != nil && e.Description != nil {
+		r = e.Description
+	}
+	return r
+}
+
+func (e *RackGroup) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *RackGroup) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
+func (e *RackGroup) GetTags() []*pb.Tag {
+	var r []*pb.Tag
+	if e != nil && e.Tags != nil {
+		for _, v := range e.Tags {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Tag))
+		}
+	}
+	return r
+}
+
+func (e *RackGroup) GetCustomFields() map[string]*pb.CustomFieldValue {
+	var r map[string]*pb.CustomFieldValue
+	if e != nil && e.CustomFields != nil {
+		r = make(map[string]*pb.CustomFieldValue)
+		for k, v := range e.CustomFields {
+			r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+		}
+	}
+	return r
+}
+
+func (e *RackGroup) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
+	}
+	return r
+}
+
+type ScriptModule struct {
+	File     *string
+	Metadata Metadata
+}
+
+func (e *ScriptModule) ConvertToProtoMessage() proto.Message {
+	r := &pb.ScriptModule{
+		File:     e.GetFile(),
+		Metadata: e.GetMetadata(),
+	}
+	return r
+}
+
+func (e *ScriptModule) ConvertToProtoEntity() *pb.Entity {
+	return &pb.Entity{
+		Entity: &pb.Entity_ScriptModule{
+			ScriptModule: e.ConvertToProtoMessage().(*pb.ScriptModule),
+		},
+	}
+}
+
+func (e *ScriptModule) GetFile() string {
+	var r string
+	if e != nil && e.File != nil {
+		r = *e.File
+	}
+	return r
+}
+
+func (e *ScriptModule) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
+	}
+	return r
+}
+
+type VirtualMachineType struct {
+	Name            *string
+	Slug            *string
+	DefaultPlatform *Platform
+	DefaultVcpus    *float64
+	DefaultMemory   *int64
+	Description     *string
+	Owner           *Owner
+	Comments        *string
+	Tags            []*Tag
+	CustomFields    map[string]*CustomFieldValue
+	Metadata        Metadata
+}
+
+func (e *VirtualMachineType) ConvertToProtoMessage() proto.Message {
+	r := &pb.VirtualMachineType{
+		Name:            e.GetName(),
+		Slug:            e.GetSlug(),
+		DefaultPlatform: e.GetDefaultPlatform(),
+		DefaultVcpus:    e.GetDefaultVcpus(),
+		DefaultMemory:   e.GetDefaultMemory(),
+		Description:     e.GetDescription(),
+		Owner:           e.GetOwner(),
+		Comments:        e.GetComments(),
+		Tags:            e.GetTags(),
+		CustomFields:    e.GetCustomFields(),
+		Metadata:        e.GetMetadata(),
+	}
+	return r
+}
+
+func (e *VirtualMachineType) ConvertToProtoEntity() *pb.Entity {
+	return &pb.Entity{
+		Entity: &pb.Entity_VirtualMachineType{
+			VirtualMachineType: e.ConvertToProtoMessage().(*pb.VirtualMachineType),
+		},
+	}
+}
+
+func (e *VirtualMachineType) SetCustomField(key string, value any) error {
+	if e.CustomFields == nil {
+		e.CustomFields = make(map[string]*CustomFieldValue)
+	}
+	return setCustomField(e.CustomFields, key, value)
+}
+
+func (e *VirtualMachineType) GetName() string {
+	var r string
+	if e != nil && e.Name != nil {
+		r = *e.Name
+	}
+	return r
+}
+
+func (e *VirtualMachineType) GetSlug() string {
+	var r string
+	if e != nil && e.Slug != nil {
+		r = *e.Slug
+	}
+	return r
+}
+
+func (e *VirtualMachineType) GetDefaultPlatform() *pb.Platform {
+	var r *pb.Platform
+	if e != nil && e.DefaultPlatform != nil {
+		r = e.DefaultPlatform.ConvertToProtoMessage().(*pb.Platform)
+	}
+	return r
+}
+
+func (e *VirtualMachineType) GetDefaultVcpus() *float64 {
+	var r *float64
+	if e != nil && e.DefaultVcpus != nil {
+		r = e.DefaultVcpus
+	}
+	return r
+}
+
+func (e *VirtualMachineType) GetDefaultMemory() *int64 {
+	var r *int64
+	if e != nil && e.DefaultMemory != nil {
+		r = e.DefaultMemory
+	}
+	return r
+}
+
+func (e *VirtualMachineType) GetDescription() *string {
+	var r *string
+	if e != nil && e.Description != nil {
+		r = e.Description
+	}
+	return r
+}
+
+func (e *VirtualMachineType) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *VirtualMachineType) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
+func (e *VirtualMachineType) GetTags() []*pb.Tag {
+	var r []*pb.Tag
+	if e != nil && e.Tags != nil {
+		for _, v := range e.Tags {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Tag))
+		}
+	}
+	return r
+}
+
+func (e *VirtualMachineType) GetCustomFields() map[string]*pb.CustomFieldValue {
+	var r map[string]*pb.CustomFieldValue
+	if e != nil && e.CustomFields != nil {
+		r = make(map[string]*pb.CustomFieldValue)
+		for k, v := range e.CustomFields {
+			r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+		}
+	}
+	return r
+}
+
+func (e *VirtualMachineType) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
 		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
@@ -19154,6 +19667,188 @@ func (e *OwnerGroup) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTer
 func (e *OwnerGroup) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
 	p.AssignedObject = &pb.JournalEntry_AssignedObjectOwnerGroup{
 		AssignedObjectOwnerGroup: e.ConvertToProtoMessage().(*pb.OwnerGroup),
+	}
+}
+
+// implementation of oneof interfaces for CableBundle.
+
+func (e *CableBundle) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment) {
+	p.Object = &pb.ContactAssignment_ObjectCableBundle{
+		ObjectCableBundle: e.ConvertToProtoMessage().(*pb.CableBundle),
+	}
+}
+
+func (e *CableBundle) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference) {
+	p.Object = &pb.CustomFieldObjectReference_CableBundle{
+		CableBundle: e.ConvertToProtoMessage().(*pb.CableBundle),
+	}
+}
+
+func (e *CableBundle) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment) {
+	p.Interface = &pb.FHRPGroupAssignment_InterfaceCableBundle{
+		InterfaceCableBundle: e.ConvertToProtoMessage().(*pb.CableBundle),
+	}
+}
+
+func (e *CableBundle) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject) {
+	p.Object = &pb.GenericObject_ObjectCableBundle{
+		ObjectCableBundle: e.ConvertToProtoMessage().(*pb.CableBundle),
+	}
+}
+
+func (e *CableBundle) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination) {
+	p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCableBundle{
+		AssignedObjectCableBundle: e.ConvertToProtoMessage().(*pb.CableBundle),
+	}
+}
+
+func (e *CableBundle) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination) {
+	p.Termination = &pb.TunnelTermination_TerminationCableBundle{
+		TerminationCableBundle: e.ConvertToProtoMessage().(*pb.CableBundle),
+	}
+}
+
+func (e *CableBundle) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
+	p.AssignedObject = &pb.JournalEntry_AssignedObjectCableBundle{
+		AssignedObjectCableBundle: e.ConvertToProtoMessage().(*pb.CableBundle),
+	}
+}
+
+// implementation of oneof interfaces for RackGroup.
+
+func (e *RackGroup) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment) {
+	p.Object = &pb.ContactAssignment_ObjectRackGroup{
+		ObjectRackGroup: e.ConvertToProtoMessage().(*pb.RackGroup),
+	}
+}
+
+func (e *RackGroup) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference) {
+	p.Object = &pb.CustomFieldObjectReference_RackGroup{
+		RackGroup: e.ConvertToProtoMessage().(*pb.RackGroup),
+	}
+}
+
+func (e *RackGroup) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment) {
+	p.Interface = &pb.FHRPGroupAssignment_InterfaceRackGroup{
+		InterfaceRackGroup: e.ConvertToProtoMessage().(*pb.RackGroup),
+	}
+}
+
+func (e *RackGroup) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject) {
+	p.Object = &pb.GenericObject_ObjectRackGroup{
+		ObjectRackGroup: e.ConvertToProtoMessage().(*pb.RackGroup),
+	}
+}
+
+func (e *RackGroup) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination) {
+	p.AssignedObject = &pb.L2VPNTermination_AssignedObjectRackGroup{
+		AssignedObjectRackGroup: e.ConvertToProtoMessage().(*pb.RackGroup),
+	}
+}
+
+func (e *RackGroup) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination) {
+	p.Termination = &pb.TunnelTermination_TerminationRackGroup{
+		TerminationRackGroup: e.ConvertToProtoMessage().(*pb.RackGroup),
+	}
+}
+
+func (e *RackGroup) anyVLANGroupScopeValueApplyTo(p *pb.VLANGroup) {
+	p.Scope = &pb.VLANGroup_ScopeRackGroup{
+		ScopeRackGroup: e.ConvertToProtoMessage().(*pb.RackGroup),
+	}
+}
+
+func (e *RackGroup) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
+	p.AssignedObject = &pb.JournalEntry_AssignedObjectRackGroup{
+		AssignedObjectRackGroup: e.ConvertToProtoMessage().(*pb.RackGroup),
+	}
+}
+
+// implementation of oneof interfaces for ScriptModule.
+
+func (e *ScriptModule) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment) {
+	p.Object = &pb.ContactAssignment_ObjectScriptModule{
+		ObjectScriptModule: e.ConvertToProtoMessage().(*pb.ScriptModule),
+	}
+}
+
+func (e *ScriptModule) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference) {
+	p.Object = &pb.CustomFieldObjectReference_ScriptModule{
+		ScriptModule: e.ConvertToProtoMessage().(*pb.ScriptModule),
+	}
+}
+
+func (e *ScriptModule) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment) {
+	p.Interface = &pb.FHRPGroupAssignment_InterfaceScriptModule{
+		InterfaceScriptModule: e.ConvertToProtoMessage().(*pb.ScriptModule),
+	}
+}
+
+func (e *ScriptModule) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject) {
+	p.Object = &pb.GenericObject_ObjectScriptModule{
+		ObjectScriptModule: e.ConvertToProtoMessage().(*pb.ScriptModule),
+	}
+}
+
+func (e *ScriptModule) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination) {
+	p.AssignedObject = &pb.L2VPNTermination_AssignedObjectScriptModule{
+		AssignedObjectScriptModule: e.ConvertToProtoMessage().(*pb.ScriptModule),
+	}
+}
+
+func (e *ScriptModule) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination) {
+	p.Termination = &pb.TunnelTermination_TerminationScriptModule{
+		TerminationScriptModule: e.ConvertToProtoMessage().(*pb.ScriptModule),
+	}
+}
+
+func (e *ScriptModule) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
+	p.AssignedObject = &pb.JournalEntry_AssignedObjectScriptModule{
+		AssignedObjectScriptModule: e.ConvertToProtoMessage().(*pb.ScriptModule),
+	}
+}
+
+// implementation of oneof interfaces for VirtualMachineType.
+
+func (e *VirtualMachineType) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment) {
+	p.Object = &pb.ContactAssignment_ObjectVirtualMachineType{
+		ObjectVirtualMachineType: e.ConvertToProtoMessage().(*pb.VirtualMachineType),
+	}
+}
+
+func (e *VirtualMachineType) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference) {
+	p.Object = &pb.CustomFieldObjectReference_VirtualMachineType{
+		VirtualMachineType: e.ConvertToProtoMessage().(*pb.VirtualMachineType),
+	}
+}
+
+func (e *VirtualMachineType) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment) {
+	p.Interface = &pb.FHRPGroupAssignment_InterfaceVirtualMachineType{
+		InterfaceVirtualMachineType: e.ConvertToProtoMessage().(*pb.VirtualMachineType),
+	}
+}
+
+func (e *VirtualMachineType) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject) {
+	p.Object = &pb.GenericObject_ObjectVirtualMachineType{
+		ObjectVirtualMachineType: e.ConvertToProtoMessage().(*pb.VirtualMachineType),
+	}
+}
+
+func (e *VirtualMachineType) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination) {
+	p.AssignedObject = &pb.L2VPNTermination_AssignedObjectVirtualMachineType{
+		AssignedObjectVirtualMachineType: e.ConvertToProtoMessage().(*pb.VirtualMachineType),
+	}
+}
+
+func (e *VirtualMachineType) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination) {
+	p.Termination = &pb.TunnelTermination_TerminationVirtualMachineType{
+		TerminationVirtualMachineType: e.ConvertToProtoMessage().(*pb.VirtualMachineType),
+	}
+}
+
+func (e *VirtualMachineType) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
+	p.AssignedObject = &pb.JournalEntry_AssignedObjectVirtualMachineType{
+		AssignedObjectVirtualMachineType: e.ConvertToProtoMessage().(*pb.VirtualMachineType),
 	}
 }
 

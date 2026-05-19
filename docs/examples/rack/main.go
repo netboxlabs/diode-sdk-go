@@ -159,6 +159,11 @@ func RackExplicit() *diode.Rack {
 			},
 			Metadata: diode.Metadata{"source": "example"},
 		},
+		Group: &diode.RackGroup{
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }
