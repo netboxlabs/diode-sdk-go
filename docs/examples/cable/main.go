@@ -60,7 +60,7 @@ func CableExtended() *diode.Cable {
 		Length:      diode.Float64(1.0),
 		LengthUnit:  diode.String("cm"),
 		Comments:    diode.String("Example comments"),
-		Profile:     diode.String("breakout-1c4p-4c1p"),
+		Profile:     diode.String("breakout-1c2p-2c1p"),
 	}
 }
 
@@ -76,7 +76,7 @@ func CableExplicit() *diode.Cable {
 		Label:       diode.String("Example Label"),
 		Length:      diode.Float64(1.0),
 		LengthUnit:  diode.String("cm"),
-		Profile:     diode.String("breakout-1c4p-4c1p"),
+		Profile:     diode.String("breakout-1c2p-2c1p"),
 		Tenant: &diode.Tenant{
 			Name:     diode.String("Example Name"),
 			Slug:     diode.String("example-slug"),
@@ -88,6 +88,10 @@ func CableExplicit() *diode.Cable {
 				Name:     diode.String("Example Name"),
 				Metadata: diode.Metadata{"source": "example"},
 			},
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Bundle: &diode.CableBundle{
+			Name:     diode.String("Example Name"),
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},

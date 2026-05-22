@@ -102,6 +102,7 @@ func DeviceBayExtended() *diode.DeviceBay {
 		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Description: diode.String("Example description"),
 		Label:       diode.String("Example Label"),
+		Enabled:     diode.Bool(true),
 	}
 }
 
@@ -138,6 +139,7 @@ func DeviceBayExplicit() *diode.DeviceBay {
 		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Description: diode.String("Example description"),
 		Label:       diode.String("Example Label"),
+		Enabled:     diode.Bool(true),
 		InstalledDevice: &diode.Device{
 			DeviceType: &diode.DeviceType{
 				Manufacturer: &diode.Manufacturer{

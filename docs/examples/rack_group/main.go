@@ -1,4 +1,4 @@
-// Package main demonstrates ingesting ASN entities using the Diode SDK.
+// Package main demonstrates ingesting RackGroup entities using the Diode SDK.
 // This example includes three patterns: Minimal, Extended, and Explicit.
 package main
 
@@ -11,7 +11,7 @@ import (
 
 const (
 	target     = "grpc://localhost:8080/diode"
-	appName    = "asn-example"
+	appName    = "rack_group-example"
 	appVersion = "1.0.0"
 )
 
@@ -26,67 +26,55 @@ func main() {
 	}
 
 	// Choose one of the three patterns by uncommenting:
-	asn := ASNMinimal()
-	// asn := ASNExtended()
-	// asn := ASNExplicit()
+	rackGroup := RackGroupMinimal()
+	// rackGroup := RackGroupExtended()
+	// rackGroup := RackGroupExplicit()
 
-	resp, err := client.Ingest(context.Background(), []diode.Entity{asn})
+	resp, err := client.Ingest(context.Background(), []diode.Entity{rackGroup})
 	if err != nil {
 		log.Fatalf("Ingestion failed: %v", err)
 	}
 	if resp.Errors != nil {
 		log.Printf("Errors: %v", resp.Errors)
 	} else {
-		log.Println("ASN ingested successfully")
+		log.Println("RackGroup ingested successfully")
 	}
 }
 
-// ASNMinimal Creates a ASN with only required fields.
-func ASNMinimal() *diode.ASN {
-	return &diode.ASN{
-		Asn:      diode.Int64(64512),
+// RackGroupMinimal Creates a RackGroup with only required fields.
+func RackGroupMinimal() *diode.RackGroup {
+	return &diode.RackGroup{
+		Name:     diode.String("Example Name"),
+		Slug:     diode.String("example-slug"),
 		Metadata: diode.Metadata{"source": "example"},
 	}
 }
 
-// ASNExtended Creates a ASN with common optional fields.
-func ASNExtended() *diode.ASN {
-	return &diode.ASN{
-		Asn:         diode.Int64(64512),
+// RackGroupExtended Creates a RackGroup with common optional fields.
+func RackGroupExtended() *diode.RackGroup {
+	return &diode.RackGroup{
+		Name:        diode.String("Example Name"),
+		Slug:        diode.String("example-slug"),
 		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 	}
 }
 
-// ASNExplicit Creates a ASN with fully nested objects and all common fields.
-func ASNExplicit() *diode.ASN {
-	return &diode.ASN{
-		Asn:         diode.Int64(64512),
+// RackGroupExplicit Creates a RackGroup with fully nested objects and all common fields.
+func RackGroupExplicit() *diode.RackGroup {
+	return &diode.RackGroup{
+		Name:        diode.String("Example Name"),
+		Slug:        diode.String("example-slug"),
 		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
-		Rir: &diode.RIR{
-			Name:     diode.String("Example Name"),
-			Slug:     diode.String("example-slug"),
-			Metadata: diode.Metadata{"source": "example"},
-		},
-		Tenant: &diode.Tenant{
-			Name:     diode.String("Example Name"),
-			Slug:     diode.String("example-slug"),
-			Metadata: diode.Metadata{"source": "example"},
-		},
 		Owner: &diode.Owner{
 			Name: diode.String("Example Name"),
 			Group: &diode.OwnerGroup{
 				Name:     diode.String("Example Name"),
 				Metadata: diode.Metadata{"source": "example"},
 			},
-			Metadata: diode.Metadata{"source": "example"},
-		},
-		Role: &diode.Role{
-			Name:     diode.String("Example Name"),
-			Slug:     diode.String("example-slug"),
 			Metadata: diode.Metadata{"source": "example"},
 		},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
