@@ -7,7 +7,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log/slog"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
@@ -57,6 +59,9 @@ const (
 	DiodeSkipTLSVerifyEnvVarName = "DIODE_SKIP_TLS_VERIFY"
 
 	defaultStreamName = "latest"
+
+	authInitialRetryDelay = 1 * time.Second
+	authMaxRetryDelay     = 30 * time.Second
 )
 
 var (
@@ -356,10 +361,18 @@ func WithSkipTLSVerify() ClientOption {
 	}
 }
 
+func formatClientUserAgent(sdkName, sdkVersion, appName, appVersion string) string {
+	return fmt.Sprintf("%s/%s %s/%s", sdkName, sdkVersion, appName, appVersion)
+}
+
 // authenticate fetches an OAuth2 token using client credentials and updates the metadata with the token.
-func (g *GRPCClient) authenticate() error {
-	authClient := newDiodeAuthentication(g.target, g.path, g.isPlaintext, g.tlsVerify, g.rootCAs, g.clientID, g.clientSecret)
-	accessToken, err := authClient.authenticate(g.logger, []string{DiodeOAuth2IngestScope})
+func (g *GRPCClient) authenticate(ctx context.Context) error {
+	authClient := newDiodeAuthentication(
+		g.target, g.path, g.isPlaintext, g.tlsVerify, g.rootCAs,
+		g.clientID, g.clientSecret,
+		g.sdkName, g.sdkVersion, g.appName, g.appVersion,
+	)
+	accessToken, err := authClient.authenticate(ctx, g.logger, []string{DiodeOAuth2IngestScope}, g.maxAuthRetries)
 	if err != nil {
 		return fmt.Errorf("authentication failed: %w", err)
 	}
@@ -378,10 +391,26 @@ type diodeAuthentication struct {
 	tlsVerify    bool
 	clientID     string
 	clientSecret string
+	sdkName      string
+	sdkVersion   string
+	appName      string
+	appVersion   string
+
+	// Test hooks; zero values use production defaults in authenticate().
+	initialRetryDelay time.Duration
+	maxRetryDelay     time.Duration
 }
 
 // NewDiodeAuthentication creates a new instance of DiodeAuthentication.
-func newDiodeAuthentication(target string, path string, isPlaintext bool, tlsVerify bool, rootCAs *x509.CertPool, clientID, clientSecret string) *diodeAuthentication {
+func newDiodeAuthentication(
+	target string,
+	path string,
+	isPlaintext bool,
+	tlsVerify bool,
+	rootCAs *x509.CertPool,
+	clientID, clientSecret string,
+	sdkName, sdkVersion, appName, appVersion string,
+) *diodeAuthentication {
 	return &diodeAuthentication{
 		target:       target,
 		path:         path,
@@ -390,11 +419,101 @@ func newDiodeAuthentication(target string, path string, isPlaintext bool, tlsVer
 		rootCAs:      rootCAs,
 		clientID:     clientID,
 		clientSecret: clientSecret,
+		sdkName:      sdkName,
+		sdkVersion:   sdkVersion,
+		appName:      appName,
+		appVersion:   appVersion,
+	}
+}
+
+func isRetriableAuthHTTPStatus(statusCode int) bool {
+	switch statusCode {
+	case http.StatusTooManyRequests,
+		http.StatusInternalServerError,
+		http.StatusBadGateway,
+		http.StatusServiceUnavailable:
+		return true
+	default:
+		return false
+	}
+}
+
+const maxRetryAfterSeconds = int64((1<<63 - 1) / int64(time.Second))
+
+func parseRetryAfterHeader(value string) (time.Duration, bool) {
+	if value == "" {
+		return 0, false
+	}
+	if seconds, err := strconv.Atoi(value); err == nil {
+		if seconds < 0 {
+			return 0, false
+		}
+		sec := int64(seconds)
+		if sec > maxRetryAfterSeconds {
+			sec = maxRetryAfterSeconds
+		}
+		return time.Duration(sec) * time.Second, true
+	}
+	if t, err := http.ParseTime(value); err == nil {
+		delay := time.Until(t)
+		if delay < 0 {
+			delay = 0
+		}
+		return delay, true
+	}
+	return 0, false
+}
+
+func authRetryDelay(attempt int, statusCode int, retryAfter string, initialDelay, maxDelay time.Duration) time.Duration {
+	var delay time.Duration
+	if statusCode == http.StatusTooManyRequests || statusCode == http.StatusServiceUnavailable {
+		if parsed, ok := parseRetryAfterHeader(retryAfter); ok {
+			delay = parsed
+		}
+	}
+	if delay == 0 {
+		delay = initialDelay
+		for i := 1; i < attempt; i++ {
+			delay *= 2
+			if delay >= maxDelay {
+				delay = maxDelay
+				break
+			}
+		}
+	}
+	if delay > maxDelay {
+		delay = maxDelay
+	}
+	jitter := time.Duration(rand.Int63n(int64(delay)/4 + 1))
+	total := delay + jitter
+	if total > maxDelay {
+		total = maxDelay
+	}
+	return total
+}
+
+func waitForAuthRetry(ctx context.Context, delay time.Duration) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if delay <= 0 {
+		return nil
+	}
+
+	timer := time.NewTimer(delay)
+	select {
+	case <-ctx.Done():
+		if !timer.Stop() {
+			<-timer.C
+		}
+		return ctx.Err()
+	case <-timer.C:
+		return nil
 	}
 }
 
 // Authenticate requests an OAuth2 token using client credentials and returns it.
-func (d *diodeAuthentication) authenticate(logger *slog.Logger, scopes []string) (string, error) {
+func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Logger, scopes []string, maxRetries int) (string, error) {
 	scheme := "https"
 	if d.isPlaintext {
 		scheme = "http"
@@ -403,59 +522,95 @@ func (d *diodeAuthentication) authenticate(logger *slog.Logger, scopes []string)
 	if d.path != "" {
 		authURL = fmt.Sprintf("%s://%s%s/auth/token", scheme, d.target, d.path)
 	}
-	data := url.Values{}
-	data.Set("grant_type", "client_credentials")
-	data.Set("client_id", d.clientID)
-	data.Set("client_secret", d.clientSecret)
-	data.Set("scope", strings.Join(scopes, " "))
-	req, err := http.NewRequest(http.MethodPost, authURL, strings.NewReader(data.Encode()))
-	if err != nil {
-		return "", fmt.Errorf("failed to create request: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	formData := url.Values{}
+	formData.Set("grant_type", "client_credentials")
+	formData.Set("client_id", d.clientID)
+	formData.Set("client_secret", d.clientSecret)
+	formData.Set("scope", strings.Join(scopes, " "))
 
+	initialDelay := d.initialRetryDelay
+	if initialDelay == 0 {
+		initialDelay = authInitialRetryDelay
+	}
+	maxDelay := d.maxRetryDelay
+	if maxDelay == 0 {
+		maxDelay = authMaxRetryDelay
+	}
 	client := &http.Client{}
 	if d.isPlaintext {
-		// HTTP plaintext - no TLS
 		client.Transport = &http.Transport{
 			Proxy: http.ProxyFromEnvironment,
 		}
 	} else {
-		// HTTPS - always use TLS for secure schemes
 		client.Transport = &http.Transport{
 			Proxy: http.ProxyFromEnvironment,
 			TLSClientConfig: &tls.Config{
 				RootCAs:            d.rootCAs,
-				InsecureSkipVerify: !d.tlsVerify, // Skip verification if tlsVerify is false
+				InsecureSkipVerify: !d.tlsVerify,
 			},
 		}
 	}
 
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", fmt.Errorf("failed to send request: %w", err)
-	}
-	defer func() {
-		if err := resp.Body.Close(); err != nil {
-			logger.Error("failed to close response body", "error", err)
+	var lastStatus string
+	for attempt := 1; attempt <= maxRetries; attempt++ {
+		if err := ctx.Err(); err != nil {
+			return "", fmt.Errorf("authentication canceled: %w", err)
 		}
-	}()
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("authentication failed: %s", resp.Status)
+
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, authURL, strings.NewReader(formData.Encode()))
+		if err != nil {
+			return "", fmt.Errorf("failed to create request: %w", err)
+		}
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		req.Header.Set("User-Agent", formatClientUserAgent(d.sdkName, d.sdkVersion, d.appName, d.appVersion))
+
+		resp, err := client.Do(req)
+		if err != nil {
+			return "", fmt.Errorf("failed to send request: %w", err)
+		}
+
+		if resp.StatusCode == http.StatusOK {
+			var result struct {
+				AccessToken string `json:"access_token"`
+			}
+			decodeErr := json.NewDecoder(resp.Body).Decode(&result)
+			closeErr := resp.Body.Close()
+			if decodeErr != nil {
+				return "", fmt.Errorf("failed to parse response: %w", decodeErr)
+			}
+			if closeErr != nil {
+				logger.Error("failed to close response body", "error", closeErr)
+			}
+			if result.AccessToken == "" {
+				return "", errors.New("access token not found in response")
+			}
+			return result.AccessToken, nil
+		}
+
+		lastStatus = resp.Status
+		retryAfter := resp.Header.Get("Retry-After")
+		_, _ = io.Copy(io.Discard, resp.Body)
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			logger.Error("failed to close response body", "error", closeErr)
+		}
+
+		if !isRetriableAuthHTTPStatus(resp.StatusCode) || attempt >= maxRetries {
+			return "", fmt.Errorf("authentication failed: %s", lastStatus)
+		}
+
+		delay := authRetryDelay(attempt, resp.StatusCode, retryAfter, initialDelay, maxDelay)
+		logger.Debug(
+			"Auth token request failed, retrying",
+			"status", resp.StatusCode,
+			"attempt", attempt,
+			"retry_in", delay,
+		)
+		if err := waitForAuthRetry(ctx, delay); err != nil {
+			return "", fmt.Errorf("authentication canceled: %w", err)
+		}
 	}
 
-	var result struct {
-		AccessToken string `json:"access_token"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return "", fmt.Errorf("failed to parse response: %w", err)
-	}
-
-	if result.AccessToken == "" {
-		return "", errors.New("access token not found in response")
-	}
-
-	return result.AccessToken, nil
+	return "", fmt.Errorf("authentication failed: %s", lastStatus)
 }
 
 // NewClient creates a new diode client based on gRPC
@@ -511,8 +666,9 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 	}
 	c.rootCAs = rootCAs
 
+	userAgent := formatClientUserAgent(c.sdkName, c.sdkVersion, c.appName, c.appVersion)
 	dialOpts := []grpc.DialOption{
-		grpc.WithUserAgent(fmt.Sprintf("%s/%s", c.sdkName, c.sdkVersion)),
+		grpc.WithUserAgent(userAgent),
 		defaultClientKeepaliveDialOption(),
 	}
 
@@ -562,7 +718,7 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 	c.clientID = clientID
 	c.clientSecret = clientSecret
 
-	if err = c.authenticate(); err != nil {
+	if err = c.authenticate(context.Background()); err != nil {
 		return nil, err
 	}
 
@@ -633,7 +789,10 @@ func (g *GRPCClient) ingestSingleRequest(ctx context.Context, entities []*diodep
 					return nil, fmt.Errorf("authentication failed after %d attempts: %w", attempt, err)
 				}
 				g.logger.Debug("Authentication failed, retrying...", "attempt", attempt)
-				if err := g.authenticate(); err != nil {
+				if err := g.authenticate(ctx); err != nil {
+					if ctx.Err() != nil {
+						return nil, fmt.Errorf("re-authentication canceled: %w", ctx.Err())
+					}
 					g.logger.Error("Failed to re-authenticate", "error", err)
 				}
 				continue
