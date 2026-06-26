@@ -361,9 +361,17 @@ func WithSkipTLSVerify() ClientOption {
 	}
 }
 
+func formatClientUserAgent(sdkName, sdkVersion, appName, appVersion string) string {
+	return fmt.Sprintf("%s/%s %s/%s", sdkName, sdkVersion, appName, appVersion)
+}
+
 // authenticate fetches an OAuth2 token using client credentials and updates the metadata with the token.
 func (g *GRPCClient) authenticate(ctx context.Context) error {
-	authClient := newDiodeAuthentication(g.target, g.path, g.isPlaintext, g.tlsVerify, g.rootCAs, g.clientID, g.clientSecret)
+	authClient := newDiodeAuthentication(
+		g.target, g.path, g.isPlaintext, g.tlsVerify, g.rootCAs,
+		g.clientID, g.clientSecret,
+		g.sdkName, g.sdkVersion, g.appName, g.appVersion,
+	)
 	accessToken, err := authClient.authenticate(ctx, g.logger, []string{DiodeOAuth2IngestScope}, g.maxAuthRetries)
 	if err != nil {
 		return fmt.Errorf("authentication failed: %w", err)
@@ -383,6 +391,10 @@ type diodeAuthentication struct {
 	tlsVerify    bool
 	clientID     string
 	clientSecret string
+	sdkName      string
+	sdkVersion   string
+	appName      string
+	appVersion   string
 
 	// Test hooks; zero values use production defaults in authenticate().
 	initialRetryDelay time.Duration
@@ -390,7 +402,15 @@ type diodeAuthentication struct {
 }
 
 // NewDiodeAuthentication creates a new instance of DiodeAuthentication.
-func newDiodeAuthentication(target string, path string, isPlaintext bool, tlsVerify bool, rootCAs *x509.CertPool, clientID, clientSecret string) *diodeAuthentication {
+func newDiodeAuthentication(
+	target string,
+	path string,
+	isPlaintext bool,
+	tlsVerify bool,
+	rootCAs *x509.CertPool,
+	clientID, clientSecret string,
+	sdkName, sdkVersion, appName, appVersion string,
+) *diodeAuthentication {
 	return &diodeAuthentication{
 		target:       target,
 		path:         path,
@@ -399,6 +419,10 @@ func newDiodeAuthentication(target string, path string, isPlaintext bool, tlsVer
 		rootCAs:      rootCAs,
 		clientID:     clientID,
 		clientSecret: clientSecret,
+		sdkName:      sdkName,
+		sdkVersion:   sdkVersion,
+		appName:      appName,
+		appVersion:   appVersion,
 	}
 }
 
@@ -538,6 +562,7 @@ func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Log
 			return "", fmt.Errorf("failed to create request: %w", err)
 		}
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		req.Header.Set("User-Agent", formatClientUserAgent(d.sdkName, d.sdkVersion, d.appName, d.appVersion))
 
 		resp, err := client.Do(req)
 		if err != nil {
@@ -641,8 +666,9 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 	}
 	c.rootCAs = rootCAs
 
+	userAgent := formatClientUserAgent(c.sdkName, c.sdkVersion, c.appName, c.appVersion)
 	dialOpts := []grpc.DialOption{
-		grpc.WithUserAgent(fmt.Sprintf("%s/%s", c.sdkName, c.sdkVersion)),
+		grpc.WithUserAgent(userAgent),
 		defaultClientKeepaliveDialOption(),
 	}
 

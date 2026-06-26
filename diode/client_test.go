@@ -70,6 +70,66 @@ func TestLoadCerts(t *testing.T) {
 	}
 }
 
+func TestFormatClientUserAgent(t *testing.T) {
+	tests := []struct {
+		name       string
+		sdkName    string
+		sdkVersion string
+		appName    string
+		appVersion string
+		want       string
+	}{
+		{
+			name:       "simple app name",
+			sdkName:    "diode-sdk-go",
+			sdkVersion: "1.9.0",
+			appName:    "snmp-discovery",
+			appVersion: "0.42.0",
+			want:       "diode-sdk-go/1.9.0 snmp-discovery/0.42.0",
+		},
+		{
+			name:       "prefixed app name",
+			sdkName:    "diode-sdk-go",
+			sdkVersion: "1.9.0",
+			appName:    "my-agent/network-discovery",
+			appVersion: "0.1.0",
+			want:       "diode-sdk-go/1.9.0 my-agent/network-discovery/0.1.0",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, formatClientUserAgent(tt.sdkName, tt.sdkVersion, tt.appName, tt.appVersion))
+		})
+	}
+}
+
+func TestAuthenticateSetsUserAgent(t *testing.T) {
+	var capturedUserAgent string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/auth/token" {
+			http.NotFound(w, r)
+			return
+		}
+		capturedUserAgent = r.Header.Get("User-Agent")
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"access_token": "mock-token"}`))
+	}))
+	t.Cleanup(server.Close)
+
+	host := strings.TrimPrefix(server.URL, "http://")
+	authClient := newDiodeAuthentication(
+		host, "", true, false, nil,
+		"client-id", "client-secret",
+		"diode-sdk-go", "1.0.0", "my-producer", "0.1.0",
+	)
+
+	token, err := authClient.authenticate(context.Background(), slog.Default(), []string{DiodeOAuth2IngestScope}, 3)
+	require.NoError(t, err)
+	require.Equal(t, "mock-token", token)
+	assert.Equal(t, "diode-sdk-go/1.0.0 my-producer/0.1.0", capturedUserAgent)
+}
+
 func TestParseTarget(t *testing.T) {
 	tests := []struct {
 		desc      string
@@ -1643,7 +1703,7 @@ func TestAuthenticateRetriesRetriableHTTPStatuses(t *testing.T) {
 			t.Cleanup(server.Close)
 
 			host := strings.TrimPrefix(server.URL, "http://")
-			authClient := newDiodeAuthentication(host, "", true, false, nil, "client-id", "client-secret")
+			authClient := newDiodeAuthentication(host, "", true, false, nil, "client-id", "client-secret", "", "", "", "")
 			authClient.initialRetryDelay = 0
 			authClient.maxRetryDelay = 0
 
@@ -1680,7 +1740,7 @@ func TestAuthenticateRespectsContextDuringBackoff(t *testing.T) {
 	t.Cleanup(server.Close)
 
 	host := strings.TrimPrefix(server.URL, "http://")
-	authClient := newDiodeAuthentication(host, "", true, false, nil, "client-id", "client-secret")
+	authClient := newDiodeAuthentication(host, "", true, false, nil, "client-id", "client-secret", "", "", "", "")
 	authClient.initialRetryDelay = time.Second
 	authClient.maxRetryDelay = 30 * time.Second
 
