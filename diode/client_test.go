@@ -1540,6 +1540,15 @@ func TestParseRetryAfterHeader(t *testing.T) {
 		_, ok := parseRetryAfterHeader("not-a-date")
 		assert.False(t, ok)
 	})
+
+	t.Run("large seconds does not overflow", func(t *testing.T) {
+		delay, ok := parseRetryAfterHeader("9223372037")
+		assert.True(t, ok)
+		assert.Positive(t, delay)
+
+		got := authRetryDelay(1, http.StatusTooManyRequests, "9223372037", time.Second, 30*time.Second)
+		assert.LessOrEqual(t, got, 30*time.Second)
+	})
 }
 
 func TestAuthRetryDelay(t *testing.T) {
@@ -1572,6 +1581,13 @@ func TestAuthRetryDelay(t *testing.T) {
 
 	t.Run("caps retry-after at max delay", func(t *testing.T) {
 		assertDelayInRange(t, authRetryDelay(1, http.StatusTooManyRequests, "120", initial, maxDelay), maxDelay)
+	})
+
+	t.Run("final delay never exceeds max delay after jitter", func(t *testing.T) {
+		for range 100 {
+			got := authRetryDelay(10, http.StatusInternalServerError, "", initial, maxDelay)
+			assert.LessOrEqual(t, got, maxDelay)
+		}
 	})
 }
 

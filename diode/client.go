@@ -415,6 +415,8 @@ func isRetriableAuthHTTPStatus(statusCode int) bool {
 	}
 }
 
+const maxRetryAfterSeconds = int64((1<<63 - 1) / int64(time.Second))
+
 func parseRetryAfterHeader(value string) (time.Duration, bool) {
 	if value == "" {
 		return 0, false
@@ -423,7 +425,11 @@ func parseRetryAfterHeader(value string) (time.Duration, bool) {
 		if seconds < 0 {
 			return 0, false
 		}
-		return time.Duration(seconds) * time.Second, true
+		sec := int64(seconds)
+		if sec > maxRetryAfterSeconds {
+			sec = maxRetryAfterSeconds
+		}
+		return time.Duration(sec) * time.Second, true
 	}
 	if t, err := http.ParseTime(value); err == nil {
 		delay := time.Until(t)
@@ -456,7 +462,11 @@ func authRetryDelay(attempt int, statusCode int, retryAfter string, initialDelay
 		delay = maxDelay
 	}
 	jitter := time.Duration(rand.Int63n(int64(delay)/4 + 1))
-	return delay + jitter
+	total := delay + jitter
+	if total > maxDelay {
+		total = maxDelay
+	}
+	return total
 }
 
 // Authenticate requests an OAuth2 token using client credentials and returns it.
