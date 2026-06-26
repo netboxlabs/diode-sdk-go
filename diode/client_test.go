@@ -1648,7 +1648,7 @@ func TestAuthenticateRetriesRetriableHTTPStatuses(t *testing.T) {
 			authClient.maxRetryDelay = 0
 			authClient.sleep = func(time.Duration) {}
 
-			token, err := authClient.authenticate(slog.Default(), []string{DiodeOAuth2IngestScope}, tt.maxRetries)
+			token, err := authClient.authenticate(context.Background(), slog.Default(), []string{DiodeOAuth2IngestScope}, tt.maxRetries)
 			assert.Equal(t, tt.wantCalls, calls)
 			if tt.wantErr {
 				require.Error(t, err)
@@ -1659,4 +1659,28 @@ func TestAuthenticateRetriesRetriableHTTPStatuses(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestAuthenticateRespectsContextDuringBackoff(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Retry-After", "30")
+		w.WriteHeader(http.StatusTooManyRequests)
+	}))
+	t.Cleanup(server.Close)
+
+	host := strings.TrimPrefix(server.URL, "http://")
+	authClient := newDiodeAuthentication(host, "", true, false, nil, "client-id", "client-secret")
+	authClient.initialRetryDelay = time.Second
+	authClient.maxRetryDelay = 30 * time.Second
+
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	defer cancel()
+
+	start := time.Now()
+	_, err := authClient.authenticate(ctx, slog.Default(), []string{DiodeOAuth2IngestScope}, 3)
+	elapsed := time.Since(start)
+
+	require.Error(t, err)
+	assert.ErrorIs(t, err, context.DeadlineExceeded)
+	assert.Less(t, elapsed, 2*time.Second, "backoff should abort when context expires")
 }

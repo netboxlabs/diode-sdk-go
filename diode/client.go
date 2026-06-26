@@ -362,9 +362,9 @@ func WithSkipTLSVerify() ClientOption {
 }
 
 // authenticate fetches an OAuth2 token using client credentials and updates the metadata with the token.
-func (g *GRPCClient) authenticate() error {
+func (g *GRPCClient) authenticate(ctx context.Context) error {
 	authClient := newDiodeAuthentication(g.target, g.path, g.isPlaintext, g.tlsVerify, g.rootCAs, g.clientID, g.clientSecret)
-	accessToken, err := authClient.authenticate(g.logger, []string{DiodeOAuth2IngestScope}, g.maxAuthRetries)
+	accessToken, err := authClient.authenticate(ctx, g.logger, []string{DiodeOAuth2IngestScope}, g.maxAuthRetries)
 	if err != nil {
 		return fmt.Errorf("authentication failed: %w", err)
 	}
@@ -469,8 +469,28 @@ func authRetryDelay(attempt int, statusCode int, retryAfter string, initialDelay
 	return total
 }
 
+func waitForAuthRetry(ctx context.Context, delay time.Duration, sleep func(time.Duration)) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if delay <= 0 {
+		return nil
+	}
+	done := make(chan struct{})
+	go func() {
+		sleep(delay)
+		close(done)
+	}()
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-done:
+		return nil
+	}
+}
+
 // Authenticate requests an OAuth2 token using client credentials and returns it.
-func (d *diodeAuthentication) authenticate(logger *slog.Logger, scopes []string, maxRetries int) (string, error) {
+func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Logger, scopes []string, maxRetries int) (string, error) {
 	scheme := "https"
 	if d.isPlaintext {
 		scheme = "http"
@@ -515,7 +535,11 @@ func (d *diodeAuthentication) authenticate(logger *slog.Logger, scopes []string,
 
 	var lastStatus string
 	for attempt := 1; attempt <= maxRetries; attempt++ {
-		req, err := http.NewRequest(http.MethodPost, authURL, strings.NewReader(formData.Encode()))
+		if err := ctx.Err(); err != nil {
+			return "", fmt.Errorf("authentication canceled: %w", err)
+		}
+
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, authURL, strings.NewReader(formData.Encode()))
 		if err != nil {
 			return "", fmt.Errorf("failed to create request: %w", err)
 		}
@@ -562,7 +586,9 @@ func (d *diodeAuthentication) authenticate(logger *slog.Logger, scopes []string,
 			"attempt", attempt,
 			"retry_in", delay,
 		)
-		sleep(delay)
+		if err := waitForAuthRetry(ctx, delay, sleep); err != nil {
+			return "", fmt.Errorf("authentication canceled: %w", err)
+		}
 	}
 
 	return "", fmt.Errorf("authentication failed: %s", lastStatus)
@@ -672,7 +698,7 @@ func NewClient(target string, appName string, appVersion string, opts ...ClientO
 	c.clientID = clientID
 	c.clientSecret = clientSecret
 
-	if err = c.authenticate(); err != nil {
+	if err = c.authenticate(context.Background()); err != nil {
 		return nil, err
 	}
 
@@ -743,7 +769,10 @@ func (g *GRPCClient) ingestSingleRequest(ctx context.Context, entities []*diodep
 					return nil, fmt.Errorf("authentication failed after %d attempts: %w", attempt, err)
 				}
 				g.logger.Debug("Authentication failed, retrying...", "attempt", attempt)
-				if err := g.authenticate(); err != nil {
+				if err := g.authenticate(ctx); err != nil {
+					if ctx.Err() != nil {
+						return nil, fmt.Errorf("re-authentication canceled: %w", ctx.Err())
+					}
 					g.logger.Error("Failed to re-authenticate", "error", err)
 				}
 				continue
