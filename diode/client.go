@@ -387,7 +387,6 @@ type diodeAuthentication struct {
 	// Test hooks; zero values use production defaults in authenticate().
 	initialRetryDelay time.Duration
 	maxRetryDelay     time.Duration
-	sleep             func(time.Duration)
 }
 
 // NewDiodeAuthentication creates a new instance of DiodeAuthentication.
@@ -469,22 +468,22 @@ func authRetryDelay(attempt int, statusCode int, retryAfter string, initialDelay
 	return total
 }
 
-func waitForAuthRetry(ctx context.Context, delay time.Duration, sleep func(time.Duration)) error {
+func waitForAuthRetry(ctx context.Context, delay time.Duration) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
 	if delay <= 0 {
 		return nil
 	}
-	done := make(chan struct{})
-	go func() {
-		sleep(delay)
-		close(done)
-	}()
+
+	timer := time.NewTimer(delay)
 	select {
 	case <-ctx.Done():
+		if !timer.Stop() {
+			<-timer.C
+		}
 		return ctx.Err()
-	case <-done:
+	case <-timer.C:
 		return nil
 	}
 }
@@ -513,11 +512,6 @@ func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Log
 	if maxDelay == 0 {
 		maxDelay = authMaxRetryDelay
 	}
-	sleep := d.sleep
-	if sleep == nil {
-		sleep = time.Sleep
-	}
-
 	client := &http.Client{}
 	if d.isPlaintext {
 		client.Transport = &http.Transport{
@@ -586,7 +580,7 @@ func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Log
 			"attempt", attempt,
 			"retry_in", delay,
 		)
-		if err := waitForAuthRetry(ctx, delay, sleep); err != nil {
+		if err := waitForAuthRetry(ctx, delay); err != nil {
 			return "", fmt.Errorf("authentication canceled: %w", err)
 		}
 	}
