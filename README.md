@@ -31,6 +31,8 @@ go get github.com/netboxlabs/diode-sdk-go
 * `DIODE_SKIP_TLS_VERIFY` - Skip TLS verification (default: `false`)
 * `DIODE_DRY_RUN_OUTPUT_DIR` - Directory to write dry run output files when using `DryRunClient`
 
+OAuth `NewClient` sets the gRPC User-Agent and the `/auth/token` HTTP `User-Agent` header to `{sdkName}/{sdkVersion} {appName}/{appVersion}` (for example `diode-sdk-go/1.9.0 snmp-discovery/0.42.0`).
+
 ### Example
 
 * `target` should be the address of the Diode service.
