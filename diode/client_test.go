@@ -8,11 +8,13 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"os"
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -1499,4 +1501,197 @@ func (m *MockIngesterWithCapture) Ingest(_ context.Context, req *diodepb.IngestR
 		m.captureFunc(req)
 	}
 	return &diodepb.IngestResponse{Errors: nil}, nil
+}
+
+func TestIsRetriableAuthHTTPStatus(t *testing.T) {
+	tests := []struct {
+		statusCode int
+		want       bool
+	}{
+		{statusCode: http.StatusTooManyRequests, want: true},
+		{statusCode: http.StatusInternalServerError, want: true},
+		{statusCode: http.StatusBadGateway, want: true},
+		{statusCode: http.StatusServiceUnavailable, want: true},
+		{statusCode: http.StatusUnauthorized, want: false},
+		{statusCode: http.StatusForbidden, want: false},
+		{statusCode: http.StatusBadRequest, want: false},
+		{statusCode: http.StatusOK, want: false},
+	}
+	for _, tt := range tests {
+		t.Run(http.StatusText(tt.statusCode), func(t *testing.T) {
+			assert.Equal(t, tt.want, isRetriableAuthHTTPStatus(tt.statusCode))
+		})
+	}
+}
+
+func TestParseRetryAfterHeader(t *testing.T) {
+	t.Run("seconds", func(t *testing.T) {
+		delay, ok := parseRetryAfterHeader("5")
+		assert.True(t, ok)
+		assert.Equal(t, 5*time.Second, delay)
+	})
+
+	t.Run("empty", func(t *testing.T) {
+		_, ok := parseRetryAfterHeader("")
+		assert.False(t, ok)
+	})
+
+	t.Run("invalid", func(t *testing.T) {
+		_, ok := parseRetryAfterHeader("not-a-date")
+		assert.False(t, ok)
+	})
+
+	t.Run("large seconds does not overflow", func(t *testing.T) {
+		delay, ok := parseRetryAfterHeader("9223372037")
+		assert.True(t, ok)
+		assert.Positive(t, delay)
+
+		got := authRetryDelay(1, http.StatusTooManyRequests, "9223372037", time.Second, 30*time.Second)
+		assert.LessOrEqual(t, got, 30*time.Second)
+	})
+}
+
+func TestAuthRetryDelay(t *testing.T) {
+	initial := time.Second
+	maxDelay := 30 * time.Second
+
+	assertDelayInRange := func(t *testing.T, got, want time.Duration) {
+		t.Helper()
+		maxJitter := want / 4
+		if maxJitter == 0 {
+			maxJitter = time.Nanosecond
+		}
+		assert.GreaterOrEqual(t, got, want)
+		assert.LessOrEqual(t, got, want+maxJitter)
+	}
+
+	t.Run("exponential backoff without retry-after", func(t *testing.T) {
+		assertDelayInRange(t, authRetryDelay(1, http.StatusInternalServerError, "", initial, maxDelay), time.Second)
+		assertDelayInRange(t, authRetryDelay(2, http.StatusInternalServerError, "", initial, maxDelay), 2*time.Second)
+		assertDelayInRange(t, authRetryDelay(3, http.StatusBadGateway, "", initial, maxDelay), 4*time.Second)
+	})
+
+	t.Run("honours retry-after on 429", func(t *testing.T) {
+		assertDelayInRange(t, authRetryDelay(1, http.StatusTooManyRequests, "7", initial, maxDelay), 7*time.Second)
+	})
+
+	t.Run("honours retry-after on 503", func(t *testing.T) {
+		assertDelayInRange(t, authRetryDelay(1, http.StatusServiceUnavailable, "12", initial, maxDelay), 12*time.Second)
+	})
+
+	t.Run("caps retry-after at max delay", func(t *testing.T) {
+		assertDelayInRange(t, authRetryDelay(1, http.StatusTooManyRequests, "120", initial, maxDelay), maxDelay)
+	})
+
+	t.Run("final delay never exceeds max delay after jitter", func(t *testing.T) {
+		for range 100 {
+			got := authRetryDelay(10, http.StatusInternalServerError, "", initial, maxDelay)
+			assert.LessOrEqual(t, got, maxDelay)
+		}
+	})
+}
+
+func TestAuthenticateRetriesRetriableHTTPStatuses(t *testing.T) {
+	tests := []struct {
+		name       string
+		statusCode int
+		maxRetries int
+		wantCalls  int
+		wantErr    bool
+	}{
+		{
+			name:       "503 then success",
+			statusCode: http.StatusServiceUnavailable,
+			maxRetries: 3,
+			wantCalls:  2,
+			wantErr:    false,
+		},
+		{
+			name:       "429 exhausts retries",
+			statusCode: http.StatusTooManyRequests,
+			maxRetries: 2,
+			wantCalls:  2,
+			wantErr:    true,
+		},
+		{
+			name:       "401 fails fast",
+			statusCode: http.StatusUnauthorized,
+			maxRetries: 3,
+			wantCalls:  1,
+			wantErr:    true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			calls := 0
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+				calls++
+				if !tt.wantErr && calls == 1 {
+					w.Header().Set("Retry-After", "0")
+					w.WriteHeader(tt.statusCode)
+					return
+				}
+				if tt.wantErr {
+					w.Header().Set("Retry-After", "0")
+					w.WriteHeader(tt.statusCode)
+					return
+				}
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write([]byte(`{"access_token":"token"}`))
+			}))
+			t.Cleanup(server.Close)
+
+			host := strings.TrimPrefix(server.URL, "http://")
+			authClient := newDiodeAuthentication(host, "", true, false, nil, "client-id", "client-secret")
+			authClient.initialRetryDelay = 0
+			authClient.maxRetryDelay = 0
+
+			token, err := authClient.authenticate(context.Background(), slog.Default(), []string{DiodeOAuth2IngestScope}, tt.maxRetries)
+			assert.Equal(t, tt.wantCalls, calls)
+			if tt.wantErr {
+				require.Error(t, err)
+				assert.Empty(t, token)
+			} else {
+				require.NoError(t, err)
+				assert.Equal(t, "token", token)
+			}
+		})
+	}
+}
+
+func TestWaitForAuthRetryCancelsOnContextDone(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	defer cancel()
+
+	start := time.Now()
+	err := waitForAuthRetry(ctx, 30*time.Second)
+	elapsed := time.Since(start)
+
+	require.ErrorIs(t, err, context.DeadlineExceeded)
+	assert.Less(t, elapsed, 2*time.Second, "timer wait should abort when context expires")
+}
+
+func TestAuthenticateRespectsContextDuringBackoff(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Retry-After", "30")
+		w.WriteHeader(http.StatusTooManyRequests)
+	}))
+	t.Cleanup(server.Close)
+
+	host := strings.TrimPrefix(server.URL, "http://")
+	authClient := newDiodeAuthentication(host, "", true, false, nil, "client-id", "client-secret")
+	authClient.initialRetryDelay = time.Second
+	authClient.maxRetryDelay = 30 * time.Second
+
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	defer cancel()
+
+	start := time.Now()
+	_, err := authClient.authenticate(ctx, slog.Default(), []string{DiodeOAuth2IngestScope}, 3)
+	elapsed := time.Since(start)
+
+	require.Error(t, err)
+	assert.ErrorIs(t, err, context.DeadlineExceeded)
+	assert.Less(t, elapsed, 2*time.Second, "backoff should abort when context expires")
 }
