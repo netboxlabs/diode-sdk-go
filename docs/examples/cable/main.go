@@ -45,14 +45,138 @@ func main() {
 func CableMinimal() *diode.Cable {
 	return &diode.Cable{
 		Metadata: diode.Metadata{"source": "example"},
+		ATerminations: []*diode.GenericObject{{Object: &diode.Interface{
+			Device: &diode.Device{
+				DeviceType: &diode.DeviceType{
+					Manufacturer: &diode.Manufacturer{
+						Name:     diode.String("Example Name"),
+						Slug:     diode.String("example-slug"),
+						Metadata: diode.Metadata{"source": "example"},
+					},
+					Model:    diode.String("Model X"),
+					Slug:     diode.String("example-slug"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Role: &diode.DeviceRole{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Color:    diode.String("0000ff"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Site: &diode.Site{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Status:   diode.String("active"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Status:   diode.String("active"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Name:     diode.String("Example Name A"),
+			Type:     diode.String("1000base-t"),
+			Metadata: diode.Metadata{"source": "example"},
+		}}},
+		BTerminations: []*diode.GenericObject{{Object: &diode.Interface{
+			Device: &diode.Device{
+				DeviceType: &diode.DeviceType{
+					Manufacturer: &diode.Manufacturer{
+						Name:     diode.String("Example Name"),
+						Slug:     diode.String("example-slug"),
+						Metadata: diode.Metadata{"source": "example"},
+					},
+					Model:    diode.String("Model X"),
+					Slug:     diode.String("example-slug"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Role: &diode.DeviceRole{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Color:    diode.String("0000ff"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Site: &diode.Site{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Status:   diode.String("active"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Status:   diode.String("active"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Name:     diode.String("Example Name B"),
+			Type:     diode.String("1000base-t"),
+			Metadata: diode.Metadata{"source": "example"},
+		}}},
 	}
 }
 
 // CableExtended Creates a Cable with common optional fields.
 func CableExtended() *diode.Cable {
 	return &diode.Cable{
-		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
-		Status:      diode.String("connected"),
+		Metadata: diode.Metadata{"source": "example", "custom_key": "custom_value"},
+		ATerminations: []*diode.GenericObject{{Object: &diode.Interface{
+			Device: &diode.Device{
+				DeviceType: &diode.DeviceType{
+					Manufacturer: &diode.Manufacturer{
+						Name:     diode.String("Example Name"),
+						Slug:     diode.String("example-slug"),
+						Metadata: diode.Metadata{"source": "example"},
+					},
+					Model:    diode.String("Model X"),
+					Slug:     diode.String("example-slug"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Role: &diode.DeviceRole{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Color:    diode.String("0000ff"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Site: &diode.Site{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Status:   diode.String("active"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Status:   diode.String("active"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Name:     diode.String("Example Name A"),
+			Type:     diode.String("1000base-t"),
+			Metadata: diode.Metadata{"source": "example"},
+		}}},
+		BTerminations: []*diode.GenericObject{{Object: &diode.Interface{
+			Device: &diode.Device{
+				DeviceType: &diode.DeviceType{
+					Manufacturer: &diode.Manufacturer{
+						Name:     diode.String("Example Name"),
+						Slug:     diode.String("example-slug"),
+						Metadata: diode.Metadata{"source": "example"},
+					},
+					Model:    diode.String("Model X"),
+					Slug:     diode.String("example-slug"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Role: &diode.DeviceRole{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Color:    diode.String("0000ff"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Site: &diode.Site{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Status:   diode.String("active"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Status:   diode.String("active"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Name:     diode.String("Example Name B"),
+			Type:     diode.String("1000base-t"),
+			Metadata: diode.Metadata{"source": "example"},
+		}}},
+		Status:      diode.String("planned"),
 		Description: diode.String("Example description"),
 		Color:       diode.String("0000ff"),
 		Type:        diode.String("aoc"),
@@ -68,7 +192,7 @@ func CableExtended() *diode.Cable {
 func CableExplicit() *diode.Cable {
 	return &diode.Cable{
 		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
-		Status:      diode.String("connected"),
+		Status:      diode.String("planned"),
 		Description: diode.String("Example description"),
 		Color:       diode.String("0000ff"),
 		Comments:    diode.String("Example comments"),
@@ -94,6 +218,68 @@ func CableExplicit() *diode.Cable {
 			Name:     diode.String("Example Name"),
 			Metadata: diode.Metadata{"source": "example"},
 		},
+		ATerminations: []*diode.GenericObject{{Object: &diode.Interface{
+			Device: &diode.Device{
+				DeviceType: &diode.DeviceType{
+					Manufacturer: &diode.Manufacturer{
+						Name:     diode.String("Example Name"),
+						Slug:     diode.String("example-slug"),
+						Metadata: diode.Metadata{"source": "example"},
+					},
+					Model:    diode.String("Model X"),
+					Slug:     diode.String("example-slug"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Role: &diode.DeviceRole{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Color:    diode.String("0000ff"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Site: &diode.Site{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Status:   diode.String("active"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Status:   diode.String("active"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Name:     diode.String("Example Name A"),
+			Type:     diode.String("1000base-t"),
+			Metadata: diode.Metadata{"source": "example"},
+		}}},
+		BTerminations: []*diode.GenericObject{{Object: &diode.Interface{
+			Device: &diode.Device{
+				DeviceType: &diode.DeviceType{
+					Manufacturer: &diode.Manufacturer{
+						Name:     diode.String("Example Name"),
+						Slug:     diode.String("example-slug"),
+						Metadata: diode.Metadata{"source": "example"},
+					},
+					Model:    diode.String("Model X"),
+					Slug:     diode.String("example-slug"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Role: &diode.DeviceRole{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Color:    diode.String("0000ff"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Site: &diode.Site{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Status:   diode.String("active"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Status:   diode.String("active"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Name:     diode.String("Example Name B"),
+			Type:     diode.String("1000base-t"),
+			Metadata: diode.Metadata{"source": "example"},
+		}}},
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }
