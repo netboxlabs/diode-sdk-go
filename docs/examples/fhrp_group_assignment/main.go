@@ -45,7 +45,7 @@ func main() {
 func FHRPGroupAssignmentMinimal() *diode.FHRPGroupAssignment {
 	return &diode.FHRPGroupAssignment{
 		Group: &diode.FHRPGroup{
-			Protocol: diode.String("Example Protocol"),
+			Protocol: diode.String("carp"),
 			GroupId:  diode.Int64(1),
 			Metadata: diode.Metadata{"source": "example"},
 		},
@@ -58,7 +58,7 @@ func FHRPGroupAssignmentMinimal() *diode.FHRPGroupAssignment {
 func FHRPGroupAssignmentExtended() *diode.FHRPGroupAssignment {
 	return &diode.FHRPGroupAssignment{
 		Group: &diode.FHRPGroup{
-			Protocol: diode.String("Example Protocol"),
+			Protocol: diode.String("carp"),
 			GroupId:  diode.Int64(1),
 			Metadata: diode.Metadata{"source": "example"},
 		},
@@ -71,7 +71,7 @@ func FHRPGroupAssignmentExtended() *diode.FHRPGroupAssignment {
 func FHRPGroupAssignmentExplicit() *diode.FHRPGroupAssignment {
 	return &diode.FHRPGroupAssignment{
 		Group: &diode.FHRPGroup{
-			Protocol: diode.String("Example Protocol"),
+			Protocol: diode.String("carp"),
 			GroupId:  diode.Int64(1),
 			Metadata: diode.Metadata{"source": "example"},
 		},

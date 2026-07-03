@@ -81,7 +81,7 @@ func TunnelExplicit() *diode.Tunnel {
 		},
 		IpsecProfile: &diode.IPSecProfile{
 			Name: diode.String("Example Name"),
-			Mode: diode.String("Example Mode"),
+			Mode: diode.String("ah"),
 			IkePolicy: &diode.IKEPolicy{
 				Name:     diode.String("Example Name"),
 				Version:  diode.Int64(1),

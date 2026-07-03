@@ -47,7 +47,7 @@ func TunnelTerminationMinimal() *diode.TunnelTermination {
 		Tunnel: &diode.Tunnel{
 			Name:          diode.String("Example Name"),
 			Status:        diode.String("active"),
-			Encapsulation: diode.String("Example Encapsulation"),
+			Encapsulation: diode.String("gre"),
 			Metadata:      diode.Metadata{"source": "example"},
 		},
 		Role:     diode.String("hub"),
@@ -61,7 +61,7 @@ func TunnelTerminationExtended() *diode.TunnelTermination {
 		Tunnel: &diode.Tunnel{
 			Name:          diode.String("Example Name"),
 			Status:        diode.String("active"),
-			Encapsulation: diode.String("Example Encapsulation"),
+			Encapsulation: diode.String("gre"),
 			Metadata:      diode.Metadata{"source": "example"},
 		},
 		Role:     diode.String("hub"),
@@ -75,7 +75,7 @@ func TunnelTerminationExplicit() *diode.TunnelTermination {
 		Tunnel: &diode.Tunnel{
 			Name:          diode.String("Example Name"),
 			Status:        diode.String("active"),
-			Encapsulation: diode.String("Example Encapsulation"),
+			Encapsulation: diode.String("gre"),
 			Metadata:      diode.Metadata{"source": "example"},
 		},
 		Role:     diode.String("hub"),

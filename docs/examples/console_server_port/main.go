@@ -103,7 +103,7 @@ func ConsoleServerPortExtended() *diode.ConsoleServerPort {
 		Description:   diode.String("Example description"),
 		Label:         diode.String("Example Label"),
 		Type:          diode.String("db-25"),
-		Speed:         diode.Int64(1),
+		Speed:         diode.Int64(1200),
 		MarkConnected: diode.Bool(true),
 	}
 }
@@ -142,7 +142,7 @@ func ConsoleServerPortExplicit() *diode.ConsoleServerPort {
 		Description:   diode.String("Example description"),
 		Label:         diode.String("Example Label"),
 		Type:          diode.String("db-25"),
-		Speed:         diode.Int64(1),
+		Speed:         diode.Int64(1200),
 		MarkConnected: diode.Bool(true),
 		Module: &diode.Module{
 			Device: &diode.Device{
