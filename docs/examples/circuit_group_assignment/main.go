@@ -76,6 +76,24 @@ func CircuitGroupAssignmentExplicit() *diode.CircuitGroupAssignment {
 		},
 		Metadata: diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Priority: diode.String("inactive"),
-		Tags:     []*diode.Tag{{Name: diode.String("production")}},
+		// Polymorphic 'member' — choose ONE variant for Member:
+		Member: &diode.Circuit{
+			Cid: diode.String("CID-001"),
+			Provider: &diode.Provider{
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Type: &diode.CircuitType{
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Color:    diode.String("0000ff"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		// Member: &diode.VirtualCircuit{ Cid: diode.String("CID-001"), ProviderNetwork: &diode.ProviderNetwork{ Provider: &diode.Provider{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Name: diode.String("Example Name"), Metadata: diode.Metadata{"source": "example"}, }, Type: &diode.VirtualCircuitType{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Color: diode.String("0000ff"), Metadata: diode.Metadata{"source": "example"}, }, Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, },
+		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

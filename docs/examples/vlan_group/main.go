@@ -82,6 +82,20 @@ func VLANGroupExplicit() *diode.VLANGroup {
 			},
 			Metadata: diode.Metadata{"source": "example"},
 		},
+		// Polymorphic 'scope' — choose ONE variant for Scope:
+		Scope: &diode.Site{
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		// Scope: &diode.Cluster{ Name: diode.String("Example Name"), Type: &diode.ClusterType{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, },
+		// Scope: &diode.ClusterGroup{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, },
+		// Scope: &diode.Location{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Site: &diode.Site{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, },
+		// Scope: &diode.Rack{ Name: diode.String("Example Name"), Site: &diode.Site{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, },
+		// Scope: &diode.Region{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, },
+		// Scope: &diode.SiteGroup{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, },
+		// Scope: &diode.RackGroup{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, },
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }
