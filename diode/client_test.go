@@ -18,8 +18,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -388,17 +386,21 @@ func startMockAuthServer(port string, path string, authErrorGrpc bool) (*MockAut
 		}
 	})
 
-	// Wrap the mux with h2c-compatible handler that detects gRPC
-	handler := h2c.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// Serve gRPC and HTTP on the same cleartext listener, detecting gRPC by content type
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.ProtoMajor == 2 && strings.HasPrefix(r.Header.Get("Content-Type"), "application/grpc") {
 			grpcServer.ServeHTTP(w, r)
 		} else {
 			httpMux.ServeHTTP(w, r)
 		}
-	}), &http2.Server{})
+	})
 
+	protocols := new(http.Protocols)
+	protocols.SetHTTP1(true)
+	protocols.SetUnencryptedHTTP2(true)
 	httpServer := &http.Server{
-		Handler: handler,
+		Handler:   handler,
+		Protocols: protocols,
 	}
 
 	go func() {
@@ -1412,15 +1414,18 @@ func TestIngestProtoWithMetadataTypes(t *testing.T) {
 		_, _ = w.Write([]byte(`{"access_token": "mock-token"}`))
 	})
 
-	handler := h2c.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.ProtoMajor == 2 && strings.HasPrefix(r.Header.Get("Content-Type"), "application/grpc") {
 			grpcServer.ServeHTTP(w, r)
 		} else {
 			httpMux.ServeHTTP(w, r)
 		}
-	}), &http2.Server{})
+	})
 
-	httpServer := &http.Server{Handler: handler}
+	protocols := new(http.Protocols)
+	protocols.SetHTTP1(true)
+	protocols.SetUnencryptedHTTP2(true)
+	httpServer := &http.Server{Handler: handler, Protocols: protocols}
 	go func() {
 		_ = httpServer.Serve(listener)
 	}()
