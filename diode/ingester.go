@@ -1,5 +1,5 @@
 // Generated code. DO NOT EDIT.
-// Timestamp: 2026-05-14 20:30:14Z
+// Timestamp: 2026-07-08 14:57:56Z
 //
 
 package diode
@@ -2422,6 +2422,7 @@ type ContactAssignment struct {
 	//  - RackGroup
 	//  - ScriptModule
 	//  - VirtualMachineType
+	//  - User
 	Object       anyContactAssignmentObjectValue
 	Contact      *Contact
 	Role         *ContactRole
@@ -2853,6 +2854,7 @@ type CustomFieldObjectReference struct {
 	//  - RackGroup
 	//  - ScriptModule
 	//  - VirtualMachineType
+	//  - User
 	Object anyCustomFieldObjectReferenceObjectValue
 }
 
@@ -3980,6 +3982,7 @@ type FHRPGroupAssignment struct {
 	//  - RackGroup
 	//  - ScriptModule
 	//  - VirtualMachineType
+	//  - User
 	Interface anyFHRPGroupAssignmentInterfaceValue
 	Priority  *int64
 	Metadata  Metadata
@@ -4319,6 +4322,7 @@ type GenericObject struct {
 	//  - RackGroup
 	//  - ScriptModule
 	//  - VirtualMachineType
+	//  - User
 	Object anyGenericObjectObjectValue
 }
 
@@ -6365,6 +6369,7 @@ type L2VPNTermination struct {
 	//  - RackGroup
 	//  - ScriptModule
 	//  - VirtualMachineType
+	//  - User
 	AssignedObject anyL2VPNTerminationAssignedObjectValue
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
@@ -9140,6 +9145,7 @@ type RackReservation struct {
 	Status       *string
 	Metadata     Metadata
 	Owner        *Owner
+	User         *User
 }
 
 func (e *RackReservation) ConvertToProtoMessage() proto.Message {
@@ -9154,6 +9160,7 @@ func (e *RackReservation) ConvertToProtoMessage() proto.Message {
 		Status:       e.GetStatus(),
 		Metadata:     e.GetMetadata(),
 		Owner:        e.GetOwner(),
+		User:         e.GetUser(),
 	}
 	return r
 }
@@ -9256,6 +9263,14 @@ func (e *RackReservation) GetOwner() *pb.Owner {
 	var r *pb.Owner
 	if e != nil && e.Owner != nil {
 		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *RackReservation) GetUser() *pb.User {
+	var r *pb.User
+	if e != nil && e.User != nil {
+		r = e.User.ConvertToProtoMessage().(*pb.User)
 	}
 	return r
 }
@@ -11343,6 +11358,7 @@ type TunnelTermination struct {
 	//  - RackGroup
 	//  - ScriptModule
 	//  - VirtualMachineType
+	//  - User
 	Termination  anyTunnelTerminationTerminationValue
 	OutsideIp    *IPAddress
 	Tags         []*Tag
@@ -14242,12 +14258,14 @@ type JournalEntry struct {
 	//  - RackGroup
 	//  - ScriptModule
 	//  - VirtualMachineType
+	//  - User
 	AssignedObject anyJournalEntryAssignedObjectValue
 	Kind           *string
 	Comments       *string
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
 	Metadata       Metadata
+	CreatedBy      *User
 }
 
 func (e *JournalEntry) ConvertToProtoMessage() proto.Message {
@@ -14257,6 +14275,7 @@ func (e *JournalEntry) ConvertToProtoMessage() proto.Message {
 		Tags:         e.GetTags(),
 		CustomFields: e.GetCustomFields(),
 		Metadata:     e.GetMetadata(),
+		CreatedBy:    e.GetCreatedBy(),
 	}
 	if e.AssignedObject != nil {
 		e.AssignedObject.anyJournalEntryAssignedObjectValueApplyTo(r)
@@ -14330,6 +14349,14 @@ func (e *JournalEntry) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
 		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
+	}
+	return r
+}
+
+func (e *JournalEntry) GetCreatedBy() *pb.User {
+	var r *pb.User
+	if e != nil && e.CreatedBy != nil {
+		r = e.CreatedBy.ConvertToProtoMessage().(*pb.User)
 	}
 	return r
 }
@@ -14577,6 +14604,7 @@ type Owner struct {
 	Group       *OwnerGroup
 	Description *string
 	Metadata    Metadata
+	Users       []*User
 }
 
 func (e *Owner) ConvertToProtoMessage() proto.Message {
@@ -14585,6 +14613,7 @@ func (e *Owner) ConvertToProtoMessage() proto.Message {
 		Group:       e.GetGroup(),
 		Description: e.GetDescription(),
 		Metadata:    e.GetMetadata(),
+		Users:       e.GetUsers(),
 	}
 	return r
 }
@@ -14625,6 +14654,16 @@ func (e *Owner) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
 		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
+	}
+	return r
+}
+
+func (e *Owner) GetUsers() []*pb.User {
+	var r []*pb.User
+	if e != nil && e.Users != nil {
+		for _, v := range e.Users {
+			r = append(r, v.ConvertToProtoMessage().(*pb.User))
+		}
 	}
 	return r
 }
@@ -15107,6 +15146,43 @@ func (e *VirtualMachineType) GetCustomFields() map[string]*pb.CustomFieldValue {
 }
 
 func (e *VirtualMachineType) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
+	}
+	return r
+}
+
+type User struct {
+	Username *string
+	Metadata Metadata
+}
+
+func (e *User) ConvertToProtoMessage() proto.Message {
+	r := &pb.User{
+		Username: e.GetUsername(),
+		Metadata: e.GetMetadata(),
+	}
+	return r
+}
+
+func (e *User) ConvertToProtoEntity() *pb.Entity {
+	return &pb.Entity{
+		Entity: &pb.Entity_User{
+			User: e.ConvertToProtoMessage().(*pb.User),
+		},
+	}
+}
+
+func (e *User) GetUsername() string {
+	var r string
+	if e != nil && e.Username != nil {
+		r = *e.Username
+	}
+	return r
+}
+
+func (e *User) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
 		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
@@ -19849,6 +19925,50 @@ func (e *VirtualMachineType) anyTunnelTerminationTerminationValueApplyTo(p *pb.T
 func (e *VirtualMachineType) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
 	p.AssignedObject = &pb.JournalEntry_AssignedObjectVirtualMachineType{
 		AssignedObjectVirtualMachineType: e.ConvertToProtoMessage().(*pb.VirtualMachineType),
+	}
+}
+
+// implementation of oneof interfaces for User.
+
+func (e *User) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment) {
+	p.Object = &pb.ContactAssignment_ObjectUser{
+		ObjectUser: e.ConvertToProtoMessage().(*pb.User),
+	}
+}
+
+func (e *User) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference) {
+	p.Object = &pb.CustomFieldObjectReference_User{
+		User: e.ConvertToProtoMessage().(*pb.User),
+	}
+}
+
+func (e *User) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment) {
+	p.Interface = &pb.FHRPGroupAssignment_InterfaceUser{
+		InterfaceUser: e.ConvertToProtoMessage().(*pb.User),
+	}
+}
+
+func (e *User) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject) {
+	p.Object = &pb.GenericObject_ObjectUser{
+		ObjectUser: e.ConvertToProtoMessage().(*pb.User),
+	}
+}
+
+func (e *User) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination) {
+	p.AssignedObject = &pb.L2VPNTermination_AssignedObjectUser{
+		AssignedObjectUser: e.ConvertToProtoMessage().(*pb.User),
+	}
+}
+
+func (e *User) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination) {
+	p.Termination = &pb.TunnelTermination_TerminationUser{
+		TerminationUser: e.ConvertToProtoMessage().(*pb.User),
+	}
+}
+
+func (e *User) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
+	p.AssignedObject = &pb.JournalEntry_AssignedObjectUser{
+		AssignedObjectUser: e.ConvertToProtoMessage().(*pb.User),
 	}
 }
 
