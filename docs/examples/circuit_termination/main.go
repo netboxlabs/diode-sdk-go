@@ -118,6 +118,17 @@ func CircuitTerminationExplicit() *diode.CircuitTermination {
 		XconnectId:    diode.String("Example XconnectId"),
 		PpInfo:        diode.String("Example PpInfo"),
 		MarkConnected: diode.Bool(true),
-		Tags:          []*diode.Tag{{Name: diode.String("production")}},
+		// Polymorphic 'termination' — choose ONE variant for Termination:
+		Termination: &diode.Site{
+			Name:     diode.String("Example Name"),
+			Slug:     diode.String("example-slug"),
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		// Termination: &diode.Location{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Site: &diode.Site{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, },
+		// Termination: &diode.ProviderNetwork{ Provider: &diode.Provider{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Name: diode.String("Example Name"), Metadata: diode.Metadata{"source": "example"}, },
+		// Termination: &diode.Region{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, },
+		// Termination: &diode.SiteGroup{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, },
+		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

@@ -107,6 +107,35 @@ func ServiceExplicit() *diode.Service {
 			},
 			Metadata: diode.Metadata{"source": "example"},
 		},
+		// Polymorphic 'parent_object' — choose ONE variant for ParentObject:
+		ParentObject: &diode.Device{
+			DeviceType: &diode.DeviceType{
+				Manufacturer: &diode.Manufacturer{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Model:    diode.String("Model X"),
+				Slug:     diode.String("example-slug"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Role: &diode.DeviceRole{
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Color:    diode.String("0000ff"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Site: &diode.Site{
+				Name:     diode.String("Example Name"),
+				Slug:     diode.String("example-slug"),
+				Status:   diode.String("active"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Status:   diode.String("active"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		// ParentObject: &diode.FHRPGroup{ Protocol: diode.String("carp"), GroupId: diode.Int64(1), Metadata: diode.Metadata{"source": "example"}, },
+		// ParentObject: &diode.VirtualMachine{ Name: diode.String("Example Name"), Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, },
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

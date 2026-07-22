@@ -198,6 +198,44 @@ func InventoryItemExplicit() *diode.InventoryItem {
 			},
 			Metadata: diode.Metadata{"source": "example"},
 		},
+		// Polymorphic 'component' — choose ONE variant for Component:
+		Component: &diode.Interface{
+			Device: &diode.Device{
+				DeviceType: &diode.DeviceType{
+					Manufacturer: &diode.Manufacturer{
+						Name:     diode.String("Example Name"),
+						Slug:     diode.String("example-slug"),
+						Metadata: diode.Metadata{"source": "example"},
+					},
+					Model:    diode.String("Model X"),
+					Slug:     diode.String("example-slug"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Role: &diode.DeviceRole{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Color:    diode.String("0000ff"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Site: &diode.Site{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Status:   diode.String("active"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Status:   diode.String("active"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Name:     diode.String("Example Name"),
+			Type:     diode.String("1000base-t"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		// Component: &diode.ConsolePort{ Device: &diode.Device{ DeviceType: &diode.DeviceType{ Manufacturer: &diode.Manufacturer{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Model: diode.String("Model X"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Role: &diode.DeviceRole{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Color: diode.String("0000ff"), Metadata: diode.Metadata{"source": "example"}, }, Site: &diode.Site{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Name: diode.String("Example Name"), Metadata: diode.Metadata{"source": "example"}, },
+		// Component: &diode.ConsoleServerPort{ Device: &diode.Device{ DeviceType: &diode.DeviceType{ Manufacturer: &diode.Manufacturer{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Model: diode.String("Model X"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Role: &diode.DeviceRole{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Color: diode.String("0000ff"), Metadata: diode.Metadata{"source": "example"}, }, Site: &diode.Site{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Name: diode.String("Example Name"), Metadata: diode.Metadata{"source": "example"}, },
+		// Component: &diode.FrontPort{ Device: &diode.Device{ DeviceType: &diode.DeviceType{ Manufacturer: &diode.Manufacturer{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Model: diode.String("Model X"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Role: &diode.DeviceRole{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Color: diode.String("0000ff"), Metadata: diode.Metadata{"source": "example"}, }, Site: &diode.Site{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Name: diode.String("Example Name"), Type: diode.String("110-punch"), Color: diode.String("0000ff"), RearPort: &diode.RearPort{ Device: &diode.Device{ DeviceType: &diode.DeviceType{ Manufacturer: &diode.Manufacturer{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Model: diode.String("Model X"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Role: &diode.DeviceRole{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Color: diode.String("0000ff"), Metadata: diode.Metadata{"source": "example"}, }, Site: &diode.Site{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Name: diode.String("Example Name"), Type: diode.String("110-punch"), Color: diode.String("0000ff"), Metadata: diode.Metadata{"source": "example"}, }, Metadata: diode.Metadata{"source": "example"}, },
+		// Component: &diode.PowerOutlet{ Device: &diode.Device{ DeviceType: &diode.DeviceType{ Manufacturer: &diode.Manufacturer{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Model: diode.String("Model X"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Role: &diode.DeviceRole{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Color: diode.String("0000ff"), Metadata: diode.Metadata{"source": "example"}, }, Site: &diode.Site{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Name: diode.String("Example Name"), Color: diode.String("0000ff"), Status: diode.String("disabled"), Metadata: diode.Metadata{"source": "example"}, },
+		// Component: &diode.PowerPort{ Device: &diode.Device{ DeviceType: &diode.DeviceType{ Manufacturer: &diode.Manufacturer{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Model: diode.String("Model X"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Role: &diode.DeviceRole{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Color: diode.String("0000ff"), Metadata: diode.Metadata{"source": "example"}, }, Site: &diode.Site{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Name: diode.String("Example Name"), Metadata: diode.Metadata{"source": "example"}, },
+		// Component: &diode.RearPort{ Device: &diode.Device{ DeviceType: &diode.DeviceType{ Manufacturer: &diode.Manufacturer{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Model: diode.String("Model X"), Slug: diode.String("example-slug"), Metadata: diode.Metadata{"source": "example"}, }, Role: &diode.DeviceRole{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Color: diode.String("0000ff"), Metadata: diode.Metadata{"source": "example"}, }, Site: &diode.Site{ Name: diode.String("Example Name"), Slug: diode.String("example-slug"), Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Name: diode.String("Example Name"), Type: diode.String("110-punch"), Color: diode.String("0000ff"), Metadata: diode.Metadata{"source": "example"}, },
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

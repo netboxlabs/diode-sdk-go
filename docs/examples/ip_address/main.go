@@ -57,7 +57,7 @@ func IPAddressExtended() *diode.IPAddress {
 		Status:      diode.String("active"),
 		Description: diode.String("Example description"),
 		Role:        diode.String("anycast"),
-		DnsName:     diode.String("Example DnsName"),
+		DnsName:     diode.String("example.host.local"),
 		Comments:    diode.String("Example comments"),
 	}
 }
@@ -71,7 +71,7 @@ func IPAddressExplicit() *diode.IPAddress {
 		Description: diode.String("Example description"),
 		Comments:    diode.String("Example comments"),
 		Role:        diode.String("anycast"),
-		DnsName:     diode.String("Example DnsName"),
+		DnsName:     diode.String("example.host.local"),
 		Vrf: &diode.VRF{
 			Name:     diode.String("Example Name"),
 			Metadata: diode.Metadata{"source": "example"},
@@ -94,6 +94,40 @@ func IPAddressExplicit() *diode.IPAddress {
 			},
 			Metadata: diode.Metadata{"source": "example"},
 		},
+		// Polymorphic 'assigned_object' — choose ONE variant for AssignedObject:
+		AssignedObject: &diode.Interface{
+			Device: &diode.Device{
+				DeviceType: &diode.DeviceType{
+					Manufacturer: &diode.Manufacturer{
+						Name:     diode.String("Example Name"),
+						Slug:     diode.String("example-slug"),
+						Metadata: diode.Metadata{"source": "example"},
+					},
+					Model:    diode.String("Model X"),
+					Slug:     diode.String("example-slug"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Role: &diode.DeviceRole{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Color:    diode.String("0000ff"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Site: &diode.Site{
+					Name:     diode.String("Example Name"),
+					Slug:     diode.String("example-slug"),
+					Status:   diode.String("active"),
+					Metadata: diode.Metadata{"source": "example"},
+				},
+				Status:   diode.String("active"),
+				Metadata: diode.Metadata{"source": "example"},
+			},
+			Name:     diode.String("Example Name"),
+			Type:     diode.String("1000base-t"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		// AssignedObject: &diode.VMInterface{ VirtualMachine: &diode.VirtualMachine{ Name: diode.String("Example Name"), Status: diode.String("active"), Metadata: diode.Metadata{"source": "example"}, }, Name: diode.String("Example Name"), Metadata: diode.Metadata{"source": "example"}, },
+		// AssignedObject: &diode.FHRPGroup{ Protocol: diode.String("carp"), GroupId: diode.Int64(1), Metadata: diode.Metadata{"source": "example"}, },
 		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

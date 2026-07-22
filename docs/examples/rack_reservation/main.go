@@ -55,6 +55,10 @@ func RackReservationMinimal() *diode.RackReservation {
 		},
 		Description: diode.String("Example description"),
 		Metadata:    diode.Metadata{"source": "example"},
+		User: &diode.User{
+			Username: diode.String("Example Username"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
 	}
 }
 
@@ -72,8 +76,12 @@ func RackReservationExtended() *diode.RackReservation {
 		},
 		Description: diode.String("Example description"),
 		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
-		Status:      diode.String("active"),
-		Comments:    diode.String("Example comments"),
+		User: &diode.User{
+			Username: diode.String("Example Username"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Status:   diode.String("active"),
+		Comments: diode.String("Example comments"),
 	}
 }
 
@@ -93,8 +101,12 @@ func RackReservationExplicit() *diode.RackReservation {
 		},
 		Description: diode.String("Example description"),
 		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
-		Status:      diode.String("active"),
-		Comments:    diode.String("Example comments"),
+		User: &diode.User{
+			Username: diode.String("Example Username"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Status:   diode.String("active"),
+		Comments: diode.String("Example comments"),
 		Tenant: &diode.Tenant{
 			Name:     diode.String("Example Name"),
 			Slug:     diode.String("example-slug"),
