@@ -74,6 +74,10 @@ type refreshTestServer struct {
 	// omitExpiresIn drops expires_in from the response, standing in for a server
 	// that does not report a lifetime.
 	omitExpiresIn atomic.Bool
+
+	// sequentialTokens issues "token-N" for the Nth request, so a test can tell
+	// which token a snapshot is carrying.
+	sequentialTokens atomic.Bool
 }
 
 // startRefreshTestServer issues tokens whose exp is now+tokenTTL. A negative or
@@ -97,7 +101,7 @@ func startRefreshTestServer(t *testing.T, tokenTTL time.Duration, ingestErr erro
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/auth/token", func(w http.ResponseWriter, _ *http.Request) {
-		s.tokenRequests.Add(1)
+		n := s.tokenRequests.Add(1)
 		if d := s.tokenDelayMS.Load(); d > 0 {
 			time.Sleep(time.Duration(d) * time.Millisecond)
 		}
@@ -112,13 +116,18 @@ func startRefreshTestServer(t *testing.T, tokenTTL time.Duration, ingestErr erro
 			jwtExp = time.Unix(override, 0)
 		}
 
+		token := makeJWT(jwtExp)
+		if s.sequentialTokens.Load() {
+			token = fmt.Sprintf("token-%d", n)
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		var body string
 		if s.omitExpiresIn.Load() {
-			body = fmt.Sprintf(`{"access_token": %q}`, makeJWT(jwtExp))
+			body = fmt.Sprintf(`{"access_token": %q}`, token)
 		} else {
 			body = fmt.Sprintf(`{"access_token": %q, "expires_in": %d}`,
-				makeJWT(jwtExp), int64(tokenTTL.Seconds()))
+				token, int64(tokenTTL.Seconds()))
 		}
 		_, _ = w.Write([]byte(body))
 	})
@@ -243,6 +252,52 @@ func TestMissingExpiresInDisablesProactiveRenewal(t *testing.T) {
 	_, err := client.Ingest(context.Background(), []Entity{&Site{Name: String("site-1")}})
 	require.NoError(t, err)
 	assert.Equal(t, int64(1), s.tokenRequests.Load(), "no proactive renewal without a lifetime")
+}
+
+// The generation an attempt reports must describe the token that attempt sends.
+// Reading them separately lets a refresh land in between, after which a refresh
+// keyed on the reported generation declines to renew the token that failed and
+// the retry budget drains without ever replacing it.
+//
+// The window is a few instructions wide, so this stresses the invariant under
+// concurrent refreshes rather than pinning one interleaving: the assertion is
+// that generation and credentials always agree, which no interleaving may break.
+func TestTokenSnapshotGenerationMatchesItsCredentials(t *testing.T) {
+	s := startRefreshTestServer(t, time.Hour, nil)
+	s.sequentialTokens.Store(true)
+	client := newRefreshTestClient(t, s)
+
+	stop := make(chan struct{})
+	var refresher sync.WaitGroup
+	refresher.Add(1)
+	go func() {
+		defer refresher.Done()
+		for {
+			select {
+			case <-stop:
+				return
+			default:
+				_ = client.authenticate(context.Background())
+			}
+		}
+	}()
+	t.Cleanup(func() {
+		close(stop)
+		refresher.Wait()
+	})
+
+	deadline := time.Now().Add(500 * time.Millisecond)
+	checks := 0
+	for time.Now().Before(deadline) {
+		snap := client.tokenSnapshot()
+		auth := snap.md.Get("authorization")
+		require.Len(t, auth, 1, "snapshot must carry an authorization header")
+		require.Equal(t, fmt.Sprintf("Bearer token-%d", snap.gen), auth[0],
+			"generation %d does not describe the token in the same snapshot", snap.gen)
+		checks++
+	}
+	assert.Greater(t, checks, 100, "expected the invariant to be exercised repeatedly")
+	assert.Greater(t, s.tokenRequests.Load(), int64(1), "expected refreshes to have run concurrently")
 }
 
 // A token that is still comfortably valid must not be renewed on every ingest.

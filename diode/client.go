@@ -440,14 +440,42 @@ func tokenLifetime(expiresIn any) (time.Duration, bool) {
 	return time.Duration(seconds * float64(time.Second)), true
 }
 
+// staleLocked reports whether the access token has expired or is about to.
+// Staleness is false when the expiry is unknown, leaving behaviour unchanged.
+// Callers must hold authMu.
+func (g *GRPCClient) staleLocked() bool {
+	return !g.tokenExpiry.IsZero() && time.Until(g.tokenExpiry) < tokenRefreshWindow
+}
+
 // tokenState reports the generation of the current access token together with
-// whether it has expired or is about to. Staleness is false when the expiry is
-// unknown, leaving behaviour unchanged.
+// whether it has expired or is about to.
 func (g *GRPCClient) tokenState() (uint64, bool) {
 	g.authMu.Lock()
 	defer g.authMu.Unlock()
-	stale := !g.tokenExpiry.IsZero() && time.Until(g.tokenExpiry) < tokenRefreshWindow
-	return g.tokenGen, stale
+	return g.tokenGen, g.staleLocked()
+}
+
+// tokenSnapshot is one attempt's consistent view of the credentials it sends.
+type tokenSnapshot struct {
+	gen   uint64
+	stale bool
+	md    metadata.MD
+}
+
+// tokenSnapshot captures the generation, the staleness verdict and the request
+// metadata in one acquisition, so all three describe the same token. Read
+// separately, a refresh landing in between would leave an attempt sending one
+// token while reporting the generation of another; a refresh keyed on that
+// stale generation would then decline to renew the token that actually failed,
+// spending the retry budget without ever replacing it.
+func (g *GRPCClient) tokenSnapshot() tokenSnapshot {
+	g.authMu.Lock()
+	defer g.authMu.Unlock()
+	return tokenSnapshot{
+		gen:   g.tokenGen,
+		stale: g.staleLocked(),
+		md:    g.metadata.Copy(),
+	}
 }
 
 // tokenStale reports whether the access token has expired or is about to.
@@ -504,14 +532,6 @@ func (g *GRPCClient) refreshToken(ctx context.Context, usedGen uint64) error {
 	r.err = err
 	close(r.done)
 	return err
-}
-
-// outgoingMetadata snapshots the request metadata so a concurrent refresh
-// cannot rewrite the map while a call reads it.
-func (g *GRPCClient) outgoingMetadata() metadata.MD {
-	g.authMu.Lock()
-	defer g.authMu.Unlock()
-	return g.metadata.Copy()
 }
 
 // DiodeAuthentication handles OAuth2 authentication for the Diode API.
@@ -938,27 +958,26 @@ func (g *GRPCClient) ingestSingleRequest(ctx context.Context, entities []*diodep
 
 	attempt := 0
 	for {
-		// Read together, and before the call, so that the staleness verdict and
-		// the generation both describe the token this attempt actually sends.
-		gen, stale := g.tokenState()
+		// One snapshot per attempt, so the credentials sent and the generation
+		// reported for them cannot come from different tokens.
+		snap := g.tokenSnapshot()
 
-		// Built per attempt so a refresh takes effect on the next one.
-		res, err = g.client.Ingest(metadata.NewOutgoingContext(ctx, g.outgoingMetadata()), req)
+		res, err = g.client.Ingest(metadata.NewOutgoingContext(ctx, snap.md), req)
 		if err != nil {
 			// A stale token is retried whatever the reported status, because an
 			// intermediary may report the rejection as something other than
 			// Unauthenticated. A fresh token keeps unrelated failures fatal.
-			if status.Code(err) == codes.Unauthenticated || stale {
+			if status.Code(err) == codes.Unauthenticated || snap.stale {
 				attempt++
 				if attempt >= g.maxAuthRetries {
 					return nil, fmt.Errorf("authentication failed after %d attempts: %w", attempt, err)
 				}
-				if stale {
+				if snap.stale {
 					g.logger.Debug("Ingest failed with a stale access token, refreshing...", "attempt", attempt, "error", err)
 				} else {
 					g.logger.Debug("Authentication failed, retrying...", "attempt", attempt)
 				}
-				if err := g.refreshToken(ctx, gen); err != nil {
+				if err := g.refreshToken(ctx, snap.gen); err != nil {
 					if ctx.Err() != nil {
 						return nil, fmt.Errorf("re-authentication canceled: %w", ctx.Err())
 					}
