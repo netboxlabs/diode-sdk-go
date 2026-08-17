@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -211,6 +212,40 @@ func TestFreshTokenDoesNotRetryOnNonUnauthenticatedError(t *testing.T) {
 
 	assert.Equal(t, int64(1), s.tokenRequests.Load(), "no renewal for an unrelated failure")
 	assert.Equal(t, int64(1), s.ingester.calls.Load(), "no retry for an unrelated failure")
+}
+
+// Concurrent ingests that all see the same stale token must coalesce onto one
+// token request. One request per caller would risk tripping authentication rate
+// limits at exactly the moment the token needs renewing.
+func TestConcurrentStaleIngestsCoalesceOneRefresh(t *testing.T) {
+	s := startRefreshTestServer(t, 10*time.Second, nil)
+	client := newRefreshTestClient(t, s)
+
+	require.Equal(t, int64(1), s.tokenRequests.Load(), "construction should authenticate once")
+
+	const callers = 12
+	var start, done sync.WaitGroup
+	start.Add(1)
+	done.Add(callers)
+
+	errs := make([]error, callers)
+	for i := range callers {
+		go func(i int) {
+			defer done.Done()
+			start.Wait() // release every caller at once
+			_, errs[i] = client.Ingest(context.Background(), []Entity{&Site{Name: String("site-1")}})
+		}(i)
+	}
+	start.Done()
+	done.Wait()
+
+	for i, err := range errs {
+		require.NoError(t, err, "caller %d", i)
+	}
+
+	assert.Equal(t, int64(2), s.tokenRequests.Load(),
+		"the stale token should be renewed once for all %d concurrent callers", callers)
+	assert.Equal(t, int64(callers), s.ingester.calls.Load(), "every caller should still ingest")
 }
 
 // An opaque token carries no exp, so behaviour must be unchanged: no proactive

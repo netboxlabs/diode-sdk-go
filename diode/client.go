@@ -336,13 +336,21 @@ type GRPCClient struct {
 	// Metadata
 	metadata metadata.MD
 
-	// authMu guards metadata and tokenExpiry. A refresh rewrites both while
-	// concurrent Ingest calls read them.
+	// authMu guards metadata, tokenExpiry and tokenGen. A refresh rewrites them
+	// while concurrent Ingest calls read them.
 	authMu sync.Mutex
+
+	// refreshMu serializes token refreshes so that concurrent calls coalesce
+	// onto one token request instead of one per call.
+	refreshMu sync.Mutex
 
 	// tokenExpiry is when the current access token expires, or the zero time
 	// when it could not be determined.
 	tokenExpiry time.Time
+
+	// tokenGen counts successful authentications. A caller that sent a request
+	// under an older generation knows its token has since been replaced.
+	tokenGen uint64
 }
 
 // ClientOption is a functional option for the GRPCClient
@@ -396,6 +404,7 @@ func (g *GRPCClient) authenticate(ctx context.Context) error {
 	g.authMu.Lock()
 	g.metadata.Set("authorization", fmt.Sprintf("Bearer %s", accessToken))
 	g.tokenExpiry = accessTokenExpiry(accessToken)
+	g.tokenGen++
 	g.authMu.Unlock()
 	return nil
 }
@@ -422,12 +431,35 @@ func accessTokenExpiry(accessToken string) time.Time {
 	return time.Unix(claims.Exp, 0)
 }
 
-// tokenStale reports whether the access token has expired or is about to. It
-// reports false when the expiry is unknown, leaving behaviour unchanged.
-func (g *GRPCClient) tokenStale() bool {
+// tokenState reports the generation of the current access token together with
+// whether it has expired or is about to. Staleness is false when the expiry is
+// unknown, leaving behaviour unchanged.
+func (g *GRPCClient) tokenState() (uint64, bool) {
 	g.authMu.Lock()
 	defer g.authMu.Unlock()
-	return !g.tokenExpiry.IsZero() && time.Until(g.tokenExpiry) < tokenRefreshWindow
+	stale := !g.tokenExpiry.IsZero() && time.Until(g.tokenExpiry) < tokenRefreshWindow
+	return g.tokenGen, stale
+}
+
+// tokenStale reports whether the access token has expired or is about to.
+func (g *GRPCClient) tokenStale() bool {
+	_, stale := g.tokenState()
+	return stale
+}
+
+// refreshToken renews the access token unless it has already been replaced
+// since usedGen was read. Concurrent callers therefore coalesce onto a single
+// token request rather than issuing one apiece, which would risk tripping
+// authentication rate limits exactly when the token needs renewing.
+func (g *GRPCClient) refreshToken(ctx context.Context, usedGen uint64) error {
+	g.refreshMu.Lock()
+	defer g.refreshMu.Unlock()
+
+	if gen, _ := g.tokenState(); gen != usedGen {
+		// Another caller refreshed while this one waited for the lock.
+		return nil
+	}
+	return g.authenticate(ctx)
 }
 
 // outgoingMetadata snapshots the request metadata so a concurrent refresh
@@ -834,8 +866,8 @@ func (g *GRPCClient) ingestSingleRequest(ctx context.Context, entities []*diodep
 	// An expired token is rejected before the request reaches the ingester, and
 	// an intermediary that denies it with a plain HTTP response can leave the
 	// client with no Unauthenticated status to react to.
-	if g.tokenStale() {
-		if err := g.authenticate(ctx); err != nil {
+	if gen, stale := g.tokenState(); stale {
+		if err := g.refreshToken(ctx, gen); err != nil {
 			if ctx.Err() != nil {
 				return nil, fmt.Errorf("token refresh canceled: %w", ctx.Err())
 			}
@@ -848,13 +880,16 @@ func (g *GRPCClient) ingestSingleRequest(ctx context.Context, entities []*diodep
 
 	attempt := 0
 	for {
-		// Built per attempt so a re-authentication above takes effect here.
+		// Read together, and before the call, so that the staleness verdict and
+		// the generation both describe the token this attempt actually sends.
+		gen, stale := g.tokenState()
+
+		// Built per attempt so a refresh takes effect on the next one.
 		res, err = g.client.Ingest(metadata.NewOutgoingContext(ctx, g.outgoingMetadata()), req)
 		if err != nil {
 			// A stale token is retried whatever the reported status, because an
 			// intermediary may report the rejection as something other than
 			// Unauthenticated. A fresh token keeps unrelated failures fatal.
-			stale := g.tokenStale()
 			if status.Code(err) == codes.Unauthenticated || stale {
 				attempt++
 				if attempt >= g.maxAuthRetries {
@@ -865,7 +900,7 @@ func (g *GRPCClient) ingestSingleRequest(ctx context.Context, entities []*diodep
 				} else {
 					g.logger.Debug("Authentication failed, retrying...", "attempt", attempt)
 				}
-				if err := g.authenticate(ctx); err != nil {
+				if err := g.refreshToken(ctx, gen); err != nil {
 					if ctx.Err() != nil {
 						return nil, fmt.Errorf("re-authentication canceled: %w", ctx.Err())
 					}
