@@ -122,7 +122,7 @@ func TestAuthenticateSetsUserAgent(t *testing.T) {
 		"diode-sdk-go", "1.0.0", "my-producer", "0.1.0",
 	)
 
-	token, err := authClient.authenticate(context.Background(), slog.Default(), []string{DiodeOAuth2IngestScope}, 3)
+	token, _, err := authClient.authenticate(context.Background(), slog.Default(), []string{DiodeOAuth2IngestScope}, 3)
 	require.NoError(t, err)
 	require.Equal(t, "mock-token", token)
 	assert.Equal(t, "diode-sdk-go/1.0.0 my-producer/0.1.0", capturedUserAgent)
@@ -1712,7 +1712,7 @@ func TestAuthenticateRetriesRetriableHTTPStatuses(t *testing.T) {
 			authClient.initialRetryDelay = 0
 			authClient.maxRetryDelay = 0
 
-			token, err := authClient.authenticate(context.Background(), slog.Default(), []string{DiodeOAuth2IngestScope}, tt.maxRetries)
+			token, _, err := authClient.authenticate(context.Background(), slog.Default(), []string{DiodeOAuth2IngestScope}, tt.maxRetries)
 			assert.Equal(t, tt.wantCalls, calls)
 			if tt.wantErr {
 				require.Error(t, err)
@@ -1753,7 +1753,7 @@ func TestAuthenticateRespectsContextDuringBackoff(t *testing.T) {
 	defer cancel()
 
 	start := time.Now()
-	_, err := authClient.authenticate(ctx, slog.Default(), []string{DiodeOAuth2IngestScope}, 3)
+	_, _, err := authClient.authenticate(ctx, slog.Default(), []string{DiodeOAuth2IngestScope}, 3)
 	elapsed := time.Since(start)
 
 	require.Error(t, err)

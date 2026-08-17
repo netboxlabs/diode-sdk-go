@@ -18,6 +18,7 @@ import (
 	"runtime/debug"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -62,6 +63,11 @@ const (
 
 	authInitialRetryDelay = 1 * time.Second
 	authMaxRetryDelay     = 30 * time.Second
+
+	// tokenRefreshWindow is how long before its expiry the access token is
+	// renewed. It also covers an already-expired token, whose remaining
+	// lifetime is negative and therefore below the window.
+	tokenRefreshWindow = 1 * time.Minute
 )
 
 var (
@@ -328,6 +334,25 @@ type GRPCClient struct {
 
 	// Metadata
 	metadata metadata.MD
+
+	// authMu guards metadata, tokenExpiry and tokenGen. A refresh rewrites them
+	// while concurrent Ingest calls read them.
+	authMu sync.Mutex
+
+	// refreshMu guards inFlight. It is never held across a token request.
+	refreshMu sync.Mutex
+
+	// inFlight is the token refresh currently under way, if any. Concurrent
+	// callers join it instead of starting their own.
+	inFlight *tokenRefresh
+
+	// tokenExpiry is when the current access token expires, or the zero time
+	// when it could not be determined.
+	tokenExpiry time.Time
+
+	// tokenGen counts successful authentications. A caller that sent a request
+	// under an older generation knows its token has since been replaced.
+	tokenGen uint64
 }
 
 // ClientOption is a functional option for the GRPCClient
@@ -372,14 +397,167 @@ func (g *GRPCClient) authenticate(ctx context.Context) error {
 		g.clientID, g.clientSecret,
 		g.sdkName, g.sdkVersion, g.appName, g.appVersion,
 	)
-	accessToken, err := authClient.authenticate(ctx, g.logger, []string{DiodeOAuth2IngestScope}, g.maxAuthRetries)
+	accessToken, expiry, err := authClient.authenticate(ctx, g.logger, []string{DiodeOAuth2IngestScope}, g.maxAuthRetries)
 	if err != nil {
 		return fmt.Errorf("authentication failed: %w", err)
 	}
 
 	// Update metadata with the new authorization token
+	g.authMu.Lock()
 	g.metadata.Set("authorization", fmt.Sprintf("Bearer %s", accessToken))
+	g.tokenExpiry = expiry
+	g.tokenGen++
+	g.authMu.Unlock()
 	return nil
+}
+
+// tokenLifetime interprets an OAuth2 expires_in value, which servers send as a
+// number but occasionally as a string. It reports false when the value is
+// missing or unusable, which disables proactive renewal rather than guessing.
+func tokenLifetime(expiresIn any) (time.Duration, bool) {
+	var seconds float64
+	switch v := expiresIn.(type) {
+	case float64:
+		seconds = v
+	case json.Number:
+		f, err := v.Float64()
+		if err != nil {
+			return 0, false
+		}
+		seconds = f
+	case string:
+		f, err := strconv.ParseFloat(v, 64)
+		if err != nil {
+			return 0, false
+		}
+		seconds = f
+	default:
+		return 0, false
+	}
+	if seconds <= 0 {
+		return 0, false
+	}
+	return time.Duration(seconds * float64(time.Second)), true
+}
+
+// staleLocked reports whether the access token has expired or is about to.
+// Staleness is false when the expiry is unknown, leaving behaviour unchanged.
+// Callers must hold authMu.
+func (g *GRPCClient) staleLocked() bool {
+	return !g.tokenExpiry.IsZero() && time.Until(g.tokenExpiry) < tokenRefreshWindow
+}
+
+// tokenState reports the generation of the current access token together with
+// whether it has expired or is about to.
+func (g *GRPCClient) tokenState() (uint64, bool) {
+	g.authMu.Lock()
+	defer g.authMu.Unlock()
+	return g.tokenGen, g.staleLocked()
+}
+
+// tokenSnapshot is one attempt's consistent view of the credentials it sends.
+type tokenSnapshot struct {
+	gen   uint64
+	stale bool
+	md    metadata.MD
+}
+
+// tokenSnapshot captures the generation, the staleness verdict and the request
+// metadata in one acquisition, so all three describe the same token. Read
+// separately, a refresh landing in between would leave an attempt sending one
+// token while reporting the generation of another; a refresh keyed on that
+// stale generation would then decline to renew the token that actually failed,
+// spending the retry budget without ever replacing it.
+func (g *GRPCClient) tokenSnapshot() tokenSnapshot {
+	g.authMu.Lock()
+	defer g.authMu.Unlock()
+	return tokenSnapshot{
+		gen:   g.tokenGen,
+		stale: g.staleLocked(),
+		md:    g.metadata.Copy(),
+	}
+}
+
+// tokenStale reports whether the access token has expired or is about to.
+func (g *GRPCClient) tokenStale() bool {
+	_, stale := g.tokenState()
+	return stale
+}
+
+// tokenRefresh is a single refresh whose outcome, success or failure, is shared
+// by every caller that joined it.
+type tokenRefresh struct {
+	done chan struct{}
+	err  error
+}
+
+// abandonedRefresh reports whether a refresh ended because the context driving
+// it was cut short, as opposed to the server rejecting the credentials.
+func abandonedRefresh(err error) bool {
+	return errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded)
+}
+
+// refreshToken renews the access token, coalescing concurrent callers onto one
+// token request. A caller whose token has already been replaced does nothing; a
+// caller arriving while a refresh is under way joins it and takes its outcome,
+// so an unreachable or rate-limiting auth server sees one request sequence
+// rather than one per caller.
+//
+// refreshMu is held only for bookkeeping, never across the token request, and
+// joining is bounded by the caller's own context, so a slow refresh cannot pin
+// an unrelated caller past its deadline. A refresh abandoned because its
+// initiator's context ended reports nothing about the credentials or about any
+// other caller's deadline, so a waiter that is still live retries in its own
+// right rather than adopting that outcome.
+func (g *GRPCClient) refreshToken(ctx context.Context, usedGen uint64) error {
+	for {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+
+		g.refreshMu.Lock()
+
+		if gen, _ := g.tokenState(); gen != usedGen {
+			// Another caller already replaced the token this attempt used.
+			g.refreshMu.Unlock()
+			return nil
+		}
+
+		if r := g.inFlight; r != nil {
+			g.refreshMu.Unlock()
+			select {
+			case <-r.done:
+				if abandonedRefresh(r.err) && ctx.Err() == nil {
+					// The initiator gave up, not the server. Take it over.
+					continue
+				}
+				return r.err
+			case <-ctx.Done():
+				return ctx.Err()
+			}
+		}
+
+		r := &tokenRefresh{done: make(chan struct{})}
+		g.inFlight = r
+		g.refreshMu.Unlock()
+
+		err := g.authenticate(ctx)
+
+		// Recorded before the refresh is published, so a waiter woken by the
+		// close is guaranteed to observe it.
+		r.err = err
+
+		// Published and deregistered under one acquisition. Split apart, a
+		// caller arriving in between would find no refresh to join and no result
+		// to read, and would start a duplicate sequence just when a failing auth
+		// server can least afford one.
+		g.refreshMu.Lock()
+		close(r.done)
+		g.inFlight = nil
+		g.refreshMu.Unlock()
+
+		return err
+	}
 }
 
 // DiodeAuthentication handles OAuth2 authentication for the Diode API.
@@ -513,7 +691,7 @@ func waitForAuthRetry(ctx context.Context, delay time.Duration) error {
 }
 
 // Authenticate requests an OAuth2 token using client credentials and returns it.
-func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Logger, scopes []string, maxRetries int) (string, error) {
+func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Logger, scopes []string, maxRetries int) (string, time.Time, error) {
 	scheme := "https"
 	if d.isPlaintext {
 		scheme = "http"
@@ -554,37 +732,51 @@ func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Log
 	var lastStatus string
 	for attempt := 1; attempt <= maxRetries; attempt++ {
 		if err := ctx.Err(); err != nil {
-			return "", fmt.Errorf("authentication canceled: %w", err)
+			return "", time.Time{}, fmt.Errorf("authentication canceled: %w", err)
 		}
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodPost, authURL, strings.NewReader(formData.Encode()))
 		if err != nil {
-			return "", fmt.Errorf("failed to create request: %w", err)
+			return "", time.Time{}, fmt.Errorf("failed to create request: %w", err)
 		}
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		req.Header.Set("User-Agent", formatClientUserAgent(d.sdkName, d.sdkVersion, d.appName, d.appVersion))
 
+		// Timed before the request so the derived deadline is conservative by
+		// the round trip rather than optimistic by it.
+		sentAt := time.Now()
 		resp, err := client.Do(req)
 		if err != nil {
-			return "", fmt.Errorf("failed to send request: %w", err)
+			return "", time.Time{}, fmt.Errorf("failed to send request: %w", err)
 		}
 
 		if resp.StatusCode == http.StatusOK {
 			var result struct {
 				AccessToken string `json:"access_token"`
+				// Decoded loosely: a lifetime this client cannot interpret must
+				// not fail the authentication that carries it.
+				ExpiresIn any `json:"expires_in"`
 			}
 			decodeErr := json.NewDecoder(resp.Body).Decode(&result)
 			closeErr := resp.Body.Close()
 			if decodeErr != nil {
-				return "", fmt.Errorf("failed to parse response: %w", decodeErr)
+				return "", time.Time{}, fmt.Errorf("failed to parse response: %w", decodeErr)
 			}
 			if closeErr != nil {
 				logger.Error("failed to close response body", "error", closeErr)
 			}
 			if result.AccessToken == "" {
-				return "", errors.New("access token not found in response")
+				return "", time.Time{}, errors.New("access token not found in response")
 			}
-			return result.AccessToken, nil
+
+			// Expiry is derived from the relative lifetime, never from an
+			// absolute claim in the token, so that a clock offset between this
+			// host and the issuer cannot shift the verdict.
+			var expiry time.Time
+			if lifetime, ok := tokenLifetime(result.ExpiresIn); ok {
+				expiry = sentAt.Add(lifetime)
+			}
+			return result.AccessToken, expiry, nil
 		}
 
 		lastStatus = resp.Status
@@ -595,7 +787,7 @@ func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Log
 		}
 
 		if !isRetriableAuthHTTPStatus(resp.StatusCode) || attempt >= maxRetries {
-			return "", fmt.Errorf("authentication failed: %s", lastStatus)
+			return "", time.Time{}, fmt.Errorf("authentication failed: %s", lastStatus)
 		}
 
 		delay := authRetryDelay(attempt, resp.StatusCode, retryAfter, initialDelay, maxDelay)
@@ -606,11 +798,11 @@ func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Log
 			"retry_in", delay,
 		)
 		if err := waitForAuthRetry(ctx, delay); err != nil {
-			return "", fmt.Errorf("authentication canceled: %w", err)
+			return "", time.Time{}, fmt.Errorf("authentication canceled: %w", err)
 		}
 	}
 
-	return "", fmt.Errorf("authentication failed: %s", lastStatus)
+	return "", time.Time{}, fmt.Errorf("authentication failed: %s", lastStatus)
 }
 
 // NewClient creates a new diode client based on gRPC
@@ -774,22 +966,44 @@ func (g *GRPCClient) ingestSingleRequest(ctx context.Context, entities []*diodep
 		req.Metadata, _ = structpb.NewStruct(cfg.metadata)
 	}
 
-	ctx = metadata.NewOutgoingContext(ctx, g.metadata)
+	// Renew the token before it expires rather than waiting to be told it has.
+	// An expired token is rejected before the request reaches the ingester, and
+	// an intermediary that denies it with a plain HTTP response can leave the
+	// client with no Unauthenticated status to react to.
+	if gen, stale := g.tokenState(); stale {
+		if err := g.refreshToken(ctx, gen); err != nil {
+			if ctx.Err() != nil {
+				return nil, fmt.Errorf("token refresh canceled: %w", ctx.Err())
+			}
+			g.logger.Error("Failed to refresh the access token before ingesting", "error", err)
+		}
+	}
 
 	var err error
 	var res *diodepb.IngestResponse
 
 	attempt := 0
 	for {
-		res, err = g.client.Ingest(ctx, req)
+		// One snapshot per attempt, so the credentials sent and the generation
+		// reported for them cannot come from different tokens.
+		snap := g.tokenSnapshot()
+
+		res, err = g.client.Ingest(metadata.NewOutgoingContext(ctx, snap.md), req)
 		if err != nil {
-			if status.Code(err) == codes.Unauthenticated {
+			// A stale token is retried whatever the reported status, because an
+			// intermediary may report the rejection as something other than
+			// Unauthenticated. A fresh token keeps unrelated failures fatal.
+			if status.Code(err) == codes.Unauthenticated || snap.stale {
 				attempt++
 				if attempt >= g.maxAuthRetries {
 					return nil, fmt.Errorf("authentication failed after %d attempts: %w", attempt, err)
 				}
-				g.logger.Debug("Authentication failed, retrying...", "attempt", attempt)
-				if err := g.authenticate(ctx); err != nil {
+				if snap.stale {
+					g.logger.Debug("Ingest failed with a stale access token, refreshing...", "attempt", attempt, "error", err)
+				} else {
+					g.logger.Debug("Authentication failed, retrying...", "attempt", attempt)
+				}
+				if err := g.refreshToken(ctx, snap.gen); err != nil {
 					if ctx.Err() != nil {
 						return nil, fmt.Errorf("re-authentication canceled: %w", ctx.Err())
 					}
