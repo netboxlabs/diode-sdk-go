@@ -543,12 +543,19 @@ func (g *GRPCClient) refreshToken(ctx context.Context, usedGen uint64) error {
 
 		err := g.authenticate(ctx)
 
+		// Recorded before the refresh is published, so a waiter woken by the
+		// close is guaranteed to observe it.
+		r.err = err
+
+		// Published and deregistered under one acquisition. Split apart, a
+		// caller arriving in between would find no refresh to join and no result
+		// to read, and would start a duplicate sequence just when a failing auth
+		// server can least afford one.
 		g.refreshMu.Lock()
+		close(r.done)
 		g.inFlight = nil
 		g.refreshMu.Unlock()
 
-		r.err = err
-		close(r.done)
 		return err
 	}
 }

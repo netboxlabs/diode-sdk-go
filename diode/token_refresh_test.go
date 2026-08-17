@@ -509,6 +509,36 @@ func TestFailedRefreshIsSharedAcrossConcurrentCallers(t *testing.T) {
 		"a failing refresh should be shared by all %d callers, not retried by each", callers)
 }
 
+// The burst test above releases every caller at once, so it only covers arrivals
+// at the very start of a refresh. Callers turning up part way through a slow
+// failing refresh must coalesce onto it too.
+func TestStaggeredArrivalsJoinAFailingRefresh(t *testing.T) {
+	s := startRefreshTestServer(t, 10*time.Second, nil)
+	client := newRefreshTestClient(t, s)
+	client.maxAuthRetries = 2
+
+	require.Equal(t, int64(1), s.tokenRequests.Load())
+
+	// The refresh runs for ~600ms, so every arrival below lands while it is live.
+	s.tokenDelayMS.Store(600)
+	s.failTokens.Store(true)
+
+	const callers = 8
+	var done sync.WaitGroup
+	done.Add(callers)
+	for range callers {
+		go func() {
+			defer done.Done()
+			_, _ = client.Ingest(context.Background(), []Entity{&Site{Name: String("site-1")}})
+		}()
+		time.Sleep(50 * time.Millisecond)
+	}
+	done.Wait()
+
+	assert.Equal(t, int64(2), s.tokenRequests.Load(),
+		"arrivals spread across a failing refresh should share it, not each start one")
+}
+
 // The shared mock issues a token with no lifetime at all, so behaviour must be
 // unchanged: no proactive renewal, and only Unauthenticated drives a retry.
 func TestOpaqueTokenLeavesBehaviourUnchanged(t *testing.T) {
