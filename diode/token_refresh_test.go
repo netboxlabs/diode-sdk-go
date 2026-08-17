@@ -432,6 +432,51 @@ func TestSlowRefreshDoesNotOutlastWaiterContext(t *testing.T) {
 	<-owner
 }
 
+// A refresh abandoned because its initiator ran out of time must not be handed
+// to waiters that still have time. Otherwise the caller with the shortest
+// deadline decides the outcome for everyone, and with a retry budget of one the
+// waiter returns a failure it could have avoided.
+func TestInitiatorGivingUpDoesNotFailLiveWaiters(t *testing.T) {
+	// A 10s lifetime is inside tokenRefreshWindow, so the issued token is always
+	// stale and every ingest takes the refresh path.
+	s := startRefreshTestServer(t, 10*time.Second, nil)
+	s.sequentialTokens.Store(true)
+	client := newRefreshTestClient(t, s)
+
+	require.Equal(t, int64(1), s.tokenRequests.Load())
+	require.Equal(t, []string{"Bearer token-1"}, client.tokenSnapshot().md.Get("authorization"))
+
+	// Long enough that the initiator's deadline lands mid-request.
+	s.tokenDelayMS.Store(500)
+
+	// The initiator cannot outlive the refresh it starts.
+	initiatorDone := make(chan error, 1)
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		defer cancel()
+		_, err := client.Ingest(ctx, []Entity{&Site{Name: String("site-1")}})
+		initiatorDone <- err
+	}()
+
+	// Join while that refresh is still in flight.
+	time.Sleep(50 * time.Millisecond)
+
+	_, err := client.Ingest(context.Background(), []Entity{&Site{Name: String("site-2")}})
+	require.NoError(t, err)
+
+	// The discriminator: adopting the initiator's cancellation would leave the
+	// generation at 1 and the stale token still installed, and the ingest would
+	// still succeed, so the token is what has to be checked rather than the call.
+	snap := client.tokenSnapshot()
+	assert.Equal(t, uint64(2), snap.gen, "the waiter should have completed a refresh of its own")
+	assert.NotEqual(t, []string{"Bearer token-1"}, snap.md.Get("authorization"),
+		"the stale token should have been replaced")
+
+	assert.Error(t, <-initiatorDone, "the initiator itself still fails on its own deadline")
+
+	s.tokenDelayMS.Store(0)
+}
+
 // A refresh that fails must be shared too. Otherwise each queued caller runs its
 // own authentication sequence, which is exactly the load an auth outage cannot
 // absorb.

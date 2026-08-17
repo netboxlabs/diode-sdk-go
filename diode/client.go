@@ -491,6 +491,12 @@ type tokenRefresh struct {
 	err  error
 }
 
+// abandonedRefresh reports whether a refresh ended because the context driving
+// it was cut short, as opposed to the server rejecting the credentials.
+func abandonedRefresh(err error) bool {
+	return errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded)
+}
+
 // refreshToken renews the access token, coalescing concurrent callers onto one
 // token request. A caller whose token has already been replaced does nothing; a
 // caller arriving while a refresh is under way joins it and takes its outcome,
@@ -498,40 +504,53 @@ type tokenRefresh struct {
 // rather than one per caller.
 //
 // refreshMu is held only for bookkeeping, never across the token request, and
-// joining is bounded by the caller's own context. A slow refresh therefore
-// cannot pin an unrelated caller past its deadline.
+// joining is bounded by the caller's own context, so a slow refresh cannot pin
+// an unrelated caller past its deadline. A refresh abandoned because its
+// initiator's context ended reports nothing about the credentials or about any
+// other caller's deadline, so a waiter that is still live retries in its own
+// right rather than adopting that outcome.
 func (g *GRPCClient) refreshToken(ctx context.Context, usedGen uint64) error {
-	g.refreshMu.Lock()
-
-	if gen, _ := g.tokenState(); gen != usedGen {
-		// Another caller already replaced the token this attempt used.
-		g.refreshMu.Unlock()
-		return nil
-	}
-
-	if r := g.inFlight; r != nil {
-		g.refreshMu.Unlock()
-		select {
-		case <-r.done:
-			return r.err
-		case <-ctx.Done():
-			return ctx.Err()
+	for {
+		if err := ctx.Err(); err != nil {
+			return err
 		}
+
+		g.refreshMu.Lock()
+
+		if gen, _ := g.tokenState(); gen != usedGen {
+			// Another caller already replaced the token this attempt used.
+			g.refreshMu.Unlock()
+			return nil
+		}
+
+		if r := g.inFlight; r != nil {
+			g.refreshMu.Unlock()
+			select {
+			case <-r.done:
+				if abandonedRefresh(r.err) && ctx.Err() == nil {
+					// The initiator gave up, not the server. Take it over.
+					continue
+				}
+				return r.err
+			case <-ctx.Done():
+				return ctx.Err()
+			}
+		}
+
+		r := &tokenRefresh{done: make(chan struct{})}
+		g.inFlight = r
+		g.refreshMu.Unlock()
+
+		err := g.authenticate(ctx)
+
+		g.refreshMu.Lock()
+		g.inFlight = nil
+		g.refreshMu.Unlock()
+
+		r.err = err
+		close(r.done)
+		return err
 	}
-
-	r := &tokenRefresh{done: make(chan struct{})}
-	g.inFlight = r
-	g.refreshMu.Unlock()
-
-	err := g.authenticate(ctx)
-
-	g.refreshMu.Lock()
-	g.inFlight = nil
-	g.refreshMu.Unlock()
-
-	r.err = err
-	close(r.done)
-	return err
 }
 
 // DiodeAuthentication handles OAuth2 authentication for the Diode API.
