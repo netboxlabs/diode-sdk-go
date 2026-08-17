@@ -23,9 +23,9 @@ import (
 	"github.com/netboxlabs/diode-sdk-go/diode/v1/diodepb"
 )
 
-// makeJWT builds an unsigned JWT carrying only an exp claim. The SDK reads exp
-// to schedule renewal and never verifies the signature, so a placeholder is
-// enough.
+// makeJWT builds an unsigned JWT carrying only an exp claim. The SDK does not
+// read that claim, so a placeholder signature is enough; it exists so a test can
+// set the token's own idea of its expiry at odds with expires_in.
 func makeJWT(exp time.Time) string {
 	enc := func(v any) string {
 		b, _ := json.Marshal(v)
@@ -65,6 +65,15 @@ type refreshTestServer struct {
 
 	// failTokens makes the token endpoint reject, so a refresh fails outright.
 	failTokens atomic.Bool
+
+	// jwtExpUnix overrides the exp claim embedded in the issued token, so a test
+	// can make the token's absolute claim disagree with expires_in. Zero derives
+	// it from the lifetime.
+	jwtExpUnix atomic.Int64
+
+	// omitExpiresIn drops expires_in from the response, standing in for a server
+	// that does not report a lifetime.
+	omitExpiresIn atomic.Bool
 }
 
 // startRefreshTestServer issues tokens whose exp is now+tokenTTL. A negative or
@@ -97,8 +106,20 @@ func startRefreshTestServer(t *testing.T, tokenTTL time.Duration, ingestErr erro
 			http.Error(w, "invalid credentials", http.StatusUnauthorized)
 			return
 		}
+
+		jwtExp := time.Now().Add(tokenTTL)
+		if override := s.jwtExpUnix.Load(); override != 0 {
+			jwtExp = time.Unix(override, 0)
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		body := fmt.Sprintf(`{"access_token": %q}`, makeJWT(time.Now().Add(tokenTTL)))
+		var body string
+		if s.omitExpiresIn.Load() {
+			body = fmt.Sprintf(`{"access_token": %q}`, makeJWT(jwtExp))
+		} else {
+			body = fmt.Sprintf(`{"access_token": %q, "expires_in": %d}`,
+				makeJWT(jwtExp), int64(tokenTTL.Seconds()))
+		}
 		_, _ = w.Write([]byte(body))
 	})
 
@@ -138,33 +159,90 @@ func newRefreshTestClient(t *testing.T, s *refreshTestServer) *GRPCClient {
 	return client.(*GRPCClient)
 }
 
-func TestAccessTokenExpiry(t *testing.T) {
-	exp := time.Now().Add(42 * time.Minute).Truncate(time.Second)
-
+func TestTokenLifetime(t *testing.T) {
 	tests := []struct {
-		desc  string
-		token string
-		want  time.Time
+		desc      string
+		expiresIn any
+		want      time.Duration
+		wantOK    bool
 	}{
-		{"jwt with exp", makeJWT(exp), exp},
-		{"not a jwt", "opaque-token", time.Time{}},
-		{"wrong segment count", "only.two", time.Time{}},
-		{"payload not base64", "aaa.!!!not-base64!!!.ccc", time.Time{}},
-		{"payload not json", "aaa." + base64.RawURLEncoding.EncodeToString([]byte("nope")) + ".ccc", time.Time{}},
-		{"no exp claim", "aaa." + base64.RawURLEncoding.EncodeToString([]byte(`{"sub":"x"}`)) + ".ccc", time.Time{}},
-		{"zero exp claim", "aaa." + base64.RawURLEncoding.EncodeToString([]byte(`{"exp":0}`)) + ".ccc", time.Time{}},
+		{"number", float64(3600), time.Hour, true},
+		{"json number", json.Number("3600"), time.Hour, true},
+		{"string, as some servers send it", "3600", time.Hour, true},
+		{"fractional seconds", float64(1.5), 1500 * time.Millisecond, true},
+		{"missing", nil, 0, false},
+		{"zero", float64(0), 0, false},
+		{"negative", float64(-1), 0, false},
+		{"unparseable string", "soon", 0, false},
+		{"wrong type", true, 0, false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			got := accessTokenExpiry(tt.token)
-			if tt.want.IsZero() {
-				assert.True(t, got.IsZero(), "expected zero time, got %v", got)
-				return
-			}
-			assert.True(t, got.Equal(tt.want), "expected %v, got %v", tt.want, got)
+			got, ok := tokenLifetime(tt.expiresIn)
+			assert.Equal(t, tt.wantOK, ok)
+			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+// Renewal timing must come from the relative lifetime, never from an absolute
+// claim inside the token, so that a clock offset between this host and the
+// issuer cannot make a valid token look expired or an expired one look valid.
+func TestExpiryIgnoresAbsoluteClaimInToken(t *testing.T) {
+	s := startRefreshTestServer(t, time.Hour, nil)
+	// The issued token claims it expired an hour ago, while expires_in says it
+	// has an hour left. This is what a host clock running ahead looks like.
+	s.jwtExpUnix.Store(time.Now().Add(-time.Hour).Unix())
+
+	client := newRefreshTestClient(t, s)
+
+	require.Equal(t, int64(1), s.tokenRequests.Load())
+	assert.False(t, client.tokenStale(),
+		"expires_in should govern, not the token's own exp claim")
+
+	_, err := client.Ingest(context.Background(), []Entity{&Site{Name: String("site-1")}})
+	require.NoError(t, err)
+	assert.Equal(t, int64(1), s.tokenRequests.Load(),
+		"a token with an hour of life left should not be renewed")
+}
+
+// The complementary direction, so the pair pins the behaviour from both sides:
+// a short lifetime must be honoured even when the token's own claim says there
+// is plenty of time left. Together with the test above, any implementation that
+// read the absolute claim instead of expires_in fails one of the two.
+func TestShortLifetimeHonouredDespiteDistantClaimInToken(t *testing.T) {
+	s := startRefreshTestServer(t, 10*time.Second, nil)
+	// expires_in says 10s, inside the refresh window; the token's own claim says
+	// an hour. This is what a host clock running behind looks like.
+	s.jwtExpUnix.Store(time.Now().Add(time.Hour).Unix())
+
+	client := newRefreshTestClient(t, s)
+
+	require.Equal(t, int64(1), s.tokenRequests.Load())
+	assert.True(t, client.tokenStale(),
+		"expires_in should govern, not the token's own exp claim")
+
+	_, err := client.Ingest(context.Background(), []Entity{&Site{Name: String("site-1")}})
+	require.NoError(t, err)
+	assert.Equal(t, int64(2), s.tokenRequests.Load(),
+		"a 10s lifetime should be renewed regardless of the distant claim")
+}
+
+// Without expires_in there is no skew-free signal, so proactive renewal stays
+// off rather than being driven by a value this client cannot trust.
+func TestMissingExpiresInDisablesProactiveRenewal(t *testing.T) {
+	s := startRefreshTestServer(t, 10*time.Second, nil)
+	s.omitExpiresIn.Store(true)
+
+	client := newRefreshTestClient(t, s)
+
+	assert.True(t, client.tokenExpiry.IsZero(), "no expires_in means no expiry")
+	assert.False(t, client.tokenStale(), "unknown expiry must not read as stale")
+
+	_, err := client.Ingest(context.Background(), []Entity{&Site{Name: String("site-1")}})
+	require.NoError(t, err)
+	assert.Equal(t, int64(1), s.tokenRequests.Load(), "no proactive renewal without a lifetime")
 }
 
 // A token that is still comfortably valid must not be renewed on every ingest.
@@ -331,8 +409,8 @@ func TestFailedRefreshIsSharedAcrossConcurrentCallers(t *testing.T) {
 		"a failing refresh should be shared by all %d callers, not retried by each", callers)
 }
 
-// An opaque token carries no exp, so behaviour must be unchanged: no proactive
-// renewal, and only Unauthenticated drives a retry.
+// The shared mock issues a token with no lifetime at all, so behaviour must be
+// unchanged: no proactive renewal, and only Unauthenticated drives a retry.
 func TestOpaqueTokenLeavesBehaviourUnchanged(t *testing.T) {
 	port, err := getFreePort()
 	require.NoError(t, err)

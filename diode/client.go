@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -398,7 +397,7 @@ func (g *GRPCClient) authenticate(ctx context.Context) error {
 		g.clientID, g.clientSecret,
 		g.sdkName, g.sdkVersion, g.appName, g.appVersion,
 	)
-	accessToken, err := authClient.authenticate(ctx, g.logger, []string{DiodeOAuth2IngestScope}, g.maxAuthRetries)
+	accessToken, expiry, err := authClient.authenticate(ctx, g.logger, []string{DiodeOAuth2IngestScope}, g.maxAuthRetries)
 	if err != nil {
 		return fmt.Errorf("authentication failed: %w", err)
 	}
@@ -406,32 +405,39 @@ func (g *GRPCClient) authenticate(ctx context.Context) error {
 	// Update metadata with the new authorization token
 	g.authMu.Lock()
 	g.metadata.Set("authorization", fmt.Sprintf("Bearer %s", accessToken))
-	g.tokenExpiry = accessTokenExpiry(accessToken)
+	g.tokenExpiry = expiry
 	g.tokenGen++
 	g.authMu.Unlock()
 	return nil
 }
 
-// accessTokenExpiry reads the exp claim from a JWT access token without
-// verifying its signature. The value only decides when to renew the token, it
-// never grants access, so a token that is not a JWT or carries no usable exp
-// yields the zero time and simply leaves renewal to the server's response.
-func accessTokenExpiry(accessToken string) time.Time {
-	parts := strings.Split(accessToken, ".")
-	if len(parts) != 3 {
-		return time.Time{}
+// tokenLifetime interprets an OAuth2 expires_in value, which servers send as a
+// number but occasionally as a string. It reports false when the value is
+// missing or unusable, which disables proactive renewal rather than guessing.
+func tokenLifetime(expiresIn any) (time.Duration, bool) {
+	var seconds float64
+	switch v := expiresIn.(type) {
+	case float64:
+		seconds = v
+	case json.Number:
+		f, err := v.Float64()
+		if err != nil {
+			return 0, false
+		}
+		seconds = f
+	case string:
+		f, err := strconv.ParseFloat(v, 64)
+		if err != nil {
+			return 0, false
+		}
+		seconds = f
+	default:
+		return 0, false
 	}
-	payload, err := base64.RawURLEncoding.DecodeString(parts[1])
-	if err != nil {
-		return time.Time{}
+	if seconds <= 0 {
+		return 0, false
 	}
-	var claims struct {
-		Exp int64 `json:"exp"`
-	}
-	if err := json.Unmarshal(payload, &claims); err != nil || claims.Exp <= 0 {
-		return time.Time{}
-	}
-	return time.Unix(claims.Exp, 0)
+	return time.Duration(seconds * float64(time.Second)), true
 }
 
 // tokenState reports the generation of the current access token together with
@@ -639,7 +645,7 @@ func waitForAuthRetry(ctx context.Context, delay time.Duration) error {
 }
 
 // Authenticate requests an OAuth2 token using client credentials and returns it.
-func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Logger, scopes []string, maxRetries int) (string, error) {
+func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Logger, scopes []string, maxRetries int) (string, time.Time, error) {
 	scheme := "https"
 	if d.isPlaintext {
 		scheme = "http"
@@ -680,37 +686,51 @@ func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Log
 	var lastStatus string
 	for attempt := 1; attempt <= maxRetries; attempt++ {
 		if err := ctx.Err(); err != nil {
-			return "", fmt.Errorf("authentication canceled: %w", err)
+			return "", time.Time{}, fmt.Errorf("authentication canceled: %w", err)
 		}
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodPost, authURL, strings.NewReader(formData.Encode()))
 		if err != nil {
-			return "", fmt.Errorf("failed to create request: %w", err)
+			return "", time.Time{}, fmt.Errorf("failed to create request: %w", err)
 		}
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		req.Header.Set("User-Agent", formatClientUserAgent(d.sdkName, d.sdkVersion, d.appName, d.appVersion))
 
+		// Timed before the request so the derived deadline is conservative by
+		// the round trip rather than optimistic by it.
+		sentAt := time.Now()
 		resp, err := client.Do(req)
 		if err != nil {
-			return "", fmt.Errorf("failed to send request: %w", err)
+			return "", time.Time{}, fmt.Errorf("failed to send request: %w", err)
 		}
 
 		if resp.StatusCode == http.StatusOK {
 			var result struct {
 				AccessToken string `json:"access_token"`
+				// Decoded loosely: a lifetime this client cannot interpret must
+				// not fail the authentication that carries it.
+				ExpiresIn any `json:"expires_in"`
 			}
 			decodeErr := json.NewDecoder(resp.Body).Decode(&result)
 			closeErr := resp.Body.Close()
 			if decodeErr != nil {
-				return "", fmt.Errorf("failed to parse response: %w", decodeErr)
+				return "", time.Time{}, fmt.Errorf("failed to parse response: %w", decodeErr)
 			}
 			if closeErr != nil {
 				logger.Error("failed to close response body", "error", closeErr)
 			}
 			if result.AccessToken == "" {
-				return "", errors.New("access token not found in response")
+				return "", time.Time{}, errors.New("access token not found in response")
 			}
-			return result.AccessToken, nil
+
+			// Expiry is derived from the relative lifetime, never from an
+			// absolute claim in the token, so that a clock offset between this
+			// host and the issuer cannot shift the verdict.
+			var expiry time.Time
+			if lifetime, ok := tokenLifetime(result.ExpiresIn); ok {
+				expiry = sentAt.Add(lifetime)
+			}
+			return result.AccessToken, expiry, nil
 		}
 
 		lastStatus = resp.Status
@@ -721,7 +741,7 @@ func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Log
 		}
 
 		if !isRetriableAuthHTTPStatus(resp.StatusCode) || attempt >= maxRetries {
-			return "", fmt.Errorf("authentication failed: %s", lastStatus)
+			return "", time.Time{}, fmt.Errorf("authentication failed: %s", lastStatus)
 		}
 
 		delay := authRetryDelay(attempt, resp.StatusCode, retryAfter, initialDelay, maxDelay)
@@ -732,11 +752,11 @@ func (d *diodeAuthentication) authenticate(ctx context.Context, logger *slog.Log
 			"retry_in", delay,
 		)
 		if err := waitForAuthRetry(ctx, delay); err != nil {
-			return "", fmt.Errorf("authentication canceled: %w", err)
+			return "", time.Time{}, fmt.Errorf("authentication canceled: %w", err)
 		}
 	}
 
-	return "", fmt.Errorf("authentication failed: %s", lastStatus)
+	return "", time.Time{}, fmt.Errorf("authentication failed: %s", lastStatus)
 }
 
 // NewClient creates a new diode client based on gRPC
