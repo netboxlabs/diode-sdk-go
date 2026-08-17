@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -18,6 +19,7 @@ import (
 	"runtime/debug"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -62,6 +64,11 @@ const (
 
 	authInitialRetryDelay = 1 * time.Second
 	authMaxRetryDelay     = 30 * time.Second
+
+	// tokenRefreshWindow is how long before its expiry the access token is
+	// renewed. It also covers an already-expired token, whose remaining
+	// lifetime is negative and therefore below the window.
+	tokenRefreshWindow = 1 * time.Minute
 )
 
 var (
@@ -328,6 +335,14 @@ type GRPCClient struct {
 
 	// Metadata
 	metadata metadata.MD
+
+	// authMu guards metadata and tokenExpiry. A refresh rewrites both while
+	// concurrent Ingest calls read them.
+	authMu sync.Mutex
+
+	// tokenExpiry is when the current access token expires, or the zero time
+	// when it could not be determined.
+	tokenExpiry time.Time
 }
 
 // ClientOption is a functional option for the GRPCClient
@@ -378,8 +393,49 @@ func (g *GRPCClient) authenticate(ctx context.Context) error {
 	}
 
 	// Update metadata with the new authorization token
+	g.authMu.Lock()
 	g.metadata.Set("authorization", fmt.Sprintf("Bearer %s", accessToken))
+	g.tokenExpiry = accessTokenExpiry(accessToken)
+	g.authMu.Unlock()
 	return nil
+}
+
+// accessTokenExpiry reads the exp claim from a JWT access token without
+// verifying its signature. The value only decides when to renew the token, it
+// never grants access, so a token that is not a JWT or carries no usable exp
+// yields the zero time and simply leaves renewal to the server's response.
+func accessTokenExpiry(accessToken string) time.Time {
+	parts := strings.Split(accessToken, ".")
+	if len(parts) != 3 {
+		return time.Time{}
+	}
+	payload, err := base64.RawURLEncoding.DecodeString(parts[1])
+	if err != nil {
+		return time.Time{}
+	}
+	var claims struct {
+		Exp int64 `json:"exp"`
+	}
+	if err := json.Unmarshal(payload, &claims); err != nil || claims.Exp <= 0 {
+		return time.Time{}
+	}
+	return time.Unix(claims.Exp, 0)
+}
+
+// tokenStale reports whether the access token has expired or is about to. It
+// reports false when the expiry is unknown, leaving behaviour unchanged.
+func (g *GRPCClient) tokenStale() bool {
+	g.authMu.Lock()
+	defer g.authMu.Unlock()
+	return !g.tokenExpiry.IsZero() && time.Until(g.tokenExpiry) < tokenRefreshWindow
+}
+
+// outgoingMetadata snapshots the request metadata so a concurrent refresh
+// cannot rewrite the map while a call reads it.
+func (g *GRPCClient) outgoingMetadata() metadata.MD {
+	g.authMu.Lock()
+	defer g.authMu.Unlock()
+	return g.metadata.Copy()
 }
 
 // DiodeAuthentication handles OAuth2 authentication for the Diode API.
@@ -774,21 +830,41 @@ func (g *GRPCClient) ingestSingleRequest(ctx context.Context, entities []*diodep
 		req.Metadata, _ = structpb.NewStruct(cfg.metadata)
 	}
 
-	ctx = metadata.NewOutgoingContext(ctx, g.metadata)
+	// Renew the token before it expires rather than waiting to be told it has.
+	// An expired token is rejected before the request reaches the ingester, and
+	// an intermediary that denies it with a plain HTTP response can leave the
+	// client with no Unauthenticated status to react to.
+	if g.tokenStale() {
+		if err := g.authenticate(ctx); err != nil {
+			if ctx.Err() != nil {
+				return nil, fmt.Errorf("token refresh canceled: %w", ctx.Err())
+			}
+			g.logger.Error("Failed to refresh the access token before ingesting", "error", err)
+		}
+	}
 
 	var err error
 	var res *diodepb.IngestResponse
 
 	attempt := 0
 	for {
-		res, err = g.client.Ingest(ctx, req)
+		// Built per attempt so a re-authentication above takes effect here.
+		res, err = g.client.Ingest(metadata.NewOutgoingContext(ctx, g.outgoingMetadata()), req)
 		if err != nil {
-			if status.Code(err) == codes.Unauthenticated {
+			// A stale token is retried whatever the reported status, because an
+			// intermediary may report the rejection as something other than
+			// Unauthenticated. A fresh token keeps unrelated failures fatal.
+			stale := g.tokenStale()
+			if status.Code(err) == codes.Unauthenticated || stale {
 				attempt++
 				if attempt >= g.maxAuthRetries {
 					return nil, fmt.Errorf("authentication failed after %d attempts: %w", attempt, err)
 				}
-				g.logger.Debug("Authentication failed, retrying...", "attempt", attempt)
+				if stale {
+					g.logger.Debug("Ingest failed with a stale access token, refreshing...", "attempt", attempt, "error", err)
+				} else {
+					g.logger.Debug("Authentication failed, retrying...", "attempt", attempt)
+				}
 				if err := g.authenticate(ctx); err != nil {
 					if ctx.Err() != nil {
 						return nil, fmt.Errorf("re-authentication canceled: %w", ctx.Err())
