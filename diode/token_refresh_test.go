@@ -58,6 +58,13 @@ type refreshTestServer struct {
 	ingester      *countingIngester
 	httpServer    *http.Server
 	port          string
+
+	// tokenDelayMS makes the token endpoint slow, standing in for an auth
+	// server that is backing off or unreachable.
+	tokenDelayMS atomic.Int64
+
+	// failTokens makes the token endpoint reject, so a refresh fails outright.
+	failTokens atomic.Bool
 }
 
 // startRefreshTestServer issues tokens whose exp is now+tokenTTL. A negative or
@@ -82,6 +89,14 @@ func startRefreshTestServer(t *testing.T, tokenTTL time.Duration, ingestErr erro
 	mux := http.NewServeMux()
 	mux.HandleFunc("/auth/token", func(w http.ResponseWriter, _ *http.Request) {
 		s.tokenRequests.Add(1)
+		if d := s.tokenDelayMS.Load(); d > 0 {
+			time.Sleep(time.Duration(d) * time.Millisecond)
+		}
+		if s.failTokens.Load() {
+			// 401 is not retriable, so the refresh fails without backing off.
+			http.Error(w, "invalid credentials", http.StatusUnauthorized)
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		body := fmt.Sprintf(`{"access_token": %q}`, makeJWT(time.Now().Add(tokenTTL)))
 		_, _ = w.Write([]byte(body))
@@ -246,6 +261,74 @@ func TestConcurrentStaleIngestsCoalesceOneRefresh(t *testing.T) {
 	assert.Equal(t, int64(2), s.tokenRequests.Load(),
 		"the stale token should be renewed once for all %d concurrent callers", callers)
 	assert.Equal(t, int64(callers), s.ingester.calls.Load(), "every caller should still ingest")
+}
+
+// A refresh in progress must not pin an unrelated caller past its own deadline.
+// The waiter's context governs how long it waits, not the owner's.
+func TestSlowRefreshDoesNotOutlastWaiterContext(t *testing.T) {
+	s := startRefreshTestServer(t, 10*time.Second, nil)
+	client := newRefreshTestClient(t, s)
+
+	// Every later token request stalls far longer than the waiter will allow.
+	const authStallMS = 3000
+	s.tokenDelayMS.Store(authStallMS)
+
+	// The owner starts a refresh under a context that outlives the waiter's.
+	owner := make(chan struct{})
+	go func() {
+		defer close(owner)
+		_, _ = client.Ingest(context.Background(), []Entity{&Site{Name: String("site-1")}})
+	}()
+
+	// Let the owner claim the refresh before the waiter arrives.
+	time.Sleep(300 * time.Millisecond)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Millisecond)
+	defer cancel()
+
+	started := time.Now()
+	_, err := client.Ingest(ctx, []Entity{&Site{Name: String("site-2")}})
+	elapsed := time.Since(started)
+
+	require.Error(t, err)
+	assert.ErrorIs(t, err, context.DeadlineExceeded)
+	assert.Less(t, elapsed, 2*time.Second,
+		"the waiter should give up on its own deadline, not wait out the %dms refresh", authStallMS)
+
+	s.tokenDelayMS.Store(0)
+	<-owner
+}
+
+// A refresh that fails must be shared too. Otherwise each queued caller runs its
+// own authentication sequence, which is exactly the load an auth outage cannot
+// absorb.
+func TestFailedRefreshIsSharedAcrossConcurrentCallers(t *testing.T) {
+	s := startRefreshTestServer(t, 10*time.Second, nil)
+	client := newRefreshTestClient(t, s)
+	// One refresh attempt per ingest, so the count reflects coalescing alone.
+	client.maxAuthRetries = 2
+
+	require.Equal(t, int64(1), s.tokenRequests.Load(), "construction should authenticate once")
+	s.failTokens.Store(true)
+
+	const callers = 12
+	var start, done sync.WaitGroup
+	start.Add(1)
+	done.Add(callers)
+
+	for range callers {
+		go func() {
+			defer done.Done()
+			start.Wait()
+			// The ingest still succeeds; only the refresh fails, and is logged.
+			_, _ = client.Ingest(context.Background(), []Entity{&Site{Name: String("site-1")}})
+		}()
+	}
+	start.Done()
+	done.Wait()
+
+	assert.Equal(t, int64(2), s.tokenRequests.Load(),
+		"a failing refresh should be shared by all %d callers, not retried by each", callers)
 }
 
 // An opaque token carries no exp, so behaviour must be unchanged: no proactive

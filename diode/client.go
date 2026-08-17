@@ -340,9 +340,12 @@ type GRPCClient struct {
 	// while concurrent Ingest calls read them.
 	authMu sync.Mutex
 
-	// refreshMu serializes token refreshes so that concurrent calls coalesce
-	// onto one token request instead of one per call.
+	// refreshMu guards inFlight. It is never held across a token request.
 	refreshMu sync.Mutex
+
+	// inFlight is the token refresh currently under way, if any. Concurrent
+	// callers join it instead of starting their own.
+	inFlight *tokenRefresh
 
 	// tokenExpiry is when the current access token expires, or the zero time
 	// when it could not be determined.
@@ -447,19 +450,54 @@ func (g *GRPCClient) tokenStale() bool {
 	return stale
 }
 
-// refreshToken renews the access token unless it has already been replaced
-// since usedGen was read. Concurrent callers therefore coalesce onto a single
-// token request rather than issuing one apiece, which would risk tripping
-// authentication rate limits exactly when the token needs renewing.
+// tokenRefresh is a single refresh whose outcome, success or failure, is shared
+// by every caller that joined it.
+type tokenRefresh struct {
+	done chan struct{}
+	err  error
+}
+
+// refreshToken renews the access token, coalescing concurrent callers onto one
+// token request. A caller whose token has already been replaced does nothing; a
+// caller arriving while a refresh is under way joins it and takes its outcome,
+// so an unreachable or rate-limiting auth server sees one request sequence
+// rather than one per caller.
+//
+// refreshMu is held only for bookkeeping, never across the token request, and
+// joining is bounded by the caller's own context. A slow refresh therefore
+// cannot pin an unrelated caller past its deadline.
 func (g *GRPCClient) refreshToken(ctx context.Context, usedGen uint64) error {
 	g.refreshMu.Lock()
-	defer g.refreshMu.Unlock()
 
 	if gen, _ := g.tokenState(); gen != usedGen {
-		// Another caller refreshed while this one waited for the lock.
+		// Another caller already replaced the token this attempt used.
+		g.refreshMu.Unlock()
 		return nil
 	}
-	return g.authenticate(ctx)
+
+	if r := g.inFlight; r != nil {
+		g.refreshMu.Unlock()
+		select {
+		case <-r.done:
+			return r.err
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
+
+	r := &tokenRefresh{done: make(chan struct{})}
+	g.inFlight = r
+	g.refreshMu.Unlock()
+
+	err := g.authenticate(ctx)
+
+	g.refreshMu.Lock()
+	g.inFlight = nil
+	g.refreshMu.Unlock()
+
+	r.err = err
+	close(r.done)
+	return err
 }
 
 // outgoingMetadata snapshots the request metadata so a concurrent refresh
