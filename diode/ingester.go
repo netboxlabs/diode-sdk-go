@@ -1,5 +1,5 @@
 // Generated code. DO NOT EDIT.
-// Timestamp: 2026-07-08 14:57:56Z
+// Timestamp: 2026-08-18 14:37:00Z
 //
 
 package diode
@@ -2423,6 +2423,11 @@ type ContactAssignment struct {
 	//  - ScriptModule
 	//  - VirtualMachineType
 	//  - User
+	//  - CoolingFeed
+	//  - CoolingIntake
+	//  - CoolingOutflow
+	//  - CoolingSource
+	//  - ModuleBayType
 	Object       anyContactAssignmentObjectValue
 	Contact      *Contact
 	Role         *ContactRole
@@ -2855,6 +2860,11 @@ type CustomFieldObjectReference struct {
 	//  - ScriptModule
 	//  - VirtualMachineType
 	//  - User
+	//  - CoolingFeed
+	//  - CoolingIntake
+	//  - CoolingOutflow
+	//  - CoolingSource
+	//  - ModuleBayType
 	Object anyCustomFieldObjectReferenceObjectValue
 }
 
@@ -2966,6 +2976,7 @@ type Device struct {
 	Metadata       Metadata
 	Owner          *Owner
 	Config         *DeviceConfig
+	CoolingMethod  *string
 }
 
 func (e *Device) ConvertToProtoMessage() proto.Message {
@@ -3000,6 +3011,7 @@ func (e *Device) ConvertToProtoMessage() proto.Message {
 		Metadata:       e.GetMetadata(),
 		Owner:          e.GetOwner(),
 		Config:         e.GetConfig(),
+		CoolingMethod:  e.GetCoolingMethod(),
 	}
 	return r
 }
@@ -3260,6 +3272,14 @@ func (e *Device) GetConfig() *pb.DeviceConfig {
 	var r *pb.DeviceConfig
 	if e != nil && e.Config != nil {
 		r = e.Config.ConvertToProtoMessage().(*pb.DeviceConfig)
+	}
+	return r
+}
+
+func (e *Device) GetCoolingMethod() *string {
+	var r *string
+	if e != nil && e.CoolingMethod != nil {
+		r = e.CoolingMethod
 	}
 	return r
 }
@@ -3551,6 +3571,8 @@ type DeviceType struct {
 	CustomFields           map[string]*CustomFieldValue
 	Metadata               Metadata
 	Owner                  *Owner
+	CoolingMethod          *string
+	EndOfLife              *time.Time
 }
 
 func (e *DeviceType) ConvertToProtoMessage() proto.Message {
@@ -3573,6 +3595,8 @@ func (e *DeviceType) ConvertToProtoMessage() proto.Message {
 		CustomFields:           e.GetCustomFields(),
 		Metadata:               e.GetMetadata(),
 		Owner:                  e.GetOwner(),
+		CoolingMethod:          e.GetCoolingMethod(),
+		EndOfLife:              e.GetEndOfLife(),
 	}
 	return r
 }
@@ -3737,6 +3761,22 @@ func (e *DeviceType) GetOwner() *pb.Owner {
 	var r *pb.Owner
 	if e != nil && e.Owner != nil {
 		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *DeviceType) GetCoolingMethod() *string {
+	var r *string
+	if e != nil && e.CoolingMethod != nil {
+		r = e.CoolingMethod
+	}
+	return r
+}
+
+func (e *DeviceType) GetEndOfLife() *timestamppb.Timestamp {
+	var r *timestamppb.Timestamp
+	if e != nil && e.EndOfLife != nil {
+		r = timestamppb.New(*e.EndOfLife)
 	}
 	return r
 }
@@ -3983,6 +4023,11 @@ type FHRPGroupAssignment struct {
 	//  - ScriptModule
 	//  - VirtualMachineType
 	//  - User
+	//  - CoolingFeed
+	//  - CoolingIntake
+	//  - CoolingOutflow
+	//  - CoolingSource
+	//  - ModuleBayType
 	Interface anyFHRPGroupAssignmentInterfaceValue
 	Priority  *int64
 	Metadata  Metadata
@@ -4323,6 +4368,11 @@ type GenericObject struct {
 	//  - ScriptModule
 	//  - VirtualMachineType
 	//  - User
+	//  - CoolingFeed
+	//  - CoolingIntake
+	//  - CoolingOutflow
+	//  - CoolingSource
+	//  - ModuleBayType
 	Object anyGenericObjectObjectValue
 }
 
@@ -5406,6 +5456,9 @@ type Interface struct {
 	WirelessLans          []*WirelessLAN
 	Metadata              Metadata
 	Owner                 *Owner
+	Channels              *int64
+	ChannelId             *int64
+	MacAddress            *string
 }
 
 func (e *Interface) ConvertToProtoMessage() proto.Message {
@@ -5446,6 +5499,9 @@ func (e *Interface) ConvertToProtoMessage() proto.Message {
 		WirelessLans:          e.GetWirelessLans(),
 		Metadata:              e.GetMetadata(),
 		Owner:                 e.GetOwner(),
+		Channels:              e.GetChannels(),
+		ChannelId:             e.GetChannelId(),
+		MacAddress:            e.GetMacAddress(),
 	}
 	return r
 }
@@ -5764,6 +5820,30 @@ func (e *Interface) GetOwner() *pb.Owner {
 	return r
 }
 
+func (e *Interface) GetChannels() *int64 {
+	var r *int64
+	if e != nil && e.Channels != nil {
+		r = e.Channels
+	}
+	return r
+}
+
+func (e *Interface) GetChannelId() *int64 {
+	var r *int64
+	if e != nil && e.ChannelId != nil {
+		r = e.ChannelId
+	}
+	return r
+}
+
+func (e *Interface) GetMacAddress() *string {
+	var r *string
+	if e != nil && e.MacAddress != nil {
+		r = e.MacAddress
+	}
+	return r
+}
+
 type InventoryItem struct {
 	Device       *Device
 	Parent       *InventoryItem
@@ -5785,6 +5865,8 @@ type InventoryItem struct {
 	//  - PowerOutlet
 	//  - PowerPort
 	//  - RearPort
+	//  - CoolingIntake
+	//  - CoolingOutflow
 	Component    anyInventoryItemComponentValue
 	Tags         []*Tag
 	CustomFields map[string]*CustomFieldValue
@@ -6370,6 +6452,11 @@ type L2VPNTermination struct {
 	//  - ScriptModule
 	//  - VirtualMachineType
 	//  - User
+	//  - CoolingFeed
+	//  - CoolingIntake
+	//  - CoolingOutflow
+	//  - CoolingSource
+	//  - ModuleBayType
 	AssignedObject anyL2VPNTerminationAssignedObjectValue
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
@@ -7017,6 +7104,7 @@ type ModuleBay struct {
 	Metadata        Metadata
 	Owner           *Owner
 	Enabled         *bool
+	ModuleBayTypes  []*ModuleBayType
 }
 
 func (e *ModuleBay) ConvertToProtoMessage() proto.Message {
@@ -7033,6 +7121,7 @@ func (e *ModuleBay) ConvertToProtoMessage() proto.Message {
 		Metadata:        e.GetMetadata(),
 		Owner:           e.GetOwner(),
 		Enabled:         e.GetEnabled(),
+		ModuleBayTypes:  e.GetModuleBayTypes(),
 	}
 	return r
 }
@@ -7153,39 +7242,55 @@ func (e *ModuleBay) GetEnabled() *bool {
 	return r
 }
 
+func (e *ModuleBay) GetModuleBayTypes() []*pb.ModuleBayType {
+	var r []*pb.ModuleBayType
+	if e != nil && e.ModuleBayTypes != nil {
+		for _, v := range e.ModuleBayTypes {
+			r = append(r, v.ConvertToProtoMessage().(*pb.ModuleBayType))
+		}
+	}
+	return r
+}
+
 type ModuleType struct {
-	Manufacturer *Manufacturer
-	Model        *string
-	PartNumber   *string
-	Airflow      *string
-	Weight       *float64
-	WeightUnit   *string
-	Description  *string
-	Comments     *string
-	Tags         []*Tag
-	CustomFields map[string]*CustomFieldValue
-	Profile      *ModuleTypeProfile
-	Attributes   *string
-	Metadata     Metadata
-	Owner        *Owner
+	Manufacturer   *Manufacturer
+	Model          *string
+	PartNumber     *string
+	Airflow        *string
+	Weight         *float64
+	WeightUnit     *string
+	Description    *string
+	Comments       *string
+	Tags           []*Tag
+	CustomFields   map[string]*CustomFieldValue
+	Profile        *ModuleTypeProfile
+	Attributes     *string
+	Metadata       Metadata
+	Owner          *Owner
+	CoolingMethod  *string
+	EndOfLife      *time.Time
+	ModuleBayTypes []*ModuleBayType
 }
 
 func (e *ModuleType) ConvertToProtoMessage() proto.Message {
 	r := &pb.ModuleType{
-		Manufacturer: e.GetManufacturer(),
-		Model:        e.GetModel(),
-		PartNumber:   e.GetPartNumber(),
-		Airflow:      e.GetAirflow(),
-		Weight:       e.GetWeight(),
-		WeightUnit:   e.GetWeightUnit(),
-		Description:  e.GetDescription(),
-		Comments:     e.GetComments(),
-		Tags:         e.GetTags(),
-		CustomFields: e.GetCustomFields(),
-		Profile:      e.GetProfile(),
-		Attributes:   e.GetAttributes(),
-		Metadata:     e.GetMetadata(),
-		Owner:        e.GetOwner(),
+		Manufacturer:   e.GetManufacturer(),
+		Model:          e.GetModel(),
+		PartNumber:     e.GetPartNumber(),
+		Airflow:        e.GetAirflow(),
+		Weight:         e.GetWeight(),
+		WeightUnit:     e.GetWeightUnit(),
+		Description:    e.GetDescription(),
+		Comments:       e.GetComments(),
+		Tags:           e.GetTags(),
+		CustomFields:   e.GetCustomFields(),
+		Profile:        e.GetProfile(),
+		Attributes:     e.GetAttributes(),
+		Metadata:       e.GetMetadata(),
+		Owner:          e.GetOwner(),
+		CoolingMethod:  e.GetCoolingMethod(),
+		EndOfLife:      e.GetEndOfLife(),
+		ModuleBayTypes: e.GetModuleBayTypes(),
 	}
 	return r
 }
@@ -7318,6 +7423,32 @@ func (e *ModuleType) GetOwner() *pb.Owner {
 	var r *pb.Owner
 	if e != nil && e.Owner != nil {
 		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *ModuleType) GetCoolingMethod() *string {
+	var r *string
+	if e != nil && e.CoolingMethod != nil {
+		r = e.CoolingMethod
+	}
+	return r
+}
+
+func (e *ModuleType) GetEndOfLife() *timestamppb.Timestamp {
+	var r *timestamppb.Timestamp
+	if e != nil && e.EndOfLife != nil {
+		r = timestamppb.New(*e.EndOfLife)
+	}
+	return r
+}
+
+func (e *ModuleType) GetModuleBayTypes() []*pb.ModuleBayType {
+	var r []*pb.ModuleBayType
+	if e != nil && e.ModuleBayTypes != nil {
+		for _, v := range e.ModuleBayTypes {
+			r = append(r, v.ConvertToProtoMessage().(*pb.ModuleBayType))
+		}
 	}
 	return r
 }
@@ -8796,72 +8927,76 @@ func (e *RIR) GetComments() *string {
 }
 
 type Rack struct {
-	Name          *string
-	FacilityId    *string
-	Site          *Site
-	Location      *Location
-	Tenant        *Tenant
-	Status        *string
-	Role          *RackRole
-	Serial        *string
-	AssetTag      *string
-	RackType      *RackType
-	FormFactor    *string
-	Width         *int64
-	UHeight       *int64
-	StartingUnit  *int64
-	Weight        *float64
-	MaxWeight     *int64
-	WeightUnit    *string
-	DescUnits     *bool
-	OuterWidth    *int64
-	OuterDepth    *int64
-	OuterUnit     *string
-	MountingDepth *int64
-	Airflow       *string
-	Description   *string
-	Comments      *string
-	Tags          []*Tag
-	CustomFields  map[string]*CustomFieldValue
-	OuterHeight   *int64
-	Metadata      Metadata
-	Owner         *Owner
-	Group         *RackGroup
+	Name              *string
+	FacilityId        *string
+	Site              *Site
+	Location          *Location
+	Tenant            *Tenant
+	Status            *string
+	Role              *RackRole
+	Serial            *string
+	AssetTag          *string
+	RackType          *RackType
+	FormFactor        *string
+	Width             *int64
+	UHeight           *int64
+	StartingUnit      *int64
+	Weight            *float64
+	MaxWeight         *int64
+	WeightUnit        *string
+	DescUnits         *bool
+	OuterWidth        *int64
+	OuterDepth        *int64
+	OuterUnit         *string
+	MountingDepth     *int64
+	Airflow           *string
+	Description       *string
+	Comments          *string
+	Tags              []*Tag
+	CustomFields      map[string]*CustomFieldValue
+	OuterHeight       *int64
+	Metadata          Metadata
+	Owner             *Owner
+	Group             *RackGroup
+	CoolingCapability *string
+	CoolingCapacity   *float64
 }
 
 func (e *Rack) ConvertToProtoMessage() proto.Message {
 	r := &pb.Rack{
-		Name:          e.GetName(),
-		FacilityId:    e.GetFacilityId(),
-		Site:          e.GetSite(),
-		Location:      e.GetLocation(),
-		Tenant:        e.GetTenant(),
-		Status:        e.GetStatus(),
-		Role:          e.GetRole(),
-		Serial:        e.GetSerial(),
-		AssetTag:      e.GetAssetTag(),
-		RackType:      e.GetRackType(),
-		FormFactor:    e.GetFormFactor(),
-		Width:         e.GetWidth(),
-		UHeight:       e.GetUHeight(),
-		StartingUnit:  e.GetStartingUnit(),
-		Weight:        e.GetWeight(),
-		MaxWeight:     e.GetMaxWeight(),
-		WeightUnit:    e.GetWeightUnit(),
-		DescUnits:     e.GetDescUnits(),
-		OuterWidth:    e.GetOuterWidth(),
-		OuterDepth:    e.GetOuterDepth(),
-		OuterUnit:     e.GetOuterUnit(),
-		MountingDepth: e.GetMountingDepth(),
-		Airflow:       e.GetAirflow(),
-		Description:   e.GetDescription(),
-		Comments:      e.GetComments(),
-		Tags:          e.GetTags(),
-		CustomFields:  e.GetCustomFields(),
-		OuterHeight:   e.GetOuterHeight(),
-		Metadata:      e.GetMetadata(),
-		Owner:         e.GetOwner(),
-		Group:         e.GetGroup(),
+		Name:              e.GetName(),
+		FacilityId:        e.GetFacilityId(),
+		Site:              e.GetSite(),
+		Location:          e.GetLocation(),
+		Tenant:            e.GetTenant(),
+		Status:            e.GetStatus(),
+		Role:              e.GetRole(),
+		Serial:            e.GetSerial(),
+		AssetTag:          e.GetAssetTag(),
+		RackType:          e.GetRackType(),
+		FormFactor:        e.GetFormFactor(),
+		Width:             e.GetWidth(),
+		UHeight:           e.GetUHeight(),
+		StartingUnit:      e.GetStartingUnit(),
+		Weight:            e.GetWeight(),
+		MaxWeight:         e.GetMaxWeight(),
+		WeightUnit:        e.GetWeightUnit(),
+		DescUnits:         e.GetDescUnits(),
+		OuterWidth:        e.GetOuterWidth(),
+		OuterDepth:        e.GetOuterDepth(),
+		OuterUnit:         e.GetOuterUnit(),
+		MountingDepth:     e.GetMountingDepth(),
+		Airflow:           e.GetAirflow(),
+		Description:       e.GetDescription(),
+		Comments:          e.GetComments(),
+		Tags:              e.GetTags(),
+		CustomFields:      e.GetCustomFields(),
+		OuterHeight:       e.GetOuterHeight(),
+		Metadata:          e.GetMetadata(),
+		Owner:             e.GetOwner(),
+		Group:             e.GetGroup(),
+		CoolingCapability: e.GetCoolingCapability(),
+		CoolingCapacity:   e.GetCoolingCapacity(),
 	}
 	return r
 }
@@ -9134,6 +9269,22 @@ func (e *Rack) GetGroup() *pb.RackGroup {
 	return r
 }
 
+func (e *Rack) GetCoolingCapability() *string {
+	var r *string
+	if e != nil && e.CoolingCapability != nil {
+		r = e.CoolingCapability
+	}
+	return r
+}
+
+func (e *Rack) GetCoolingCapacity() *float64 {
+	var r *float64
+	if e != nil && e.CoolingCapacity != nil {
+		r = e.CoolingCapacity
+	}
+	return r
+}
+
 type RackReservation struct {
 	Rack         *Rack
 	Units        []int64
@@ -9395,54 +9546,58 @@ func (e *RackRole) GetComments() *string {
 }
 
 type RackType struct {
-	Manufacturer  *Manufacturer
-	Model         *string
-	Slug          *string
-	Description   *string
-	FormFactor    *string
-	Width         *int64
-	UHeight       *int64
-	StartingUnit  *int64
-	DescUnits     *bool
-	OuterWidth    *int64
-	OuterDepth    *int64
-	OuterUnit     *string
-	Weight        *float64
-	MaxWeight     *int64
-	WeightUnit    *string
-	MountingDepth *int64
-	Comments      *string
-	Tags          []*Tag
-	CustomFields  map[string]*CustomFieldValue
-	OuterHeight   *int64
-	Metadata      Metadata
-	Owner         *Owner
+	Manufacturer      *Manufacturer
+	Model             *string
+	Slug              *string
+	Description       *string
+	FormFactor        *string
+	Width             *int64
+	UHeight           *int64
+	StartingUnit      *int64
+	DescUnits         *bool
+	OuterWidth        *int64
+	OuterDepth        *int64
+	OuterUnit         *string
+	Weight            *float64
+	MaxWeight         *int64
+	WeightUnit        *string
+	MountingDepth     *int64
+	Comments          *string
+	Tags              []*Tag
+	CustomFields      map[string]*CustomFieldValue
+	OuterHeight       *int64
+	Metadata          Metadata
+	Owner             *Owner
+	CoolingCapability *string
+	CoolingCapacity   *float64
 }
 
 func (e *RackType) ConvertToProtoMessage() proto.Message {
 	r := &pb.RackType{
-		Manufacturer:  e.GetManufacturer(),
-		Model:         e.GetModel(),
-		Slug:          e.GetSlug(),
-		Description:   e.GetDescription(),
-		FormFactor:    e.GetFormFactor(),
-		Width:         e.GetWidth(),
-		UHeight:       e.GetUHeight(),
-		StartingUnit:  e.GetStartingUnit(),
-		DescUnits:     e.GetDescUnits(),
-		OuterWidth:    e.GetOuterWidth(),
-		OuterDepth:    e.GetOuterDepth(),
-		OuterUnit:     e.GetOuterUnit(),
-		Weight:        e.GetWeight(),
-		MaxWeight:     e.GetMaxWeight(),
-		WeightUnit:    e.GetWeightUnit(),
-		MountingDepth: e.GetMountingDepth(),
-		Comments:      e.GetComments(),
-		Tags:          e.GetTags(),
-		CustomFields:  e.GetCustomFields(),
-		OuterHeight:   e.GetOuterHeight(),
-		Metadata:      e.GetMetadata(),
-		Owner:         e.GetOwner(),
+		Manufacturer:      e.GetManufacturer(),
+		Model:             e.GetModel(),
+		Slug:              e.GetSlug(),
+		Description:       e.GetDescription(),
+		FormFactor:        e.GetFormFactor(),
+		Width:             e.GetWidth(),
+		UHeight:           e.GetUHeight(),
+		StartingUnit:      e.GetStartingUnit(),
+		DescUnits:         e.GetDescUnits(),
+		OuterWidth:        e.GetOuterWidth(),
+		OuterDepth:        e.GetOuterDepth(),
+		OuterUnit:         e.GetOuterUnit(),
+		Weight:            e.GetWeight(),
+		MaxWeight:         e.GetMaxWeight(),
+		WeightUnit:        e.GetWeightUnit(),
+		MountingDepth:     e.GetMountingDepth(),
+		Comments:          e.GetComments(),
+		Tags:              e.GetTags(),
+		CustomFields:      e.GetCustomFields(),
+		OuterHeight:       e.GetOuterHeight(),
+		Metadata:          e.GetMetadata(),
+		Owner:             e.GetOwner(),
+		CoolingCapability: e.GetCoolingCapability(),
+		CoolingCapacity:   e.GetCoolingCapacity(),
 	}
 	return r
 }
@@ -9639,6 +9794,22 @@ func (e *RackType) GetOwner() *pb.Owner {
 	var r *pb.Owner
 	if e != nil && e.Owner != nil {
 		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *RackType) GetCoolingCapability() *string {
+	var r *string
+	if e != nil && e.CoolingCapability != nil {
+		r = e.CoolingCapability
+	}
+	return r
+}
+
+func (e *RackType) GetCoolingCapacity() *float64 {
+	var r *float64
+	if e != nil && e.CoolingCapacity != nil {
+		r = e.CoolingCapacity
 	}
 	return r
 }
@@ -10167,6 +10338,7 @@ type Service struct {
 	ParentObject anyServiceParentObjectValue
 	Metadata     Metadata
 	Owner        *Owner
+	PortMappings []string
 }
 
 func (e *Service) ConvertToProtoMessage() proto.Message {
@@ -10183,6 +10355,7 @@ func (e *Service) ConvertToProtoMessage() proto.Message {
 		Ipaddresses:    e.GetIpaddresses(),
 		Metadata:       e.GetMetadata(),
 		Owner:          e.GetOwner(),
+		PortMappings:   e.GetPortMappings(),
 	}
 	if e.ParentObject != nil {
 		e.ParentObject.anyServiceParentObjectValueApplyTo(r)
@@ -10316,6 +10489,16 @@ func (e *Service) GetOwner() *pb.Owner {
 	var r *pb.Owner
 	if e != nil && e.Owner != nil {
 		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *Service) GetPortMappings() []string {
+	var r []string
+	if e != nil && e.PortMappings != nil {
+		for _, v := range e.PortMappings {
+			r = append(r, v)
+		}
 	}
 	return r
 }
@@ -11359,6 +11542,11 @@ type TunnelTermination struct {
 	//  - ScriptModule
 	//  - VirtualMachineType
 	//  - User
+	//  - CoolingFeed
+	//  - CoolingIntake
+	//  - CoolingOutflow
+	//  - CoolingSource
+	//  - ModuleBayType
 	Termination  anyTunnelTerminationTerminationValue
 	OutsideIp    *IPAddress
 	Tags         []*Tag
@@ -11945,6 +12133,7 @@ type VMInterface struct {
 	TaggedVlans           []*VLAN
 	Metadata              Metadata
 	Owner                 *Owner
+	MacAddress            *string
 }
 
 func (e *VMInterface) ConvertToProtoMessage() proto.Message {
@@ -11967,6 +12156,7 @@ func (e *VMInterface) ConvertToProtoMessage() proto.Message {
 		TaggedVlans:           e.GetTaggedVlans(),
 		Metadata:              e.GetMetadata(),
 		Owner:                 e.GetOwner(),
+		MacAddress:            e.GetMacAddress(),
 	}
 	return r
 }
@@ -12133,6 +12323,14 @@ func (e *VMInterface) GetOwner() *pb.Owner {
 	var r *pb.Owner
 	if e != nil && e.Owner != nil {
 		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *VMInterface) GetMacAddress() *string {
+	var r *string
+	if e != nil && e.MacAddress != nil {
+		r = e.MacAddress
 	}
 	return r
 }
@@ -13815,6 +14013,7 @@ type CustomField struct {
 	Metadata            Metadata
 	Owner               *Owner
 	ValidationSchema    *string
+	NullsFirst          *bool
 }
 
 func (e *CustomField) ConvertToProtoMessage() proto.Message {
@@ -13844,6 +14043,7 @@ func (e *CustomField) ConvertToProtoMessage() proto.Message {
 		Metadata:            e.GetMetadata(),
 		Owner:               e.GetOwner(),
 		ValidationSchema:    e.GetValidationSchema(),
+		NullsFirst:          e.GetNullsFirst(),
 	}
 	return r
 }
@@ -14058,6 +14258,14 @@ func (e *CustomField) GetValidationSchema() *string {
 	return r
 }
 
+func (e *CustomField) GetNullsFirst() *bool {
+	var r *bool
+	if e != nil && e.NullsFirst != nil {
+		r = e.NullsFirst
+	}
+	return r
+}
+
 type CustomFieldChoiceSet struct {
 	Name                *string
 	Description         *string
@@ -14259,6 +14467,11 @@ type JournalEntry struct {
 	//  - ScriptModule
 	//  - VirtualMachineType
 	//  - User
+	//  - CoolingFeed
+	//  - CoolingIntake
+	//  - CoolingOutflow
+	//  - CoolingSource
+	//  - ModuleBayType
 	AssignedObject anyJournalEntryAssignedObjectValue
 	Kind           *string
 	Comments       *string
@@ -15183,6 +15396,801 @@ func (e *User) GetUsername() string {
 }
 
 func (e *User) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
+	}
+	return r
+}
+
+type CoolingFeed struct {
+	CoolingSource   *CoolingSource
+	Rack            *Rack
+	Name            *string
+	Status          *string
+	CoolingCapacity *float64
+	MaxFlow         *float64
+	MaxFlowUnit     *string
+	Description     *string
+	Tenant          *Tenant
+	Owner           *Owner
+	Comments        *string
+	Tags            []*Tag
+	CustomFields    map[string]*CustomFieldValue
+	Metadata        Metadata
+}
+
+func (e *CoolingFeed) ConvertToProtoMessage() proto.Message {
+	r := &pb.CoolingFeed{
+		CoolingSource:   e.GetCoolingSource(),
+		Rack:            e.GetRack(),
+		Name:            e.GetName(),
+		Status:          e.GetStatus(),
+		CoolingCapacity: e.GetCoolingCapacity(),
+		MaxFlow:         e.GetMaxFlow(),
+		MaxFlowUnit:     e.GetMaxFlowUnit(),
+		Description:     e.GetDescription(),
+		Tenant:          e.GetTenant(),
+		Owner:           e.GetOwner(),
+		Comments:        e.GetComments(),
+		Tags:            e.GetTags(),
+		CustomFields:    e.GetCustomFields(),
+		Metadata:        e.GetMetadata(),
+	}
+	return r
+}
+
+func (e *CoolingFeed) ConvertToProtoEntity() *pb.Entity {
+	return &pb.Entity{
+		Entity: &pb.Entity_CoolingFeed{
+			CoolingFeed: e.ConvertToProtoMessage().(*pb.CoolingFeed),
+		},
+	}
+}
+
+func (e *CoolingFeed) SetCustomField(key string, value any) error {
+	if e.CustomFields == nil {
+		e.CustomFields = make(map[string]*CustomFieldValue)
+	}
+	return setCustomField(e.CustomFields, key, value)
+}
+
+func (e *CoolingFeed) GetCoolingSource() *pb.CoolingSource {
+	var r *pb.CoolingSource
+	if e != nil && e.CoolingSource != nil {
+		r = e.CoolingSource.ConvertToProtoMessage().(*pb.CoolingSource)
+	}
+	return r
+}
+
+func (e *CoolingFeed) GetRack() *pb.Rack {
+	var r *pb.Rack
+	if e != nil && e.Rack != nil {
+		r = e.Rack.ConvertToProtoMessage().(*pb.Rack)
+	}
+	return r
+}
+
+func (e *CoolingFeed) GetName() string {
+	var r string
+	if e != nil && e.Name != nil {
+		r = *e.Name
+	}
+	return r
+}
+
+func (e *CoolingFeed) GetStatus() *string {
+	var r *string
+	if e != nil && e.Status != nil {
+		r = e.Status
+	}
+	return r
+}
+
+func (e *CoolingFeed) GetCoolingCapacity() *float64 {
+	var r *float64
+	if e != nil && e.CoolingCapacity != nil {
+		r = e.CoolingCapacity
+	}
+	return r
+}
+
+func (e *CoolingFeed) GetMaxFlow() *float64 {
+	var r *float64
+	if e != nil && e.MaxFlow != nil {
+		r = e.MaxFlow
+	}
+	return r
+}
+
+func (e *CoolingFeed) GetMaxFlowUnit() *string {
+	var r *string
+	if e != nil && e.MaxFlowUnit != nil {
+		r = e.MaxFlowUnit
+	}
+	return r
+}
+
+func (e *CoolingFeed) GetDescription() *string {
+	var r *string
+	if e != nil && e.Description != nil {
+		r = e.Description
+	}
+	return r
+}
+
+func (e *CoolingFeed) GetTenant() *pb.Tenant {
+	var r *pb.Tenant
+	if e != nil && e.Tenant != nil {
+		r = e.Tenant.ConvertToProtoMessage().(*pb.Tenant)
+	}
+	return r
+}
+
+func (e *CoolingFeed) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *CoolingFeed) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
+func (e *CoolingFeed) GetTags() []*pb.Tag {
+	var r []*pb.Tag
+	if e != nil && e.Tags != nil {
+		for _, v := range e.Tags {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Tag))
+		}
+	}
+	return r
+}
+
+func (e *CoolingFeed) GetCustomFields() map[string]*pb.CustomFieldValue {
+	var r map[string]*pb.CustomFieldValue
+	if e != nil && e.CustomFields != nil {
+		r = make(map[string]*pb.CustomFieldValue)
+		for k, v := range e.CustomFields {
+			r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+		}
+	}
+	return r
+}
+
+func (e *CoolingFeed) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
+	}
+	return r
+}
+
+type CoolingIntake struct {
+	Device         *Device
+	Module         *Module
+	Name           *string
+	Label          *string
+	Type           *string
+	Diameter       *float64
+	DiameterUnit   *string
+	MaxFlow        *float64
+	MaxFlowUnit    *string
+	CoolingOutflow *CoolingOutflow
+	Description    *string
+	Owner          *Owner
+	Tags           []*Tag
+	CustomFields   map[string]*CustomFieldValue
+	Metadata       Metadata
+}
+
+func (e *CoolingIntake) ConvertToProtoMessage() proto.Message {
+	r := &pb.CoolingIntake{
+		Device:         e.GetDevice(),
+		Module:         e.GetModule(),
+		Name:           e.GetName(),
+		Label:          e.GetLabel(),
+		Type:           e.GetType(),
+		Diameter:       e.GetDiameter(),
+		DiameterUnit:   e.GetDiameterUnit(),
+		MaxFlow:        e.GetMaxFlow(),
+		MaxFlowUnit:    e.GetMaxFlowUnit(),
+		CoolingOutflow: e.GetCoolingOutflow(),
+		Description:    e.GetDescription(),
+		Owner:          e.GetOwner(),
+		Tags:           e.GetTags(),
+		CustomFields:   e.GetCustomFields(),
+		Metadata:       e.GetMetadata(),
+	}
+	return r
+}
+
+func (e *CoolingIntake) ConvertToProtoEntity() *pb.Entity {
+	return &pb.Entity{
+		Entity: &pb.Entity_CoolingIntake{
+			CoolingIntake: e.ConvertToProtoMessage().(*pb.CoolingIntake),
+		},
+	}
+}
+
+func (e *CoolingIntake) SetCustomField(key string, value any) error {
+	if e.CustomFields == nil {
+		e.CustomFields = make(map[string]*CustomFieldValue)
+	}
+	return setCustomField(e.CustomFields, key, value)
+}
+
+func (e *CoolingIntake) GetDevice() *pb.Device {
+	var r *pb.Device
+	if e != nil && e.Device != nil {
+		r = e.Device.ConvertToProtoMessage().(*pb.Device)
+	}
+	return r
+}
+
+func (e *CoolingIntake) GetModule() *pb.Module {
+	var r *pb.Module
+	if e != nil && e.Module != nil {
+		r = e.Module.ConvertToProtoMessage().(*pb.Module)
+	}
+	return r
+}
+
+func (e *CoolingIntake) GetName() string {
+	var r string
+	if e != nil && e.Name != nil {
+		r = *e.Name
+	}
+	return r
+}
+
+func (e *CoolingIntake) GetLabel() *string {
+	var r *string
+	if e != nil && e.Label != nil {
+		r = e.Label
+	}
+	return r
+}
+
+func (e *CoolingIntake) GetType() *string {
+	var r *string
+	if e != nil && e.Type != nil {
+		r = e.Type
+	}
+	return r
+}
+
+func (e *CoolingIntake) GetDiameter() *float64 {
+	var r *float64
+	if e != nil && e.Diameter != nil {
+		r = e.Diameter
+	}
+	return r
+}
+
+func (e *CoolingIntake) GetDiameterUnit() *string {
+	var r *string
+	if e != nil && e.DiameterUnit != nil {
+		r = e.DiameterUnit
+	}
+	return r
+}
+
+func (e *CoolingIntake) GetMaxFlow() *float64 {
+	var r *float64
+	if e != nil && e.MaxFlow != nil {
+		r = e.MaxFlow
+	}
+	return r
+}
+
+func (e *CoolingIntake) GetMaxFlowUnit() *string {
+	var r *string
+	if e != nil && e.MaxFlowUnit != nil {
+		r = e.MaxFlowUnit
+	}
+	return r
+}
+
+func (e *CoolingIntake) GetCoolingOutflow() *pb.CoolingOutflow {
+	var r *pb.CoolingOutflow
+	if e != nil && e.CoolingOutflow != nil {
+		r = e.CoolingOutflow.ConvertToProtoMessage().(*pb.CoolingOutflow)
+	}
+	return r
+}
+
+func (e *CoolingIntake) GetDescription() *string {
+	var r *string
+	if e != nil && e.Description != nil {
+		r = e.Description
+	}
+	return r
+}
+
+func (e *CoolingIntake) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *CoolingIntake) GetTags() []*pb.Tag {
+	var r []*pb.Tag
+	if e != nil && e.Tags != nil {
+		for _, v := range e.Tags {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Tag))
+		}
+	}
+	return r
+}
+
+func (e *CoolingIntake) GetCustomFields() map[string]*pb.CustomFieldValue {
+	var r map[string]*pb.CustomFieldValue
+	if e != nil && e.CustomFields != nil {
+		r = make(map[string]*pb.CustomFieldValue)
+		for k, v := range e.CustomFields {
+			r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+		}
+	}
+	return r
+}
+
+func (e *CoolingIntake) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
+	}
+	return r
+}
+
+type CoolingOutflow struct {
+	Device        *Device
+	Module        *Module
+	Name          *string
+	Label         *string
+	Type          *string
+	Diameter      *float64
+	DiameterUnit  *string
+	CoolingIntake *CoolingIntake
+	Description   *string
+	Owner         *Owner
+	Tags          []*Tag
+	CustomFields  map[string]*CustomFieldValue
+	Metadata      Metadata
+}
+
+func (e *CoolingOutflow) ConvertToProtoMessage() proto.Message {
+	r := &pb.CoolingOutflow{
+		Device:        e.GetDevice(),
+		Module:        e.GetModule(),
+		Name:          e.GetName(),
+		Label:         e.GetLabel(),
+		Type:          e.GetType(),
+		Diameter:      e.GetDiameter(),
+		DiameterUnit:  e.GetDiameterUnit(),
+		CoolingIntake: e.GetCoolingIntake(),
+		Description:   e.GetDescription(),
+		Owner:         e.GetOwner(),
+		Tags:          e.GetTags(),
+		CustomFields:  e.GetCustomFields(),
+		Metadata:      e.GetMetadata(),
+	}
+	return r
+}
+
+func (e *CoolingOutflow) ConvertToProtoEntity() *pb.Entity {
+	return &pb.Entity{
+		Entity: &pb.Entity_CoolingOutflow{
+			CoolingOutflow: e.ConvertToProtoMessage().(*pb.CoolingOutflow),
+		},
+	}
+}
+
+func (e *CoolingOutflow) SetCustomField(key string, value any) error {
+	if e.CustomFields == nil {
+		e.CustomFields = make(map[string]*CustomFieldValue)
+	}
+	return setCustomField(e.CustomFields, key, value)
+}
+
+func (e *CoolingOutflow) GetDevice() *pb.Device {
+	var r *pb.Device
+	if e != nil && e.Device != nil {
+		r = e.Device.ConvertToProtoMessage().(*pb.Device)
+	}
+	return r
+}
+
+func (e *CoolingOutflow) GetModule() *pb.Module {
+	var r *pb.Module
+	if e != nil && e.Module != nil {
+		r = e.Module.ConvertToProtoMessage().(*pb.Module)
+	}
+	return r
+}
+
+func (e *CoolingOutflow) GetName() string {
+	var r string
+	if e != nil && e.Name != nil {
+		r = *e.Name
+	}
+	return r
+}
+
+func (e *CoolingOutflow) GetLabel() *string {
+	var r *string
+	if e != nil && e.Label != nil {
+		r = e.Label
+	}
+	return r
+}
+
+func (e *CoolingOutflow) GetType() *string {
+	var r *string
+	if e != nil && e.Type != nil {
+		r = e.Type
+	}
+	return r
+}
+
+func (e *CoolingOutflow) GetDiameter() *float64 {
+	var r *float64
+	if e != nil && e.Diameter != nil {
+		r = e.Diameter
+	}
+	return r
+}
+
+func (e *CoolingOutflow) GetDiameterUnit() *string {
+	var r *string
+	if e != nil && e.DiameterUnit != nil {
+		r = e.DiameterUnit
+	}
+	return r
+}
+
+func (e *CoolingOutflow) GetCoolingIntake() *pb.CoolingIntake {
+	var r *pb.CoolingIntake
+	if e != nil && e.CoolingIntake != nil {
+		r = e.CoolingIntake.ConvertToProtoMessage().(*pb.CoolingIntake)
+	}
+	return r
+}
+
+func (e *CoolingOutflow) GetDescription() *string {
+	var r *string
+	if e != nil && e.Description != nil {
+		r = e.Description
+	}
+	return r
+}
+
+func (e *CoolingOutflow) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *CoolingOutflow) GetTags() []*pb.Tag {
+	var r []*pb.Tag
+	if e != nil && e.Tags != nil {
+		for _, v := range e.Tags {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Tag))
+		}
+	}
+	return r
+}
+
+func (e *CoolingOutflow) GetCustomFields() map[string]*pb.CustomFieldValue {
+	var r map[string]*pb.CustomFieldValue
+	if e != nil && e.CustomFields != nil {
+		r = make(map[string]*pb.CustomFieldValue)
+		for k, v := range e.CustomFields {
+			r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+		}
+	}
+	return r
+}
+
+func (e *CoolingOutflow) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
+	}
+	return r
+}
+
+type CoolingSource struct {
+	Site            *Site
+	Location        *Location
+	Name            *string
+	Type            *string
+	Status          *string
+	FluidType       *string
+	CoolingCapacity *float64
+	Description     *string
+	Owner           *Owner
+	Comments        *string
+	Tags            []*Tag
+	CustomFields    map[string]*CustomFieldValue
+	Metadata        Metadata
+}
+
+func (e *CoolingSource) ConvertToProtoMessage() proto.Message {
+	r := &pb.CoolingSource{
+		Site:            e.GetSite(),
+		Location:        e.GetLocation(),
+		Name:            e.GetName(),
+		Type:            e.GetType(),
+		Status:          e.GetStatus(),
+		FluidType:       e.GetFluidType(),
+		CoolingCapacity: e.GetCoolingCapacity(),
+		Description:     e.GetDescription(),
+		Owner:           e.GetOwner(),
+		Comments:        e.GetComments(),
+		Tags:            e.GetTags(),
+		CustomFields:    e.GetCustomFields(),
+		Metadata:        e.GetMetadata(),
+	}
+	return r
+}
+
+func (e *CoolingSource) ConvertToProtoEntity() *pb.Entity {
+	return &pb.Entity{
+		Entity: &pb.Entity_CoolingSource{
+			CoolingSource: e.ConvertToProtoMessage().(*pb.CoolingSource),
+		},
+	}
+}
+
+func (e *CoolingSource) SetCustomField(key string, value any) error {
+	if e.CustomFields == nil {
+		e.CustomFields = make(map[string]*CustomFieldValue)
+	}
+	return setCustomField(e.CustomFields, key, value)
+}
+
+func (e *CoolingSource) GetSite() *pb.Site {
+	var r *pb.Site
+	if e != nil && e.Site != nil {
+		r = e.Site.ConvertToProtoMessage().(*pb.Site)
+	}
+	return r
+}
+
+func (e *CoolingSource) GetLocation() *pb.Location {
+	var r *pb.Location
+	if e != nil && e.Location != nil {
+		r = e.Location.ConvertToProtoMessage().(*pb.Location)
+	}
+	return r
+}
+
+func (e *CoolingSource) GetName() string {
+	var r string
+	if e != nil && e.Name != nil {
+		r = *e.Name
+	}
+	return r
+}
+
+func (e *CoolingSource) GetType() string {
+	var r string
+	if e != nil && e.Type != nil {
+		r = *e.Type
+	}
+	return r
+}
+
+func (e *CoolingSource) GetStatus() *string {
+	var r *string
+	if e != nil && e.Status != nil {
+		r = e.Status
+	}
+	return r
+}
+
+func (e *CoolingSource) GetFluidType() *string {
+	var r *string
+	if e != nil && e.FluidType != nil {
+		r = e.FluidType
+	}
+	return r
+}
+
+func (e *CoolingSource) GetCoolingCapacity() *float64 {
+	var r *float64
+	if e != nil && e.CoolingCapacity != nil {
+		r = e.CoolingCapacity
+	}
+	return r
+}
+
+func (e *CoolingSource) GetDescription() *string {
+	var r *string
+	if e != nil && e.Description != nil {
+		r = e.Description
+	}
+	return r
+}
+
+func (e *CoolingSource) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *CoolingSource) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
+func (e *CoolingSource) GetTags() []*pb.Tag {
+	var r []*pb.Tag
+	if e != nil && e.Tags != nil {
+		for _, v := range e.Tags {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Tag))
+		}
+	}
+	return r
+}
+
+func (e *CoolingSource) GetCustomFields() map[string]*pb.CustomFieldValue {
+	var r map[string]*pb.CustomFieldValue
+	if e != nil && e.CustomFields != nil {
+		r = make(map[string]*pb.CustomFieldValue)
+		for k, v := range e.CustomFields {
+			r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+		}
+	}
+	return r
+}
+
+func (e *CoolingSource) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
+	}
+	return r
+}
+
+type ModuleBayType struct {
+	Name         *string
+	Slug         *string
+	Manufacturer *Manufacturer
+	Color        *string
+	Description  *string
+	Owner        *Owner
+	Comments     *string
+	Tags         []*Tag
+	CustomFields map[string]*CustomFieldValue
+	Metadata     Metadata
+}
+
+func (e *ModuleBayType) ConvertToProtoMessage() proto.Message {
+	r := &pb.ModuleBayType{
+		Name:         e.GetName(),
+		Slug:         e.GetSlug(),
+		Manufacturer: e.GetManufacturer(),
+		Color:        e.GetColor(),
+		Description:  e.GetDescription(),
+		Owner:        e.GetOwner(),
+		Comments:     e.GetComments(),
+		Tags:         e.GetTags(),
+		CustomFields: e.GetCustomFields(),
+		Metadata:     e.GetMetadata(),
+	}
+	return r
+}
+
+func (e *ModuleBayType) ConvertToProtoEntity() *pb.Entity {
+	return &pb.Entity{
+		Entity: &pb.Entity_ModuleBayType{
+			ModuleBayType: e.ConvertToProtoMessage().(*pb.ModuleBayType),
+		},
+	}
+}
+
+func (e *ModuleBayType) SetCustomField(key string, value any) error {
+	if e.CustomFields == nil {
+		e.CustomFields = make(map[string]*CustomFieldValue)
+	}
+	return setCustomField(e.CustomFields, key, value)
+}
+
+func (e *ModuleBayType) GetName() string {
+	var r string
+	if e != nil && e.Name != nil {
+		r = *e.Name
+	}
+	return r
+}
+
+func (e *ModuleBayType) GetSlug() string {
+	var r string
+	if e != nil && e.Slug != nil {
+		r = *e.Slug
+	}
+	return r
+}
+
+func (e *ModuleBayType) GetManufacturer() *pb.Manufacturer {
+	var r *pb.Manufacturer
+	if e != nil && e.Manufacturer != nil {
+		r = e.Manufacturer.ConvertToProtoMessage().(*pb.Manufacturer)
+	}
+	return r
+}
+
+func (e *ModuleBayType) GetColor() *string {
+	var r *string
+	if e != nil && e.Color != nil {
+		r = e.Color
+	}
+	return r
+}
+
+func (e *ModuleBayType) GetDescription() *string {
+	var r *string
+	if e != nil && e.Description != nil {
+		r = e.Description
+	}
+	return r
+}
+
+func (e *ModuleBayType) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *ModuleBayType) GetComments() *string {
+	var r *string
+	if e != nil && e.Comments != nil {
+		r = e.Comments
+	}
+	return r
+}
+
+func (e *ModuleBayType) GetTags() []*pb.Tag {
+	var r []*pb.Tag
+	if e != nil && e.Tags != nil {
+		for _, v := range e.Tags {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Tag))
+		}
+	}
+	return r
+}
+
+func (e *ModuleBayType) GetCustomFields() map[string]*pb.CustomFieldValue {
+	var r map[string]*pb.CustomFieldValue
+	if e != nil && e.CustomFields != nil {
+		r = make(map[string]*pb.CustomFieldValue)
+		for k, v := range e.CustomFields {
+			r[k] = v.ConvertToProtoMessage().(*pb.CustomFieldValue)
+		}
+	}
+	return r
+}
+
+func (e *ModuleBayType) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
 		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
@@ -19969,6 +20977,238 @@ func (e *User) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTerminati
 func (e *User) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
 	p.AssignedObject = &pb.JournalEntry_AssignedObjectUser{
 		AssignedObjectUser: e.ConvertToProtoMessage().(*pb.User),
+	}
+}
+
+// implementation of oneof interfaces for CoolingFeed.
+
+func (e *CoolingFeed) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment) {
+	p.Object = &pb.ContactAssignment_ObjectCoolingFeed{
+		ObjectCoolingFeed: e.ConvertToProtoMessage().(*pb.CoolingFeed),
+	}
+}
+
+func (e *CoolingFeed) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference) {
+	p.Object = &pb.CustomFieldObjectReference_CoolingFeed{
+		CoolingFeed: e.ConvertToProtoMessage().(*pb.CoolingFeed),
+	}
+}
+
+func (e *CoolingFeed) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment) {
+	p.Interface = &pb.FHRPGroupAssignment_InterfaceCoolingFeed{
+		InterfaceCoolingFeed: e.ConvertToProtoMessage().(*pb.CoolingFeed),
+	}
+}
+
+func (e *CoolingFeed) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject) {
+	p.Object = &pb.GenericObject_ObjectCoolingFeed{
+		ObjectCoolingFeed: e.ConvertToProtoMessage().(*pb.CoolingFeed),
+	}
+}
+
+func (e *CoolingFeed) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination) {
+	p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCoolingFeed{
+		AssignedObjectCoolingFeed: e.ConvertToProtoMessage().(*pb.CoolingFeed),
+	}
+}
+
+func (e *CoolingFeed) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination) {
+	p.Termination = &pb.TunnelTermination_TerminationCoolingFeed{
+		TerminationCoolingFeed: e.ConvertToProtoMessage().(*pb.CoolingFeed),
+	}
+}
+
+func (e *CoolingFeed) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
+	p.AssignedObject = &pb.JournalEntry_AssignedObjectCoolingFeed{
+		AssignedObjectCoolingFeed: e.ConvertToProtoMessage().(*pb.CoolingFeed),
+	}
+}
+
+// implementation of oneof interfaces for CoolingIntake.
+
+func (e *CoolingIntake) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment) {
+	p.Object = &pb.ContactAssignment_ObjectCoolingIntake{
+		ObjectCoolingIntake: e.ConvertToProtoMessage().(*pb.CoolingIntake),
+	}
+}
+
+func (e *CoolingIntake) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference) {
+	p.Object = &pb.CustomFieldObjectReference_CoolingIntake{
+		CoolingIntake: e.ConvertToProtoMessage().(*pb.CoolingIntake),
+	}
+}
+
+func (e *CoolingIntake) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment) {
+	p.Interface = &pb.FHRPGroupAssignment_InterfaceCoolingIntake{
+		InterfaceCoolingIntake: e.ConvertToProtoMessage().(*pb.CoolingIntake),
+	}
+}
+
+func (e *CoolingIntake) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject) {
+	p.Object = &pb.GenericObject_ObjectCoolingIntake{
+		ObjectCoolingIntake: e.ConvertToProtoMessage().(*pb.CoolingIntake),
+	}
+}
+
+func (e *CoolingIntake) anyInventoryItemComponentValueApplyTo(p *pb.InventoryItem) {
+	p.Component = &pb.InventoryItem_ComponentCoolingIntake{
+		ComponentCoolingIntake: e.ConvertToProtoMessage().(*pb.CoolingIntake),
+	}
+}
+
+func (e *CoolingIntake) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination) {
+	p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCoolingIntake{
+		AssignedObjectCoolingIntake: e.ConvertToProtoMessage().(*pb.CoolingIntake),
+	}
+}
+
+func (e *CoolingIntake) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination) {
+	p.Termination = &pb.TunnelTermination_TerminationCoolingIntake{
+		TerminationCoolingIntake: e.ConvertToProtoMessage().(*pb.CoolingIntake),
+	}
+}
+
+func (e *CoolingIntake) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
+	p.AssignedObject = &pb.JournalEntry_AssignedObjectCoolingIntake{
+		AssignedObjectCoolingIntake: e.ConvertToProtoMessage().(*pb.CoolingIntake),
+	}
+}
+
+// implementation of oneof interfaces for CoolingOutflow.
+
+func (e *CoolingOutflow) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment) {
+	p.Object = &pb.ContactAssignment_ObjectCoolingOutflow{
+		ObjectCoolingOutflow: e.ConvertToProtoMessage().(*pb.CoolingOutflow),
+	}
+}
+
+func (e *CoolingOutflow) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference) {
+	p.Object = &pb.CustomFieldObjectReference_CoolingOutflow{
+		CoolingOutflow: e.ConvertToProtoMessage().(*pb.CoolingOutflow),
+	}
+}
+
+func (e *CoolingOutflow) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment) {
+	p.Interface = &pb.FHRPGroupAssignment_InterfaceCoolingOutflow{
+		InterfaceCoolingOutflow: e.ConvertToProtoMessage().(*pb.CoolingOutflow),
+	}
+}
+
+func (e *CoolingOutflow) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject) {
+	p.Object = &pb.GenericObject_ObjectCoolingOutflow{
+		ObjectCoolingOutflow: e.ConvertToProtoMessage().(*pb.CoolingOutflow),
+	}
+}
+
+func (e *CoolingOutflow) anyInventoryItemComponentValueApplyTo(p *pb.InventoryItem) {
+	p.Component = &pb.InventoryItem_ComponentCoolingOutflow{
+		ComponentCoolingOutflow: e.ConvertToProtoMessage().(*pb.CoolingOutflow),
+	}
+}
+
+func (e *CoolingOutflow) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination) {
+	p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCoolingOutflow{
+		AssignedObjectCoolingOutflow: e.ConvertToProtoMessage().(*pb.CoolingOutflow),
+	}
+}
+
+func (e *CoolingOutflow) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination) {
+	p.Termination = &pb.TunnelTermination_TerminationCoolingOutflow{
+		TerminationCoolingOutflow: e.ConvertToProtoMessage().(*pb.CoolingOutflow),
+	}
+}
+
+func (e *CoolingOutflow) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
+	p.AssignedObject = &pb.JournalEntry_AssignedObjectCoolingOutflow{
+		AssignedObjectCoolingOutflow: e.ConvertToProtoMessage().(*pb.CoolingOutflow),
+	}
+}
+
+// implementation of oneof interfaces for CoolingSource.
+
+func (e *CoolingSource) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment) {
+	p.Object = &pb.ContactAssignment_ObjectCoolingSource{
+		ObjectCoolingSource: e.ConvertToProtoMessage().(*pb.CoolingSource),
+	}
+}
+
+func (e *CoolingSource) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference) {
+	p.Object = &pb.CustomFieldObjectReference_CoolingSource{
+		CoolingSource: e.ConvertToProtoMessage().(*pb.CoolingSource),
+	}
+}
+
+func (e *CoolingSource) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment) {
+	p.Interface = &pb.FHRPGroupAssignment_InterfaceCoolingSource{
+		InterfaceCoolingSource: e.ConvertToProtoMessage().(*pb.CoolingSource),
+	}
+}
+
+func (e *CoolingSource) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject) {
+	p.Object = &pb.GenericObject_ObjectCoolingSource{
+		ObjectCoolingSource: e.ConvertToProtoMessage().(*pb.CoolingSource),
+	}
+}
+
+func (e *CoolingSource) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination) {
+	p.AssignedObject = &pb.L2VPNTermination_AssignedObjectCoolingSource{
+		AssignedObjectCoolingSource: e.ConvertToProtoMessage().(*pb.CoolingSource),
+	}
+}
+
+func (e *CoolingSource) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination) {
+	p.Termination = &pb.TunnelTermination_TerminationCoolingSource{
+		TerminationCoolingSource: e.ConvertToProtoMessage().(*pb.CoolingSource),
+	}
+}
+
+func (e *CoolingSource) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
+	p.AssignedObject = &pb.JournalEntry_AssignedObjectCoolingSource{
+		AssignedObjectCoolingSource: e.ConvertToProtoMessage().(*pb.CoolingSource),
+	}
+}
+
+// implementation of oneof interfaces for ModuleBayType.
+
+func (e *ModuleBayType) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment) {
+	p.Object = &pb.ContactAssignment_ObjectModuleBayType{
+		ObjectModuleBayType: e.ConvertToProtoMessage().(*pb.ModuleBayType),
+	}
+}
+
+func (e *ModuleBayType) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference) {
+	p.Object = &pb.CustomFieldObjectReference_ModuleBayType{
+		ModuleBayType: e.ConvertToProtoMessage().(*pb.ModuleBayType),
+	}
+}
+
+func (e *ModuleBayType) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment) {
+	p.Interface = &pb.FHRPGroupAssignment_InterfaceModuleBayType{
+		InterfaceModuleBayType: e.ConvertToProtoMessage().(*pb.ModuleBayType),
+	}
+}
+
+func (e *ModuleBayType) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject) {
+	p.Object = &pb.GenericObject_ObjectModuleBayType{
+		ObjectModuleBayType: e.ConvertToProtoMessage().(*pb.ModuleBayType),
+	}
+}
+
+func (e *ModuleBayType) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination) {
+	p.AssignedObject = &pb.L2VPNTermination_AssignedObjectModuleBayType{
+		AssignedObjectModuleBayType: e.ConvertToProtoMessage().(*pb.ModuleBayType),
+	}
+}
+
+func (e *ModuleBayType) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination) {
+	p.Termination = &pb.TunnelTermination_TerminationModuleBayType{
+		TerminationModuleBayType: e.ConvertToProtoMessage().(*pb.ModuleBayType),
+	}
+}
+
+func (e *ModuleBayType) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
+	p.AssignedObject = &pb.JournalEntry_AssignedObjectModuleBayType{
+		AssignedObjectModuleBayType: e.ConvertToProtoMessage().(*pb.ModuleBayType),
 	}
 }
 
