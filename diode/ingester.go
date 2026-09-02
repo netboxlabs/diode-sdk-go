@@ -1,5 +1,5 @@
 // Generated code. DO NOT EDIT.
-// Timestamp: 2026-08-28 12:13:46Z
+// Timestamp: 2026-09-02 20:52:39Z
 //
 
 package diode
