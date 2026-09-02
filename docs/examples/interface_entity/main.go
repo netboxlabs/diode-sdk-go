@@ -120,7 +120,6 @@ func InterfaceExtended() *diode.Interface {
 		TxPower:            diode.Int64(1),
 		MarkConnected:      diode.Bool(true),
 		Channels:           diode.Int64(1),
-		ChannelId:          diode.Int64(1),
 		MacAddress:         diode.String("00:11:22:33:44:55"),
 	}
 }
@@ -175,7 +174,6 @@ func InterfaceExplicit() *diode.Interface {
 		TxPower:            diode.Int64(1),
 		MarkConnected:      diode.Bool(true),
 		Channels:           diode.Int64(1),
-		ChannelId:          diode.Int64(1),
 		MacAddress:         diode.String("00:11:22:33:44:55"),
 		Module: &diode.Module{
 			Device: &diode.Device{
