@@ -52,22 +52,22 @@ func ServiceMinimal() *diode.Service {
 // ServiceExtended Creates a Service with common optional fields.
 func ServiceExtended() *diode.Service {
 	return &diode.Service{
-		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value"},
-		Description: diode.String("Example description"),
-		Protocol:    diode.String("sctp"),
-		Comments:    diode.String("Example comments"),
+		Name:         diode.String("Example Name"),
+		Metadata:     diode.Metadata{"source": "example", "custom_key": "custom_value"},
+		Description:  diode.String("Example description"),
+		Comments:     diode.String("Example comments"),
+		PortMappings: []string{"tcp/80", "udp/53"},
 	}
 }
 
 // ServiceExplicit Creates a Service with fully nested objects and all common fields.
 func ServiceExplicit() *diode.Service {
 	return &diode.Service{
-		Name:        diode.String("Example Name"),
-		Metadata:    diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
-		Description: diode.String("Example description"),
-		Comments:    diode.String("Example comments"),
-		Protocol:    diode.String("sctp"),
+		Name:         diode.String("Example Name"),
+		Metadata:     diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
+		Description:  diode.String("Example description"),
+		Comments:     diode.String("Example comments"),
+		PortMappings: []string{"tcp/80", "udp/53"},
 		Device: &diode.Device{
 			DeviceType: &diode.DeviceType{
 				Manufacturer: &diode.Manufacturer{

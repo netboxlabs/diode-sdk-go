@@ -64,6 +64,10 @@ func JournalEntryExplicit() *diode.JournalEntry {
 		Comments: diode.String("Example comments"),
 		Metadata: diode.Metadata{"source": "example", "custom_key": "custom_value", "collected_at": "2024-01-15T10:30:00Z"},
 		Kind:     diode.String("danger"),
-		Tags:     []*diode.Tag{{Name: diode.String("production")}},
+		CreatedBy: &diode.User{
+			Username: diode.String("Example Username"),
+			Metadata: diode.Metadata{"source": "example"},
+		},
+		Tags: []*diode.Tag{{Name: diode.String("production")}},
 	}
 }

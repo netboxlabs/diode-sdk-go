@@ -66,6 +66,7 @@ func VMInterfaceExtended() *diode.VMInterface {
 		Enabled:     diode.Bool(true),
 		Mtu:         diode.Int64(1),
 		Mode:        diode.String("access"),
+		MacAddress:  diode.String("00:11:22:33:44:55"),
 	}
 }
 
@@ -83,6 +84,7 @@ func VMInterfaceExplicit() *diode.VMInterface {
 		Enabled:     diode.Bool(true),
 		Mtu:         diode.Int64(1),
 		Mode:        diode.String("access"),
+		MacAddress:  diode.String("00:11:22:33:44:55"),
 		Parent: &diode.VMInterface{
 			VirtualMachine: &diode.VirtualMachine{
 				Name:     diode.String("Example Name"),

@@ -76,6 +76,7 @@ func DeviceTypeExtended() *diode.DeviceType {
 		Weight:                 diode.Float64(1.0),
 		WeightUnit:             diode.String("g"),
 		Comments:               diode.String("Example comments"),
+		CoolingMethod:          diode.String("air"),
 	}
 }
 
@@ -100,6 +101,7 @@ func DeviceTypeExplicit() *diode.DeviceType {
 		Airflow:                diode.String("bottom-to-top"),
 		Weight:                 diode.Float64(1.0),
 		WeightUnit:             diode.String("g"),
+		CoolingMethod:          diode.String("air"),
 		DefaultPlatform: &diode.Platform{
 			Name:     diode.String("Example Name"),
 			Slug:     diode.String("example-slug"),
