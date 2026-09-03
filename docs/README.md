@@ -1,7 +1,7 @@
 # Diode Go SDK - Entity Examples
 
-Source: NetBox v4.6.0
-Generated: 2026-07-03 00:59:24Z
+Source: NetBox v4.7.0
+Generated: 2026-09-02 20:52:39Z
 
 ## Prerequisites
 
@@ -128,7 +128,12 @@ Switch between patterns by uncommenting the desired function call in `main()`.
 ### Other
 
 - [CableBundle](examples/cable_bundle/)
+- [CoolingFeed](examples/cooling_feed/)
+- [CoolingIntake](examples/cooling_intake/)
+- [CoolingOutflow](examples/cooling_outflow/)
+- [CoolingSource](examples/cooling_source/)
 - [DeviceConfig](examples/device_config/)
+- [ModuleBayType](examples/module_bay_type/)
 - [RackGroup](examples/rack_group/)
 - [ScriptModule](examples/script_module/)
 - [VirtualMachineType](examples/virtual_machine_type/)

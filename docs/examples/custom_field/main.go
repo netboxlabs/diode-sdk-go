@@ -75,6 +75,7 @@ func CustomFieldExtended() *diode.CustomField {
 		ValidationRegex:     diode.String("Example ValidationRegex"),
 		Comments:            diode.String("Example comments"),
 		ValidationSchema:    diode.String("Example ValidationSchema"),
+		NullsFirst:          diode.Bool(true),
 	}
 }
 
@@ -103,6 +104,7 @@ func CustomFieldExplicit() *diode.CustomField {
 		ValidationMaximum:   diode.Float64(1.0),
 		ValidationRegex:     diode.String("Example ValidationRegex"),
 		ValidationSchema:    diode.String("Example ValidationSchema"),
+		NullsFirst:          diode.Bool(true),
 		ChoiceSet: &diode.CustomFieldChoiceSet{
 			Name:     diode.String("Example Name"),
 			Metadata: diode.Metadata{"source": "example"},
