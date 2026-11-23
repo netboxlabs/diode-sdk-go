@@ -1,5 +1,5 @@
 // Generated code. DO NOT EDIT.
-// Timestamp: 2026-09-02 20:52:39Z
+// Timestamp: 2026-11-23 19:38:00Z
 //
 
 package diode
@@ -2428,6 +2428,7 @@ type ContactAssignment struct {
 	//  - CoolingOutflow
 	//  - CoolingSource
 	//  - ModuleBayType
+	//  - ConfigContext
 	Object       anyContactAssignmentObjectValue
 	Contact      *Contact
 	Role         *ContactRole
@@ -2865,6 +2866,7 @@ type CustomFieldObjectReference struct {
 	//  - CoolingOutflow
 	//  - CoolingSource
 	//  - ModuleBayType
+	//  - ConfigContext
 	Object anyCustomFieldObjectReferenceObjectValue
 }
 
@@ -4028,6 +4030,7 @@ type FHRPGroupAssignment struct {
 	//  - CoolingOutflow
 	//  - CoolingSource
 	//  - ModuleBayType
+	//  - ConfigContext
 	Interface anyFHRPGroupAssignmentInterfaceValue
 	Priority  *int64
 	Metadata  Metadata
@@ -4373,6 +4376,7 @@ type GenericObject struct {
 	//  - CoolingOutflow
 	//  - CoolingSource
 	//  - ModuleBayType
+	//  - ConfigContext
 	Object anyGenericObjectObjectValue
 }
 
@@ -6457,6 +6461,7 @@ type L2VPNTermination struct {
 	//  - CoolingOutflow
 	//  - CoolingSource
 	//  - ModuleBayType
+	//  - ConfigContext
 	AssignedObject anyL2VPNTerminationAssignedObjectValue
 	Tags           []*Tag
 	CustomFields   map[string]*CustomFieldValue
@@ -11547,6 +11552,7 @@ type TunnelTermination struct {
 	//  - CoolingOutflow
 	//  - CoolingSource
 	//  - ModuleBayType
+	//  - ConfigContext
 	Termination  anyTunnelTerminationTerminationValue
 	OutsideIp    *IPAddress
 	Tags         []*Tag
@@ -14472,6 +14478,7 @@ type JournalEntry struct {
 	//  - CoolingOutflow
 	//  - CoolingSource
 	//  - ModuleBayType
+	//  - ConfigContext
 	AssignedObject anyJournalEntryAssignedObjectValue
 	Kind           *string
 	Comments       *string
@@ -16191,6 +16198,249 @@ func (e *ModuleBayType) GetCustomFields() map[string]*pb.CustomFieldValue {
 }
 
 func (e *ModuleBayType) GetMetadata() *structpb.Struct {
+	var r *structpb.Struct
+	if e != nil && e.Metadata != nil {
+		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
+	}
+	return r
+}
+
+type ConfigContext struct {
+	Name          *string
+	Weight        *int64
+	Description   *string
+	IsActive      *bool
+	Regions       []*Region
+	SiteGroups    []*SiteGroup
+	Sites         []*Site
+	Locations     []*Location
+	DeviceTypes   []*DeviceType
+	Roles         []*DeviceRole
+	Platforms     []*Platform
+	ClusterTypes  []*ClusterType
+	ClusterGroups []*ClusterGroup
+	Clusters      []*Cluster
+	TenantGroups  []*TenantGroup
+	Tenants       []*Tenant
+	Owner         *Owner
+	Tags          []*Tag
+	Data          *string
+	Metadata      Metadata
+}
+
+func (e *ConfigContext) ConvertToProtoMessage() proto.Message {
+	r := &pb.ConfigContext{
+		Name:          e.GetName(),
+		Weight:        e.GetWeight(),
+		Description:   e.GetDescription(),
+		IsActive:      e.GetIsActive(),
+		Regions:       e.GetRegions(),
+		SiteGroups:    e.GetSiteGroups(),
+		Sites:         e.GetSites(),
+		Locations:     e.GetLocations(),
+		DeviceTypes:   e.GetDeviceTypes(),
+		Roles:         e.GetRoles(),
+		Platforms:     e.GetPlatforms(),
+		ClusterTypes:  e.GetClusterTypes(),
+		ClusterGroups: e.GetClusterGroups(),
+		Clusters:      e.GetClusters(),
+		TenantGroups:  e.GetTenantGroups(),
+		Tenants:       e.GetTenants(),
+		Owner:         e.GetOwner(),
+		Tags:          e.GetTags(),
+		Data:          e.GetData(),
+		Metadata:      e.GetMetadata(),
+	}
+	return r
+}
+
+func (e *ConfigContext) ConvertToProtoEntity() *pb.Entity {
+	return &pb.Entity{
+		Entity: &pb.Entity_ConfigContext{
+			ConfigContext: e.ConvertToProtoMessage().(*pb.ConfigContext),
+		},
+	}
+}
+
+func (e *ConfigContext) GetName() string {
+	var r string
+	if e != nil && e.Name != nil {
+		r = *e.Name
+	}
+	return r
+}
+
+func (e *ConfigContext) GetWeight() *int64 {
+	var r *int64
+	if e != nil && e.Weight != nil {
+		r = e.Weight
+	}
+	return r
+}
+
+func (e *ConfigContext) GetDescription() *string {
+	var r *string
+	if e != nil && e.Description != nil {
+		r = e.Description
+	}
+	return r
+}
+
+func (e *ConfigContext) GetIsActive() *bool {
+	var r *bool
+	if e != nil && e.IsActive != nil {
+		r = e.IsActive
+	}
+	return r
+}
+
+func (e *ConfigContext) GetRegions() []*pb.Region {
+	var r []*pb.Region
+	if e != nil && e.Regions != nil {
+		for _, v := range e.Regions {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Region))
+		}
+	}
+	return r
+}
+
+func (e *ConfigContext) GetSiteGroups() []*pb.SiteGroup {
+	var r []*pb.SiteGroup
+	if e != nil && e.SiteGroups != nil {
+		for _, v := range e.SiteGroups {
+			r = append(r, v.ConvertToProtoMessage().(*pb.SiteGroup))
+		}
+	}
+	return r
+}
+
+func (e *ConfigContext) GetSites() []*pb.Site {
+	var r []*pb.Site
+	if e != nil && e.Sites != nil {
+		for _, v := range e.Sites {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Site))
+		}
+	}
+	return r
+}
+
+func (e *ConfigContext) GetLocations() []*pb.Location {
+	var r []*pb.Location
+	if e != nil && e.Locations != nil {
+		for _, v := range e.Locations {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Location))
+		}
+	}
+	return r
+}
+
+func (e *ConfigContext) GetDeviceTypes() []*pb.DeviceType {
+	var r []*pb.DeviceType
+	if e != nil && e.DeviceTypes != nil {
+		for _, v := range e.DeviceTypes {
+			r = append(r, v.ConvertToProtoMessage().(*pb.DeviceType))
+		}
+	}
+	return r
+}
+
+func (e *ConfigContext) GetRoles() []*pb.DeviceRole {
+	var r []*pb.DeviceRole
+	if e != nil && e.Roles != nil {
+		for _, v := range e.Roles {
+			r = append(r, v.ConvertToProtoMessage().(*pb.DeviceRole))
+		}
+	}
+	return r
+}
+
+func (e *ConfigContext) GetPlatforms() []*pb.Platform {
+	var r []*pb.Platform
+	if e != nil && e.Platforms != nil {
+		for _, v := range e.Platforms {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Platform))
+		}
+	}
+	return r
+}
+
+func (e *ConfigContext) GetClusterTypes() []*pb.ClusterType {
+	var r []*pb.ClusterType
+	if e != nil && e.ClusterTypes != nil {
+		for _, v := range e.ClusterTypes {
+			r = append(r, v.ConvertToProtoMessage().(*pb.ClusterType))
+		}
+	}
+	return r
+}
+
+func (e *ConfigContext) GetClusterGroups() []*pb.ClusterGroup {
+	var r []*pb.ClusterGroup
+	if e != nil && e.ClusterGroups != nil {
+		for _, v := range e.ClusterGroups {
+			r = append(r, v.ConvertToProtoMessage().(*pb.ClusterGroup))
+		}
+	}
+	return r
+}
+
+func (e *ConfigContext) GetClusters() []*pb.Cluster {
+	var r []*pb.Cluster
+	if e != nil && e.Clusters != nil {
+		for _, v := range e.Clusters {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Cluster))
+		}
+	}
+	return r
+}
+
+func (e *ConfigContext) GetTenantGroups() []*pb.TenantGroup {
+	var r []*pb.TenantGroup
+	if e != nil && e.TenantGroups != nil {
+		for _, v := range e.TenantGroups {
+			r = append(r, v.ConvertToProtoMessage().(*pb.TenantGroup))
+		}
+	}
+	return r
+}
+
+func (e *ConfigContext) GetTenants() []*pb.Tenant {
+	var r []*pb.Tenant
+	if e != nil && e.Tenants != nil {
+		for _, v := range e.Tenants {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Tenant))
+		}
+	}
+	return r
+}
+
+func (e *ConfigContext) GetOwner() *pb.Owner {
+	var r *pb.Owner
+	if e != nil && e.Owner != nil {
+		r = e.Owner.ConvertToProtoMessage().(*pb.Owner)
+	}
+	return r
+}
+
+func (e *ConfigContext) GetTags() []*pb.Tag {
+	var r []*pb.Tag
+	if e != nil && e.Tags != nil {
+		for _, v := range e.Tags {
+			r = append(r, v.ConvertToProtoMessage().(*pb.Tag))
+		}
+	}
+	return r
+}
+
+func (e *ConfigContext) GetData() string {
+	var r string
+	if e != nil && e.Data != nil {
+		r = *e.Data
+	}
+	return r
+}
+
+func (e *ConfigContext) GetMetadata() *structpb.Struct {
 	var r *structpb.Struct
 	if e != nil && e.Metadata != nil {
 		r, _ = structpb.NewStruct(convertMetadata(e.Metadata))
@@ -21209,6 +21459,50 @@ func (e *ModuleBayType) anyTunnelTerminationTerminationValueApplyTo(p *pb.Tunnel
 func (e *ModuleBayType) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
 	p.AssignedObject = &pb.JournalEntry_AssignedObjectModuleBayType{
 		AssignedObjectModuleBayType: e.ConvertToProtoMessage().(*pb.ModuleBayType),
+	}
+}
+
+// implementation of oneof interfaces for ConfigContext.
+
+func (e *ConfigContext) anyContactAssignmentObjectValueApplyTo(p *pb.ContactAssignment) {
+	p.Object = &pb.ContactAssignment_ObjectConfigContext{
+		ObjectConfigContext: e.ConvertToProtoMessage().(*pb.ConfigContext),
+	}
+}
+
+func (e *ConfigContext) anyCustomFieldObjectReferenceObjectValueApplyTo(p *pb.CustomFieldObjectReference) {
+	p.Object = &pb.CustomFieldObjectReference_ConfigContext{
+		ConfigContext: e.ConvertToProtoMessage().(*pb.ConfigContext),
+	}
+}
+
+func (e *ConfigContext) anyFHRPGroupAssignmentInterfaceValueApplyTo(p *pb.FHRPGroupAssignment) {
+	p.Interface = &pb.FHRPGroupAssignment_InterfaceConfigContext{
+		InterfaceConfigContext: e.ConvertToProtoMessage().(*pb.ConfigContext),
+	}
+}
+
+func (e *ConfigContext) anyGenericObjectObjectValueApplyTo(p *pb.GenericObject) {
+	p.Object = &pb.GenericObject_ObjectConfigContext{
+		ObjectConfigContext: e.ConvertToProtoMessage().(*pb.ConfigContext),
+	}
+}
+
+func (e *ConfigContext) anyL2VPNTerminationAssignedObjectValueApplyTo(p *pb.L2VPNTermination) {
+	p.AssignedObject = &pb.L2VPNTermination_AssignedObjectConfigContext{
+		AssignedObjectConfigContext: e.ConvertToProtoMessage().(*pb.ConfigContext),
+	}
+}
+
+func (e *ConfigContext) anyTunnelTerminationTerminationValueApplyTo(p *pb.TunnelTermination) {
+	p.Termination = &pb.TunnelTermination_TerminationConfigContext{
+		TerminationConfigContext: e.ConvertToProtoMessage().(*pb.ConfigContext),
+	}
+}
+
+func (e *ConfigContext) anyJournalEntryAssignedObjectValueApplyTo(p *pb.JournalEntry) {
+	p.AssignedObject = &pb.JournalEntry_AssignedObjectConfigContext{
+		AssignedObjectConfigContext: e.ConvertToProtoMessage().(*pb.ConfigContext),
 	}
 }
 

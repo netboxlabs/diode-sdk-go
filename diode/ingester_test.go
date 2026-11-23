@@ -2223,3 +2223,142 @@ func TestOwnerMethods(t *testing.T) {
 		})
 	}
 }
+
+func TestConfigContextMethods(t *testing.T) {
+	data := `{"ntp_servers":["10.0.0.1"]}`
+	tests := []struct {
+		name          string
+		configContext *ConfigContext
+		expected      interface{}
+		method        func(*ConfigContext) interface{}
+	}{
+		{
+			name:          "GetName",
+			configContext: &ConfigContext{Name: String("site-ntp")},
+			expected:      "site-ntp",
+			method: func(c *ConfigContext) interface{} {
+				return c.GetName()
+			},
+		},
+		{
+			name:          "GetWeight",
+			configContext: &ConfigContext{Weight: Int64(1000)},
+			expected:      Int64(1000),
+			method: func(c *ConfigContext) interface{} {
+				return c.GetWeight()
+			},
+		},
+		{
+			name:          "GetIsActive",
+			configContext: &ConfigContext{IsActive: Bool(true)},
+			expected:      Bool(true),
+			method: func(c *ConfigContext) interface{} {
+				return c.GetIsActive()
+			},
+		},
+		{
+			name:          "GetData",
+			configContext: &ConfigContext{Data: String(data)},
+			expected:      data,
+			method: func(c *ConfigContext) interface{} {
+				return c.GetData()
+			},
+		},
+		{
+			name: "GetSites",
+			configContext: &ConfigContext{Sites: []*Site{
+				{Name: String("site-1")},
+				{Name: String("site-2")},
+			}},
+			expected: []*diodepb.Site{
+				{Name: "site-1"},
+				{Name: "site-2"},
+			},
+			method: func(c *ConfigContext) interface{} {
+				return c.GetSites()
+			},
+		},
+		{
+			name: "GetRoles",
+			configContext: &ConfigContext{Roles: []*DeviceRole{
+				{Name: String("access-point")},
+			}},
+			expected: []*diodepb.DeviceRole{
+				{Name: "access-point"},
+			},
+			method: func(c *ConfigContext) interface{} {
+				return c.GetRoles()
+			},
+		},
+		{
+			name: "GetTags",
+			configContext: &ConfigContext{Tags: []*Tag{
+				{Name: String("mist")},
+			}},
+			expected: []*diodepb.Tag{
+				{Name: "mist"},
+			},
+			method: func(c *ConfigContext) interface{} {
+				return c.GetTags()
+			},
+		},
+		{
+			name:          "GetSitesEmpty",
+			configContext: &ConfigContext{},
+			expected:      []*diodepb.Site(nil),
+			method: func(c *ConfigContext) interface{} {
+				return c.GetSites()
+			},
+		},
+		{
+			name: "ConvertToProtoMessage",
+			configContext: &ConfigContext{
+				Name:     String("site-ntp"),
+				Weight:   Int64(1000),
+				IsActive: Bool(true),
+				Sites:    []*Site{{Name: String("site-1")}},
+				Roles:    []*DeviceRole{{Name: String("access-point")}},
+				Tags:     []*Tag{{Name: String("mist")}},
+				Data:     String(data),
+			},
+			expected: &diodepb.ConfigContext{
+				Name:     "site-ntp",
+				Weight:   Int64(1000),
+				IsActive: Bool(true),
+				Sites:    []*diodepb.Site{{Name: "site-1"}},
+				Roles:    []*diodepb.DeviceRole{{Name: "access-point"}},
+				Tags:     []*diodepb.Tag{{Name: "mist"}},
+				Data:     data,
+			},
+			method: func(c *ConfigContext) interface{} {
+				return c.ConvertToProtoMessage()
+			},
+		},
+		{
+			name: "ConvertToProtoEntity",
+			configContext: &ConfigContext{
+				Name:  String("site-ntp"),
+				Sites: []*Site{{Name: String("site-1")}},
+				Data:  String(data),
+			},
+			expected: &diodepb.Entity{
+				Entity: &diodepb.Entity_ConfigContext{
+					ConfigContext: &diodepb.ConfigContext{
+						Name:  "site-ntp",
+						Sites: []*diodepb.Site{{Name: "site-1"}},
+						Data:  data,
+					},
+				},
+			},
+			method: func(c *ConfigContext) interface{} {
+				return c.ConvertToProtoEntity()
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.expected, tt.method(tt.configContext))
+		})
+	}
+}
